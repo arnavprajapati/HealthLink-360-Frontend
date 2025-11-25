@@ -1,45 +1,48 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { signupWithEmail, loginWithGoogle, clearError } from '../app/reducers/authSlice';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signup, googleSignIn } = useAuth();
+  
+  const [validationError, setValidationError] = useState('');
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  const { loading, error: reduxError, user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user) navigate('/');
+    dispatch(clearError());
+  }, [user, navigate, dispatch]);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setValidationError('');
 
     if (password !== passwordConfirm) {
-      return setError('Passwords do not match');
+      return setValidationError('Passwords do not match');
     }
 
     try {
-      setError('');
-      setLoading(true);
-      await signup(email, password);
+      await dispatch(signupWithEmail({ email, password })).unwrap();
       navigate('/');
     } catch (err) {
-      setError('Failed to create an account: ' + err.message);
+      console.error("Signup Failed", err);
     }
-
-    setLoading(false);
   }
 
   async function handleGoogleSignIn() {
     try {
-      setError('');
-      setLoading(true);
-      await googleSignIn();
+      await dispatch(loginWithGoogle()).unwrap();
       navigate('/');
     } catch (err) {
-      setError('Failed to sign up with Google: ' + err.message);
+      console.error("Google Sign In Failed", err);
     }
-    setLoading(false);
   }
 
   return (
@@ -50,7 +53,13 @@ const Signup = () => {
             Create your account
           </h2>
         </div>
-        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>}
+        
+        {(validationError || reduxError) && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            {validationError || reduxError}
+          </div>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -89,9 +98,9 @@ const Signup = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Sign Up
+              {loading ? 'Creating Account...' : 'Sign Up'}
             </button>
           </div>
         </form>
