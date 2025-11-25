@@ -1,40 +1,39 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginWithEmail, loginWithGoogle, clearError } from '../app/reducers/authSlice';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login, googleSignIn } = useAuth();
+  
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  const { loading, error, user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (user) navigate('/');
+    dispatch(clearError());
+  }, [user, navigate, dispatch]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     try {
-      setError('');
-      setLoading(true);
-      await login(email, password);
+      await dispatch(loginWithEmail({ email, password })).unwrap();
       navigate('/');
     } catch (err) {
-      setError('Failed to log in: ' + err.message);
+      console.error("Login Failed", err);
     }
-
-    setLoading(false);
   }
 
   async function handleGoogleSignIn() {
     try {
-      setError('');
-      setLoading(true);
-      await googleSignIn();
+      await dispatch(loginWithGoogle()).unwrap();
       navigate('/');
     } catch (err) {
-      setError('Failed to log in with Google: ' + err.message);
+      console.error("Google Login Failed", err);
     }
-    setLoading(false);
   }
 
   return (
@@ -45,7 +44,13 @@ const Login = () => {
             Sign in to your account
           </h2>
         </div>
-        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>}
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            {error}
+          </div>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -74,9 +79,9 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
