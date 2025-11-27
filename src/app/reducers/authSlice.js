@@ -7,32 +7,45 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
 
-export const loginWithGoogle = createAsyncThunk("auth/loginWithGoogle", async () => {
+export const loginWithGoogle = createAsyncThunk("auth/loginWithGoogle", async (role) => {
     const result = await signInWithPopup(auth, googleProvider);
-    return {
+    
+    const userData = {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName,
         photoURL: result.user.photoURL,
+        role: role || "patient",
+        createdAt: new Date().toISOString(),
     };
+    
+    return userData;
 });
 
-export const signupWithEmail = createAsyncThunk("auth/signupWithEmail", async ({ email, password }) => {
+export const signupWithEmail = createAsyncThunk("auth/signupWithEmail", async ({ email, password, role }) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    return {
+    
+    const userData = {
         uid: result.user.uid,
         email: result.user.email,
-        displayName: result.user.displayName,
+        displayName: result.user.displayName || email.split('@')[0],
+        photoURL: result.user.photoURL,
+        role: role || "patient",
+        createdAt: new Date().toISOString(),
     };
+    
+    return userData;
 });
 
 export const loginWithEmail = createAsyncThunk("auth/loginWithEmail", async ({ email, password }) => {
     const result = await signInWithEmailAndPassword(auth, email, password);
+    
     return {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName,
         photoURL: result.user.photoURL,
+        role: "patient",
     };
 });
 
@@ -73,7 +86,7 @@ const authSlice = createSlice({
                 (action) => action.type.endsWith("/fulfilled"),
                 (state, action) => {
                     state.loading = false;
-                    if (action.payload) state.user = action.payload; 
+                    if (action.payload) state.user = action.payload;
                 }
             )
             .addMatcher(

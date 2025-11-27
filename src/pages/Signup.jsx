@@ -7,6 +7,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [role, setRole] = useState('patient');
   
   const [validationError, setValidationError] = useState('');
 
@@ -16,7 +17,13 @@ const Signup = () => {
   const { loading, error: reduxError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user) navigate('/');
+    if (user) {
+      if (user.role === 'doctor') {
+        navigate('/doctor-dashboard');
+      } else {
+        navigate('/patient-dashboard');
+      }
+    }
     dispatch(clearError());
   }, [user, navigate, dispatch]);
 
@@ -29,8 +36,7 @@ const Signup = () => {
     }
 
     try {
-      await dispatch(signupWithEmail({ email, password })).unwrap();
-      navigate('/');
+      await dispatch(signupWithEmail({ email, password, role })).unwrap();
     } catch (err) {
       console.error("Signup Failed", err);
     }
@@ -38,8 +44,7 @@ const Signup = () => {
 
   async function handleGoogleSignIn() {
     try {
-      await dispatch(loginWithGoogle()).unwrap();
-      navigate('/');
+      await dispatch(loginWithGoogle(role)).unwrap();
     } catch (err) {
       console.error("Google Sign In Failed", err);
     }
@@ -59,6 +64,31 @@ const Signup = () => {
             {validationError || reduxError}
           </div>
         )}
+
+        <div className="flex justify-center space-x-4">
+          <button
+            type="button"
+            onClick={() => setRole('patient')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              role === 'patient'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Patient
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole('doctor')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              role === 'doctor'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Doctor
+          </button>
+        </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
@@ -100,7 +130,7 @@ const Signup = () => {
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading ? 'Creating Account...' : 'Sign Up'}
+              {loading ? 'Creating Account...' : `Sign Up as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
             </button>
           </div>
         </form>
@@ -121,7 +151,7 @@ const Signup = () => {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
-              Sign up with Google
+              Sign up with Google as {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
           </div>
         </div>

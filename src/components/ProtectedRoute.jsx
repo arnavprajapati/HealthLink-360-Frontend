@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { HashLoader } from "react-spinners";
 
-const PrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children, allowedRoles = [] }) => {
   const { user, isAuthChecking } = useSelector((state) => state.auth);
 
   if (isAuthChecking) {
@@ -16,6 +16,14 @@ const PrivateRoute = ({ children }) => {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+    if (user.role === 'doctor') {
+      return <Navigate to="/doctor-dashboard" replace />;
+    } else {
+      return <Navigate to="/patient-dashboard" replace />;
+    }
   }
 
   return children;

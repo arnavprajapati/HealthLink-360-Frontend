@@ -6,6 +6,7 @@ import { loginWithEmail, loginWithGoogle, clearError } from '../app/reducers/aut
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('patient');
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -13,7 +14,13 @@ const Login = () => {
   const { loading, error, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user) navigate('/');
+    if (user) {
+      if (user.role === 'doctor') {
+        navigate('/doctor-dashboard');
+      } else {
+        navigate('/patient-dashboard');
+      }
+    }
     dispatch(clearError());
   }, [user, navigate, dispatch]);
 
@@ -21,7 +28,6 @@ const Login = () => {
     e.preventDefault();
     try {
       await dispatch(loginWithEmail({ email, password })).unwrap();
-      navigate('/');
     } catch (err) {
       console.error("Login Failed", err);
     }
@@ -29,8 +35,7 @@ const Login = () => {
 
   async function handleGoogleSignIn() {
     try {
-      await dispatch(loginWithGoogle()).unwrap();
-      navigate('/');
+      await dispatch(loginWithGoogle(role)).unwrap();
     } catch (err) {
       console.error("Google Login Failed", err);
     }
@@ -50,6 +55,31 @@ const Login = () => {
             {error}
           </div>
         )}
+
+        <div className="flex justify-center space-x-4">
+          <button
+            type="button"
+            onClick={() => setRole('patient')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              role === 'patient'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Patient
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole('doctor')}
+            className={`px-6 py-2 rounded-lg font-medium ${
+              role === 'doctor'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Doctor
+          </button>
+        </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
@@ -102,7 +132,7 @@ const Login = () => {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
-              Sign in with Google
+              Sign in with Google as {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
           </div>
         </div>

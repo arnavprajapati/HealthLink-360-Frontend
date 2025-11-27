@@ -15,7 +15,11 @@ const PublicRoute = ({ children }) => {
     }
 
     if (user) {
-        return <Navigate to="/" replace />;
+        if (user.role === 'doctor') {
+            return <Navigate to="/doctor-dashboard" replace />;
+        } else {
+            return <Navigate to="/patient-dashboard" replace />;
+        }
     }
 
     return children;

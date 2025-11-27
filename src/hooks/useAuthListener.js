@@ -10,13 +10,14 @@ const useAuthListener = () => {
     useEffect(() => {
         dispatch(setAuthChecking(true));
 
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 dispatch(setUser({
                     uid: user.uid,
                     email: user.email,
                     displayName: user.displayName,
                     photoURL: user.photoURL,
+                    role: "patient",
                 }));
             } else {
                 dispatch(setUser(null));
