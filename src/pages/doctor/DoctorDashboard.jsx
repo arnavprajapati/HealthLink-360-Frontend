@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../app/reducers/authSlice';
+import { logoutUser } from '../../app/reducers/authSlice';
 
-const PatientDashboard = () => {
+const DoctorDashboard = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -29,12 +29,12 @@ const PatientDashboard = () => {
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="flex-shrink-0 flex items-center">
-                                <h1 className="text-xl font-bold text-gray-800">HealthLink 360 - Patient Portal</h1>
+                                <h1 className="text-xl font-bold text-gray-800">HealthLink 360 - Doctor Portal</h1>
                             </div>
                         </div>
                         <div className="flex items-center">
-                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 mr-3">
-                                Patient
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 mr-3">
+                                Doctor
                             </span>
                             {user?.photoURL && (
                                 <img
@@ -58,7 +58,7 @@ const PatientDashboard = () => {
                 <header>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <h1 className="text-3xl font-bold leading-tight text-gray-900">
-                            Patient Dashboard
+                            Doctor Dashboard
                         </h1>
                     </div>
                 </header>
@@ -66,7 +66,7 @@ const PatientDashboard = () => {
                     <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="px-4 py-8 sm:px-0">
                             <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex flex-col items-center justify-center">
-                                <h2 className="text-2xl font-semibold text-gray-700 mb-4">Welcome, Patient!</h2>
+                                <h2 className="text-2xl font-semibold text-gray-700 mb-4">Welcome, Doctor!</h2>
 
                                 <p className="text-gray-500">
                                     You are logged in as: <strong>{user?.email}</strong>
@@ -77,7 +77,7 @@ const PatientDashboard = () => {
                                 )}
 
                                 <p className="text-gray-500 mt-2">
-                                    Role: <span className="font-semibold text-blue-600">{user?.role}</span>
+                                    Role: <span className="font-semibold text-green-600">{user?.role}</span>
                                 </p>
 
                                 {error && (
@@ -94,4 +94,4 @@ const PatientDashboard = () => {
     );
 };
 
-export default PatientDashboard;
+export default DoctorDashboard;

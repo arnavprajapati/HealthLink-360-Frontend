@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginWithEmail, loginWithGoogle, clearError } from '../app/reducers/authSlice';
+import { signupWithEmail, loginWithGoogle, clearError } from '../../app/reducers/authSlice';
 
-const Login = () => {
+const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [role, setRole] = useState('patient');
   
+  const [validationError, setValidationError] = useState('');
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
-  const { loading, error, user } = useSelector((state) => state.auth);
+  const { loading, error: reduxError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (user) {
@@ -26,10 +29,16 @@ const Login = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setValidationError('');
+
+    if (password !== passwordConfirm) {
+      return setValidationError('Passwords do not match');
+    }
+
     try {
-      await dispatch(loginWithEmail({ email, password })).unwrap();
+      await dispatch(signupWithEmail({ email, password, role })).unwrap();
     } catch (err) {
-      console.error("Login Failed", err);
+      console.error("Signup Failed", err);
     }
   }
 
@@ -37,7 +46,7 @@ const Login = () => {
     try {
       await dispatch(loginWithGoogle(role)).unwrap();
     } catch (err) {
-      console.error("Google Login Failed", err);
+      console.error("Google Sign In Failed", err);
     }
   }
 
@@ -46,13 +55,13 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Create your account
           </h2>
         </div>
-
-        {error && (
+        
+        {(validationError || reduxError) && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            {error}
+            {validationError || reduxError}
           </div>
         )}
 
@@ -97,10 +106,20 @@ const Login = () => {
               <input
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Password Confirmation"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
               />
             </div>
           </div>
@@ -111,11 +130,11 @@ const Login = () => {
               disabled={loading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Creating Account...' : `Sign Up as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
             </button>
           </div>
         </form>
-        
+
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -132,14 +151,14 @@ const Login = () => {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
-              Sign in with Google as {role.charAt(0).toUpperCase() + role.slice(1)}
+              Sign up with Google as {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
           </div>
         </div>
 
         <div className="text-center">
-          <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Don't have an account? Sign up
+          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Already have an account? Log In
           </Link>
         </div>
       </div>
@@ -147,4 +166,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;
