@@ -186,6 +186,7 @@ const authSlice = createSlice({
             .addCase(getCurrentUser.rejected, (state) => {
                 state.isAuthChecking = false;
                 state.user = null;
+                state.error = null
             });
     },
 });
