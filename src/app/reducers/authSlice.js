@@ -147,7 +147,6 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-            // Google Login
             .addCase(loginWithGoogle.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -171,10 +170,9 @@ const authSlice = createSlice({
             })
             .addCase(logoutUser.rejected, (state, action) => {
                 state.loading = false;
-                state.user = null; 
+                state.user = null;
                 state.error = action.payload || "Logout failed. Please refresh.";
             })
-            // Get Current User
             .addCase(getCurrentUser.pending, (state) => {
                 state.isAuthChecking = true;
                 state.error = null;

@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+/* Custom Theme Colors */
+:root {
+    --color-primary-light: #f0f3bd;
+    --color-primary: #02c39a;
+    --color-primary-dark: #00a896;
+    --color-primary-darker: #028090;
+}
+
+@font-face {
+    font-family: gilroy;
+    src: url('./assets/Gilroy-Medium.ttf');
+}
+
+body {
+    font-family: 'gilroy'
+}
