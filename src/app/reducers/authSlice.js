@@ -4,8 +4,8 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
 
 const API_URL =
-    process.env.NODE_ENV === "production"
-        ? process.env.VITE_API_URL
+    import.meta.env.NODE_ENV === "production"
+        ? import.meta.env.VITE_API_URL
         : "http://localhost:5000/api/auth";
 
 
