@@ -3,7 +3,11 @@ import axios from "axios";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
 
-const API_URL = import.meta.env.VITE_API_URL
+const API_URL =
+    process.env.NODE_ENV === "production"
+        ? process.env.VITE_API_URL
+        : "http://localhost:5000/api/auth";
+
 
 axios.defaults.withCredentials = true;
 
@@ -171,7 +175,8 @@ const authSlice = createSlice({
             })
             .addCase(logoutUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.user = null; 
+                state.error = action.payload || "Logout failed. Please refresh.";
             })
             // Get Current User
             .addCase(getCurrentUser.pending, (state) => {
