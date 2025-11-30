@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createHealthLog, clearError } from '../../app/reducers/healthLogSlice';
+import { useHealth } from '../../context/HealthContext';
 import { diseaseTypes, getDiseaseConfig } from '../../utils/diseaseConfig';
 import { Upload, X, Loader, FileText } from 'lucide-react';
 
 const AddHealthLog = ({ onClose, onSuccess }) => {
-    const dispatch = useDispatch();
-    const { loading, error } = useSelector((state) => state.healthLog);
+    const { createHealthLog, loading, error } = useHealth();
 
     const [step, setStep] = useState(1);
     const [diseaseType, setDiseaseType] = useState('');
@@ -59,7 +57,7 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
         }
 
         try {
-            await dispatch(createHealthLog(formData)).unwrap();
+            await createHealthLog(formData);
             onSuccess && onSuccess();
             onClose();
         } catch (err) {
