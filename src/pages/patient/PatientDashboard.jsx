@@ -1,34 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getHealthLogs, deleteHealthLog } from '../../app/reducers/healthLogSlice';
+import { useSelector } from 'react-redux';
+import { useHealth } from '../../context/HealthContext';
 import AddHealthLog from '../../components/health/AddHealthLog';
 import {
     Plus, TrendingUp, TrendingDown, Activity, Calendar,
     Trash2, Eye, MessageCircle, Send, Bot, User as UserIcon,
-    Clock, Video
+    Clock, Video, FileText
 } from 'lucide-react';
 import { getDiseaseConfig } from '../../utils/diseaseConfig';
 
-const PatientDashboard = () => {
-    const [showAddModal, setShowAddModal] = useState(false);
+const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     const [selectedLog, setSelectedLog] = useState(null);
     const [chatMessages, setChatMessages] = useState([
         { role: 'ai', text: 'Hello! I\'m your AI health assistant. How can I help you today?' }
     ]);
     const [chatInput, setChatInput] = useState('');
 
-    const dispatch = useDispatch();
-    const { logs, loading } = useSelector((state) => state.healthLog);
+    const { logs, loading, getHealthLogs, deleteHealthLog } = useHealth();
     const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
-        dispatch(getHealthLogs({ diseaseType: 'all' }));
-    }, [dispatch]);
+        getHealthLogs({ diseaseType: 'all' });
+    }, [getHealthLogs]);
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this health log?')) {
             try {
-                await dispatch(deleteHealthLog(id)).unwrap();
+                await deleteHealthLog(id);
             } catch (err) {
                 console.error('Failed to delete:', err);
             }
@@ -36,7 +34,7 @@ const PatientDashboard = () => {
     };
 
     const handleAddSuccess = () => {
-        dispatch(getHealthLogs({ diseaseType: 'all' }));
+        getHealthLogs({ diseaseType: 'all' });
     };
 
     const handleSendMessage = () => {
@@ -109,7 +107,6 @@ const PatientDashboard = () => {
                                         </span>
                                     </div>
 
-                                    {/* Status Badge */}
                                     <div className="mt-2">
                                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             ✓ Reading Recorded
@@ -239,7 +236,6 @@ const PatientDashboard = () => {
             </div>
 
             <div className="space-y-6">
-
                 <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
                     <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <Calendar className="w-5 h-5 mr-2 text-[#00a896]" />
@@ -261,7 +257,6 @@ const PatientDashboard = () => {
                         View Full Calendar
                     </button>
                 </div>
-
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="bg-gradient-to-r from-[#00a896] to-[#02c39a] p-4">
@@ -334,7 +329,6 @@ const PatientDashboard = () => {
     );
 };
 
-// Detail Modal Component (same as before)
 const DetailModal = ({ log, onClose }) => {
     const config = getDiseaseConfig(log.diseaseType);
 

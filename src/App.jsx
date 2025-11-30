@@ -1,5 +1,9 @@
+// src/App.jsx
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Provider } from 'react-redux';
+import store from './app/store';
+import { HealthProvider } from './context/HealthContext';
 import useAuthListener from "./hooks/useAuthListener";
 import { useSelector } from "react-redux";
 
