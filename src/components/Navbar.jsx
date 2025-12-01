@@ -15,7 +15,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between w-full">
 
-                <h2 className="text-xl font-bold text-[#00a896]">HealthTracker</h2>
+                <h2 className="text-xl font-bold text-[#00a896]"></h2>
 
                 <div className="flex items-center space-x-2 sm:space-x-4">
 

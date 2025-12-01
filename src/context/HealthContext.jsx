@@ -1,3 +1,5 @@
+// fileName: HealthContext.js
+
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import axios from 'axios';
 
@@ -17,6 +19,32 @@ export const HealthProvider = ({ children }) => {
         pages: 1
     });
 
+    const getCurrentVitals = useCallback(async () => {
+        try {
+            const response = await axios.get(`${API_URL}/vitals`);
+            return response.data.data;
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "Failed to fetch current vitals";
+            setError(errorMsg);
+            throw new Error(errorMsg);
+        }
+    }, []);
+
+    const createManualLog = useCallback(async (vitalsData) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.post(`${API_URL}/manual`, vitalsData);
+            return response.data.data;
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "Failed to save manual vitals";
+            setError(errorMsg);
+            throw new Error(errorMsg);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const createHealthLog = useCallback(async (formData) => {
         setLoading(true);
         setError(null);
@@ -26,7 +54,7 @@ export const HealthProvider = ({ children }) => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setLogs(prevLogs => [response.data.data, ...prevLogs]);
+            setLogs(prevLogs => [response.data.data, ...prevLogs]); 
             return response.data.data;
         } catch (err) {
             const errorMsg = err.response?.data?.message || "Failed to create health log";
@@ -106,6 +134,8 @@ export const HealthProvider = ({ children }) => {
         getHealthLogs,
         getHealthLogById,
         deleteHealthLog,
+        getCurrentVitals, 
+        createManualLog, 
         clearError,
         clearCurrentLog
     };

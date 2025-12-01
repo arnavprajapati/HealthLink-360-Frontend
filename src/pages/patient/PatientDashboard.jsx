@@ -1,13 +1,78 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHealth } from '../../context/HealthContext';
 import AddHealthLog from '../../components/health/AddHealthLog';
-import {
-    Plus, TrendingUp, TrendingDown, Activity, Calendar,
-    Trash2, Eye, MessageCircle, Send, Bot, User as UserIcon,
-    Clock, Video, FileText
-} from 'lucide-react';
+import AddVitalsModal from '../../components/health/AddVitalsModal';
 import { getDiseaseConfig } from '../../utils/diseaseConfig';
+
+import {
+    Plus, Activity, Calendar,
+    Trash2, Eye, Send, Bot, User as UserIcon,
+    Scale, Heart, FileText
+} from 'lucide-react';
+
+const DetailModal = ({ log, onClose }) => {
+    const config = getDiseaseConfig(log.diseaseType);
+
+    const readingsArray = log.readings || [];
+    const readings = readingsArray.reduce((acc, currentReading) => {
+        acc[currentReading.testName] = currentReading;
+        return acc;
+    }, {});
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+                    <div className="flex items-center space-x-3">
+                        <span className="text-3xl">{config.icon}</span>
+                        <h2 className="text-2xl font-bold text-gray-800">{config.label}</h2>
+                    </div>
+                    <button onClick={onClose} className="cursor-pointer text-gray-400 hover:text-gray-600">✕</button>
+                </div>
+                <div className="p-6 space-y-6">
+                    <div>
+                        <p className="text-sm text-gray-500">Record Date</p>
+                        <p className="text-lg font-semibold text-gray-900">
+                            {new Date(log.testDate || log.createdAt).toLocaleDateString('en-US', {
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                            })}
+                        </p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Readings</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            {Object.entries(readings || {}).map(([key, readingObject]) => {
+                                const field = config.fields.find(f => f.name.toLowerCase() === key.toLowerCase());
+                                return (
+                                    <div key={key} className="bg-gray-50 rounded-lg p-4">
+                                        <p className="text-sm text-gray-600 mb-1">{readingObject.testName || field?.label || key}</p>
+                                        <p className="text-xl font-bold text-gray-900">
+                                            {readingObject.value}
+                                            <span className="text-sm text-gray-500">{readingObject.unit || field?.unit || ''}</span>
+                                        </p>
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1
+                                            ${readingObject.status === 'high' || readingObject.status === 'low' || readingObject.status === 'critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                                            Status: {readingObject.status}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    {log.description && (
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">Notes</h3>
+                            <p className="text-gray-700 bg-gray-50 rounded-lg p-4">{log.description}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     const [selectedLog, setSelectedLog] = useState(null);
@@ -16,17 +81,47 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     ]);
     const [chatInput, setChatInput] = useState('');
 
-    const { logs, loading, getHealthLogs, deleteHealthLog } = useHealth();
-    const { user } = useSelector((state) => state.auth); 
+    const [currentVitals, setCurrentVitals] = useState(null);
+    const [vitalsLoading, setVitalsLoading] = useState(true);
+    const [showVitalsModal, setShowVitalsModal] = useState(false);
+
+    const { logs, loading, getHealthLogs, deleteHealthLog, getCurrentVitals } = useHealth();
+    const { user } = useSelector((state) => state.auth);
+
+    const formatDate = (date) => {
+        if (!date) return '-';
+        return new Date(date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    const fetchAllData = useCallback(() => {
+        getHealthLogs({ diseaseType: 'all' });
+
+        if (getCurrentVitals) {
+            setVitalsLoading(true);
+            getCurrentVitals()
+                .then(data => {
+                    setCurrentVitals(data.vitals);
+                })
+                .catch(err => console.error('Failed to fetch vitals:', err))
+                .finally(() => setVitalsLoading(false));
+        } else {
+            setVitalsLoading(false);
+        }
+    }, [getHealthLogs, getCurrentVitals]);
 
     useEffect(() => {
-        getHealthLogs({ diseaseType: 'all' });
-    }, [getHealthLogs]);
+        fetchAllData();
+    }, [fetchAllData]);
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this health log?')) {
             try {
                 await deleteHealthLog(id);
+                fetchAllData();
             } catch (err) {
                 console.error('Failed to delete:', err);
             }
@@ -34,7 +129,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     };
 
     const handleAddSuccess = () => {
-        getHealthLogs({ diseaseType: 'all' });
+        fetchAllData();
     };
 
     const handleSendMessage = () => {
@@ -45,14 +140,6 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
         { role: 'ai', text: 'This is a demo AI response. Full AI integration coming soon!' }
         ]);
         setChatInput('');
-    };
-
-    const formatDate = (date) => {
-        return new Date(date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
     };
 
     const getRoleBadge = (role) => {
@@ -67,6 +154,115 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f0f3bd] text-[#028090]">
                 Patient
             </span>
+        );
+    };
+
+    const StatBox = ({ icon, label, value }) => (
+        <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center space-x-3">
+            {icon}
+            <div>
+                <p className="text-sm text-gray-600">{label}</p>
+                <p className="text-lg font-bold text-gray-900">{value}</p>
+            </div>
+        </div>
+    );
+
+
+
+    const VitalsCard = ({ vitals, loading }) => {
+        if (loading) {
+            return (
+                <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 flex justify-center items-center h-48">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00a896]"></div>
+                </div>
+            );
+        }
+
+        const hasVitalsData = vitals && (vitals.weight || vitals.height || vitals.bmi);
+        const buttonLabel = hasVitalsData ? 'Update' : 'Add Now';
+
+        const bmiValue = parseFloat(vitals?.bmi?.split(' ')[0]);
+        const getBmiColor = (bmi) => {
+            if (isNaN(bmi) || !hasVitalsData) return 'text-gray-900'; 
+            if (bmi < 18.5) return 'text-yellow-600';
+            if (bmi >= 18.5 && bmi < 25) return 'text-green-600';
+            if (bmi >= 25 && bmi < 30) return 'text-orange-600';
+            if (bmi >= 30) return 'text-red-600';
+            return 'text-gray-900';
+        };
+
+        const getBmiStatus = (bmi) => {
+            if (isNaN(bmi) || !hasVitalsData) return 'Awaiting Data';
+            if (bmi < 18.5) return 'Underweight';
+            if (bmi >= 18.5 && bmi < 25) return 'Normal';
+            if (bmi >= 25 && bmi < 30) return 'Overweight';
+            if (bmi >= 30) return 'Obese';
+            return 'N/A';
+        };
+
+        const weightValue = vitals?.weight || '—';
+        const heightValue = vitals?.height || '—';
+        const bmiDisplay = vitals?.bmi || '—';
+        const recordedDate = vitals?.recordedDate ? formatDate(vitals.recordedDate) : '—';
+        const smokingStatus = vitals?.smokingStatus;
+
+
+        return (
+            <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                <div className="flex justify-between items-center mb-4 border-b pb-3">
+                    <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                        <Heart className="w-5 h-5 mr-2 text-[#00a896]" />
+                        Current Vitals
+                    </h3>
+                    <button
+                        onClick={() => setShowVitalsModal(true)}
+                        className="text-sm font-medium text-[#00a896] hover:text-[#028090] flex items-center transition-colors cursor-pointer"
+                        title={`${buttonLabel} Vitals`}
+                    >
+                        <Plus className="w-4 h-4 mr-1" /> {buttonLabel}
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border-b border-gray-100 pb-4 mb-4">
+                    <StatBox
+                        icon={<Scale className="w-6 h-6 text-[#028090]" />}
+                        label="Weight"
+                        value={weightValue}
+                    />
+                    <StatBox
+                        icon={<FileText className="w-6 h-6 text-[#028090]" />}
+                        label="Height"
+                        value={heightValue}
+                    />
+
+                    <div className="col-span-2 bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <Activity className="w-6 h-6 text-[#028090]" />
+                            <div>
+                                <p className="text-sm text-gray-600">BMI</p>
+                                <p className={`text-xl font-bold ${getBmiColor(bmiValue)}`}>{bmiDisplay}</p>
+                            </div>
+                        </div>
+                        <div className="text-xs text-gray-500 text-right">
+                            {getBmiStatus(bmiValue)}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mb-4">
+                    <p className="text-sm text-gray-600">
+                        Recorded on: <span className="font-semibold text-gray-800">
+                            {recordedDate}
+                        </span>
+                    </p>
+                </div>
+
+                {smokingStatus && (
+                    <div className={`p-3 rounded-lg text-white font-medium text-sm ${smokingStatus.toLowerCase().includes('smoker') ? 'bg-red-600' : 'bg-[#00a896]'}`}>
+                        🚬 Smoking Status: {smokingStatus}
+                    </div>
+                )}
+            </div>
         );
     };
 
@@ -96,14 +292,14 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                         <div className="flex items-center space-x-2">
                             <button
                                 onClick={() => setSelectedLog(log)}
-                                className="p-2 text-[#00a896] hover:bg-[#f0f3bd] rounded-lg transition-colors"
+                                className="p-2 text-[#00a896] cursor-pointer hover:bg-[#f0f3bd] rounded-lg transition-colors"
                                 title="View Details"
                             >
                                 <Eye className="w-4 h-4" />
                             </button>
                             <button
                                 onClick={() => handleDelete(log._id)}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-red-600 cursor-pointer hover:bg-red-50 rounded-lg transition-colors"
                                 title="Delete"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -204,7 +400,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
             </p>
             <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center px-6 py-3 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors shadow-sm font-medium"
+                className="inline-flex items-center px-6 py-3 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors shadow-sm font-medium cursor-pointer"
             >
                 <Plus size={20} className="mr-2" />
                 Add Your First Health Log
@@ -212,10 +408,12 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
         </div>
     );
 
+    const filteredLogs = logs.filter(log => log.fileType !== 'manual');
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                
+
                 <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
                     <div className="flex justify-between items-start mb-4 border-b pb-3">
                         <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3">
@@ -226,34 +424,34 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                         </div>
 
                         {user?.role === 'patient' && (
-                            <button 
+                            <button
                                 onClick={() => setShowAddModal(true)}
-                                className="flex items-center px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors font-medium text-sm whitespace-nowrap"
+                                className="flex items-center px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors font-medium text-sm cursor-pointer whitespace-nowrap"
                                 title="Add New Health Record"
                             >
                                 <Plus className="w-4 h-4 mr-1 sm:mr-2" />
-                                <span className="hidden sm:inline cursor-pointer">Add New Record</span>
+                                <span className="hidden sm:inline">Add New Record</span>
                                 <span className="inline sm:hidden">Add Log</span>
                             </button>
                         )}
                     </div>
-                    
-                    {logs.length > 0 && (
+
+                    {filteredLogs.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                                 <p className="text-sm text-gray-600 mb-1">Total Records</p>
-                                <p className="text-2xl font-bold text-gray-900">{logs.length}</p>
+                                <p className="text-2xl font-bold text-gray-900">{filteredLogs.length}</p>
                             </div>
                             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                                 <p className="text-sm text-gray-600 mb-1">Categories</p>
                                 <p className="text-2xl font-bold text-gray-900">
-                                    {[...new Set(logs.map(log => log.diseaseType))].length}
+                                    {[...new Set(filteredLogs.map(log => log.diseaseType))].length}
                                 </p>
                             </div>
                             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                                 <p className="text-sm text-gray-600 mb-1">Last Updated</p>
                                 <p className="text-sm font-bold text-gray-900">
-                                    {logs.length > 0 ? formatDate(logs[0].testDate || logs[0].createdAt) : '-'}
+                                    {filteredLogs.length > 0 ? formatDate(filteredLogs[0].testDate || filteredLogs[0].createdAt) : '-'}
                                 </p>
                             </div>
                         </div>
@@ -267,11 +465,11 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                         <div className="flex justify-center items-center py-12">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]"></div>
                         </div>
-                    ) : logs.length === 0 ? (
+                    ) : filteredLogs.length === 0 ? (
                         <EmptyState />
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {logs.map((log) => (
+                            {filteredLogs.map((log) => (
                                 <HealthCard key={log._id} log={log} />
                             ))}
                         </div>
@@ -280,11 +478,15 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
             </div>
 
             <div className="space-y-6">
+
+                <VitalsCard vitals={currentVitals} loading={vitalsLoading} />
+
                 <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
                     <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
                         <Calendar className="w-5 h-5 mr-2 text-[#00a896]" />
                         Health Activity Calendar
                     </h3>
+
                     <div className="text-center py-8">
                         <p className="text-sm text-gray-600 mb-2">
                             🗓️ Calendar View Coming Soon
@@ -369,80 +571,14 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                     onClose={() => setSelectedLog(null)}
                 />
             )}
-        </div>
-    );
-};
 
-const DetailModal = ({ log, onClose }) => {
-    const config = getDiseaseConfig(log.diseaseType);
-
-    const readingsArray = log.readings || [];
-    const readings = readingsArray.reduce((acc, currentReading) => {
-        acc[currentReading.testName] = currentReading;
-        return acc;
-    }, {});
-
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-                    <div className="flex items-center space-x-3">
-                        <span className="text-3xl">{config.icon}</span>
-                        <h2 className="text-2xl font-bold text-gray-800">{config.label}</h2>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600"
-                    >
-                        ✕
-                    </button>
-                </div>
-
-                <div className="p-6 space-y-6">
-                    <div>
-                        <p className="text-sm text-gray-500">Record Date</p>
-                        <p className="text-lg font-semibold text-gray-900">
-                            {new Date(log.testDate || log.createdAt).toLocaleDateString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Readings</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            {/* Iterate over the keys of the simplified readings object */}
-                            {Object.entries(readings || {}).map(([key, readingObject]) => {
-                                const field = config.fields.find(f => f.name.toLowerCase() === key.toLowerCase());
-                                return (
-                                    <div key={key} className="bg-gray-50 rounded-lg p-4">
-                                        <p className="text-sm text-gray-600 mb-1">{readingObject.testName || field?.label || key}</p>
-                                        <p className="text-xl font-bold text-gray-900">
-                                            {readingObject.value}
-                                            <span className="text-sm text-gray-500">{readingObject.unit || field?.unit || ''}</span>
-                                        </p>
-                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1
-                                            ${readingObject.status === 'high' || readingObject.status === 'low' || readingObject.status === 'critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                                            Status: {readingObject.status}
-                                        </span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {log.description && (
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">Notes</h3>
-                            <p className="text-gray-700 bg-gray-50 rounded-lg p-4">{log.description}</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+            {showVitalsModal && (
+                <AddVitalsModal
+                    onClose={() => setShowVitalsModal(false)}
+                    onSuccess={handleAddSuccess}
+                    initialVitals={currentVitals}
+                />
+            )}
         </div>
     );
 };
