@@ -17,7 +17,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     const [chatInput, setChatInput] = useState('');
 
     const { logs, loading, getHealthLogs, deleteHealthLog } = useHealth();
-    const { user } = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.auth); 
 
     useEffect(() => {
         getHealthLogs({ diseaseType: 'all' });
@@ -55,9 +55,29 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
         });
     };
 
+    const getRoleBadge = (role) => {
+        if (role === 'doctor') {
+            return (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Doctor
+                </span>
+            );
+        }
+        return (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f0f3bd] text-[#028090]">
+                Patient
+            </span>
+        );
+    };
+
     const HealthCard = ({ log }) => {
         const config = getDiseaseConfig(log.diseaseType);
-        const readings = log.readings || {};
+
+        const readingsArray = log.readings || [];
+        const readings = readingsArray.reduce((acc, currentReading) => {
+            acc[currentReading.testName] = currentReading.value;
+            return acc;
+        }, {});
 
         return (
             <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
@@ -69,7 +89,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                                 <h3 className="text-lg font-bold text-gray-800">{config.label}</h3>
                                 <p className="text-xs text-gray-500 flex items-center mt-1">
                                     <Calendar className="w-3 h-3 mr-1" />
-                                    {formatDate(log.recordDate || log.createdAt)}
+                                    {formatDate(log.testDate || log.createdAt)}
                                 </p>
                             </div>
                         </div>
@@ -137,7 +157,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                                 <div className="space-y-2 text-sm">
                                     <div className="flex items-center justify-between">
                                         <span className="text-gray-600">Total Parameters:</span>
-                                        <span className="font-semibold text-gray-800">{Object.keys(readings).length}</span>
+                                        <span className="font-semibold text-gray-800">{readingsArray.length}</span>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span className="text-gray-600">Category:</span>
@@ -195,26 +215,50 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                {logs.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-                            <p className="text-sm text-gray-600 mb-1">Total Records</p>
-                            <p className="text-2xl font-bold text-gray-900">{logs.length}</p>
+                
+                <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                    <div className="flex justify-between items-start mb-4 border-b pb-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3">
+                            <h1 className="text-xl font-bold text-gray-900">
+                                Hello, {user?.displayName || user?.email?.split('@')[0] || 'User'}!
+                            </h1>
+                            {getRoleBadge(user?.role)}
                         </div>
-                        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-                            <p className="text-sm text-gray-600 mb-1">Categories</p>
-                            <p className="text-2xl font-bold text-gray-900">
-                                {[...new Set(logs.map(log => log.diseaseType))].length}
-                            </p>
-                        </div>
-                        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-                            <p className="text-sm text-gray-600 mb-1">Last Updated</p>
-                            <p className="text-sm font-bold text-gray-900">
-                                {logs.length > 0 ? formatDate(logs[0].recordDate || logs[0].createdAt) : '-'}
-                            </p>
-                        </div>
+
+                        {user?.role === 'patient' && (
+                            <button 
+                                onClick={() => setShowAddModal(true)}
+                                className="flex items-center px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors font-medium text-sm whitespace-nowrap"
+                                title="Add New Health Record"
+                            >
+                                <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                                <span className="hidden sm:inline cursor-pointer">Add New Record</span>
+                                <span className="inline sm:hidden">Add Log</span>
+                            </button>
+                        )}
                     </div>
-                )}
+                    
+                    {logs.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <p className="text-sm text-gray-600 mb-1">Total Records</p>
+                                <p className="text-2xl font-bold text-gray-900">{logs.length}</p>
+                            </div>
+                            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <p className="text-sm text-gray-600 mb-1">Categories</p>
+                                <p className="text-2xl font-bold text-gray-900">
+                                    {[...new Set(logs.map(log => log.diseaseType))].length}
+                                </p>
+                            </div>
+                            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <p className="text-sm text-gray-600 mb-1">Last Updated</p>
+                                <p className="text-sm font-bold text-gray-900">
+                                    {logs.length > 0 ? formatDate(logs[0].testDate || logs[0].createdAt) : '-'}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 mb-4">Your Health Records</h2>
@@ -226,7 +270,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                     ) : logs.length === 0 ? (
                         <EmptyState />
                     ) : (
-                        <div className="grid grid-cols-1 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {logs.map((log) => (
                                 <HealthCard key={log._id} log={log} />
                             ))}
@@ -332,6 +376,13 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
 const DetailModal = ({ log, onClose }) => {
     const config = getDiseaseConfig(log.diseaseType);
 
+    const readingsArray = log.readings || [];
+    const readings = readingsArray.reduce((acc, currentReading) => {
+        acc[currentReading.testName] = currentReading;
+        return acc;
+    }, {});
+
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -352,7 +403,7 @@ const DetailModal = ({ log, onClose }) => {
                     <div>
                         <p className="text-sm text-gray-500">Record Date</p>
                         <p className="text-lg font-semibold text-gray-900">
-                            {new Date(log.recordDate || log.createdAt).toLocaleDateString('en-US', {
+                            {new Date(log.testDate || log.createdAt).toLocaleDateString('en-US', {
                                 weekday: 'long',
                                 year: 'numeric',
                                 month: 'long',
@@ -364,14 +415,20 @@ const DetailModal = ({ log, onClose }) => {
                     <div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-3">Readings</h3>
                         <div className="grid grid-cols-2 gap-4">
-                            {Object.entries(log.readings || {}).map(([key, value]) => {
-                                const field = config.fields.find(f => f.name === key);
+                            {/* Iterate over the keys of the simplified readings object */}
+                            {Object.entries(readings || {}).map(([key, readingObject]) => {
+                                const field = config.fields.find(f => f.name.toLowerCase() === key.toLowerCase());
                                 return (
                                     <div key={key} className="bg-gray-50 rounded-lg p-4">
-                                        <p className="text-sm text-gray-600 mb-1">{field?.label || key}</p>
+                                        <p className="text-sm text-gray-600 mb-1">{readingObject.testName || field?.label || key}</p>
                                         <p className="text-xl font-bold text-gray-900">
-                                            {value} <span className="text-sm text-gray-500">{field?.unit || ''}</span>
+                                            {readingObject.value}
+                                            <span className="text-sm text-gray-500">{readingObject.unit || field?.unit || ''}</span>
                                         </p>
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1
+                                            ${readingObject.status === 'high' || readingObject.status === 'low' || readingObject.status === 'critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                                            Status: {readingObject.status}
+                                        </span>
                                     </div>
                                 );
                             })}

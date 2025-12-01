@@ -5,47 +5,20 @@ import {
     Settings,
     User,
     ChevronDown,
-    Plus
 } from 'lucide-react';
 
 const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-    const getRoleBadge = (role) => {
-        if (role === 'doctor') {
-            return (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Doctor
-                </span>
-            );
-        }
-        return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#f0f3bd] text-[#028090]">
-                Patient
-            </span>
-        );
-    };
 
     return (
         <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between w-full">
-                <div className="flex items-center space-x-3">
-                    <h2 className="text-xl font-bold text-gray-800">
-                        {user?.displayName || user?.email?.split('@')[0] || 'User'}
-                    </h2>
-                    {getRoleBadge(user?.role)}
-                </div>
+
+                <h2 className="text-xl font-bold text-[#00a896]">HealthTracker</h2>
 
                 <div className="flex items-center space-x-2 sm:space-x-4">
-                    {user?.role === 'patient' && onAddRecord && (
-                        <button 
-                            onClick={onAddRecord}
-                            className="flex items-center px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors font-medium"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            <span className="hidden sm:inline">Add Record</span>
-                        </button>
-                    )}
+
 
                     <button className="p-2 rounded-full cursor-pointer text-gray-500 hover:bg-gray-100 relative transition-colors">
                         <Bell className="w-5 h-5" />
