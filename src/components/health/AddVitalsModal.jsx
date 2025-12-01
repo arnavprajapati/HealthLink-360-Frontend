@@ -1,7 +1,7 @@
-
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { useHealth } from '../../context/HealthContext';
 import { Save, X, Scale, FileText } from 'lucide-react';
+
 
 const extractNumber = (value) => {
     if (!value) return '';
@@ -10,36 +10,37 @@ const extractNumber = (value) => {
 
 const parseHeight = (value) => {
     if (!value) return { ft: '', inc: '' };
-    
+
     const match = value.match(/(\d+)'(\d+)"/i) || value.match(/(\d+)\s*ft\s*(\d+)\s*in/i);
     if (match) {
         return { ft: match[1], inc: match[2] };
     }
-    
+
     const singleMatch = value.match(/(\d+)/);
     if (singleMatch) {
         return { ft: singleMatch[1], inc: '' };
     }
-    
+
     return { ft: '', inc: '' };
 };
 
 
 const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
-    const { createManualLog } = useHealth(); 
-    
-    const [weightLbs, setWeightLbs] = useState(extractNumber(initialVitals?.weight));
+    const { createManualLog } = useHealth();
+
+    const [weightKg, setWeightKg] = useState(extractNumber(initialVitals?.weight));
+
     const [heightFt, setHeightFt] = useState(parseHeight(initialVitals?.height).ft);
     const [heightIn, setHeightIn] = useState(parseHeight(initialVitals?.height).inc);
-    
+
     const [smokingStatus, setSmokingStatus] = useState(
-        initialVitals?.smokingStatus?.toLowerCase() === 'not recorded/non-smoker' 
-        ? 'non-smoker' 
-        : initialVitals?.smokingStatus || 'non-smoker'
+        initialVitals?.smokingStatus?.toLowerCase() === 'not recorded/non-smoker'
+            ? 'non-smoker'
+            : initialVitals?.smokingStatus || 'non-smoker'
     );
-    
-    const [description, setDescription] = useState(''); 
-    
+
+    const [description, setDescription] = useState('');
+
     const [error, setError] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -47,20 +48,21 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
         e.preventDefault();
         setError(null);
 
-        if (!weightLbs || !heightFt) {
+        if (!weightKg || !heightFt) {
             setError('Please enter both Weight and Height.');
             return;
         }
-        
-        if (parseFloat(weightLbs) <= 0 || parseFloat(heightFt) <= 0) {
+
+        if (parseFloat(weightKg) <= 0 || parseFloat(heightFt) <= 0) {
             setError('Weight and Height must be positive numbers.');
             return;
         }
 
         setIsSaving(true);
         try {
+
             await createManualLog({
-                weightLbs,
+                weightKg,
                 heightFt,
                 heightIn: heightIn || 0,
                 smokingStatus,
@@ -90,21 +92,21 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>}
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                             <Scale className="w-4 h-4 mr-2" /> Weight
                         </label>
                         <input
                             type="number"
-                            value={weightLbs}
-                            onChange={(e) => setWeightLbs(e.target.value)}
+                            value={weightKg}
+                            onChange={(e) => setWeightKg(e.target.value)}
                             placeholder="Enter weight"
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#00a896] focus:border-[#00a896]"
                             required
                             min="1"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Units: lbs (Pounds)</p>
+                        <p className="text-xs text-gray-500 mt-1">Units: kg (Kilograms)</p>
                     </div>
 
                     <div>
@@ -150,7 +152,7 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
                             <option value="unknown">Unknown</option>
                         </select>
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
                         <textarea
@@ -184,5 +186,4 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
         </div>
     );
 };
-
 export default AddVitalsModal;
