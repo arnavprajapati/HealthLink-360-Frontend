@@ -16,7 +16,7 @@ const FullReportModal = ({ log, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm p-4 ">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[80vw] max-h-[90vh]  overflow-y-auto overflow-y-auto overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 <div className="sticky top-0 bg-gradient-to-r from-[#00a896] to-[#02c39a] px-6 py-5 border-b flex justify-between items-center z-10">
                     <div>
                         <h2 className="text-2xl font-bold text-white flex items-center">
@@ -49,38 +49,6 @@ const FullReportModal = ({ log, onClose }) => {
                         aiAnalysis={log.aiAnalysis}
                         detectedConditions={log.aiAnalysis?.detectedConditions}
                     />
-
-                    {log.aiAnalysis?.recommendations && log.aiAnalysis.recommendations.length > 0 && (
-                        <div className="bg-white rounded-xl border-2 border-gray-200 overflow-visible">
-                            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-5 py-4 border-b-2 border-gray-200 flex items-center">
-                                <span className="text-2xl mr-3">✅</span>
-                                <h3 className="font-bold text-gray-900 text-lg">Recommendations ({log.aiAnalysis.recommendations.length})</h3>
-                            </div>
-                            <div className="p-6">
-                                <div className="space-y-4">
-                                    {log.aiAnalysis.recommendations.map((rec, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="flex items-start bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-5 border-l-4 border-green-500 shadow-sm hover:shadow-md transition-shadow"
-                                        >
-                                            <span className="flex-shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-4 mt-1">
-                                                {idx + 1}
-                                            </span>
-                                            <p className="text-gray-800 leading-relaxed flex-1 text-base">{rec}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="mt-6 bg-yellow-50 rounded-xl p-5 border-l-4 border-yellow-500">
-                                    <div className="flex items-start">
-                                        <span className="text-2xl mr-3 flex-shrink-0">⚠️</span>
-                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                            <span className="font-semibold">Medical Disclaimer:</span> This AI analysis is for informational purposes only. Always consult with a qualified healthcare professional for medical advice, diagnosis, and treatment.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {log.readings && log.readings.length > 0 && (
                         <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
@@ -126,8 +94,8 @@ const FullReportModal = ({ log, onClose }) => {
 
                                             {reading.status && (
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${['high', 'low', 'critical'].includes(reading.status.toLowerCase())
-                                                    ? 'bg-red-100 text-red-800 border border-red-300'
-                                                    : 'bg-green-100 text-green-800 border border-green-300'
+                                                        ? 'bg-red-100 text-red-800 border border-red-300'
+                                                        : 'bg-green-100 text-green-800 border border-green-300'
                                                     }`}>
                                                     Status: {reading.status}
                                                 </span>
@@ -169,10 +137,10 @@ const FullReportModal = ({ log, onClose }) => {
                             <div>
                                 <p className="text-gray-500 mb-1">Risk Level</p>
                                 <p className={`font-semibold uppercase ${log.aiAnalysis?.riskLevel === 'low' ? 'text-green-600' :
-                                    log.aiAnalysis?.riskLevel === 'moderate' ? 'text-yellow-600' :
-                                        log.aiAnalysis?.riskLevel === 'high' ? 'text-orange-600' :
-                                            'text-red-600'
-                                    }`}>
+                                        log.aiAnalysis?.riskLevel === 'moderate' ? 'text-yellow-600' :
+                                            log.aiAnalysis?.riskLevel === 'high' ? 'text-orange-600' :
+                                                'text-red-600'
+                                            }`}>
                                     {log.aiAnalysis?.riskLevel || 'N/A'}
                                 </p>
                             </div>

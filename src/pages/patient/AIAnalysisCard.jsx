@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react'; // useState हटा दिया गया है
 import { 
     Brain, AlertTriangle, CheckCircle, TrendingUp, 
     FileText, ChevronDown, ChevronUp, Info 
 } from 'lucide-react';
 
 const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    // const [isExpanded, setIsExpanded] = useState(false); // अब इसकी आवश्यकता नहीं है
 
     if (!aiAnalysis) return null;
 
@@ -31,7 +31,6 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
 
     return (
         <div className="bg-white rounded-xl shadow-lg border-2 border-[#00a896] overflow-hidden">
-            {/* Header */}
             <div className="bg-gradient-to-r from-[#00a896] to-[#02c39a] p-5">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -44,7 +43,6 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                         </div>
                     </div>
                     
-                    {/* Risk Level Badge */}
                     {aiAnalysis.riskLevel && (
                         <div className={`flex items-center space-x-2 px-4 py-2 rounded-full font-semibold border-2 ${getRiskColor(aiAnalysis.riskLevel)}`}>
                             {getRiskIcon(aiAnalysis.riskLevel)}
@@ -54,7 +52,6 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                 </div>
             </div>
 
-            {/* Summary Section */}
             {aiAnalysis.summary && (
                 <div className="p-5 bg-blue-50 border-b-2 border-blue-200">
                     <div className="flex items-start space-x-3">
@@ -67,7 +64,6 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                 </div>
             )}
 
-            {/* Detected Conditions */}
             {(aiAnalysis.detectedConditions?.length > 0 || detectedConditions?.length > 0) && (
                 <div className="p-5 bg-purple-50 border-b-2 border-purple-200">
                     <h4 className="font-semibold text-purple-900 mb-3 flex items-center text-lg">
@@ -87,7 +83,6 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                 </div>
             )}
 
-            {/* Key Findings */}
             {aiAnalysis.keyFindings?.length > 0 && (
                 <div className="p-5 bg-yellow-50 border-b-2 border-yellow-200">
                     <h4 className="font-semibold text-yellow-900 mb-3 flex items-center text-lg">
@@ -108,7 +103,6 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                 </div>
             )}
 
-            {/* Abnormal Tests */}
             {aiAnalysis.abnormalTests?.length > 0 && (
                 <div className="p-5 bg-red-50 border-b-2 border-red-200">
                     <h4 className="font-semibold text-red-900 mb-3 flex items-center text-lg">
@@ -129,21 +123,18 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                 </div>
             )}
 
-            {/* Recommendations */}
             {aiAnalysis.recommendations?.length > 0 && (
-                <div className="p-5 bg-green-50">
-                    <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full flex items-center justify-between mb-3 text-lg font-semibold text-green-900 hover:text-green-700 transition-colors"
+                <div className="bg-green-50 border-b-2 border-green-200">
+                    <div
+                        className="w-full flex items-center justify-between p-5 text-lg font-semibold text-green-900"
                     >
                         <div className="flex items-center">
                             <CheckCircle className="w-5 h-5 mr-2" />
                             ✅ Recommendations ({aiAnalysis.recommendations.length})
                         </div>
-                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                    </button>
+                    </div>
                     
-                    {isExpanded && (
+                    <div className="px-5 pb-5 pt-0">
                         <ul className="space-y-3">
                             {aiAnalysis.recommendations.map((rec, idx) => (
                                 <li 
@@ -157,14 +148,13 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                                 </li>
                             ))}
                         </ul>
-                    )}
+                    </div>
                 </div>
             )}
 
-            {/* Disclaimer */}
             <div className="p-4 bg-gray-100 border-t-2 border-gray-300">
-                <p className="text-xs text-gray-600 text-center">
-                    ⚠️ <span className="font-semibold">Medical Disclaimer:</span> This AI analysis is for informational purposes only. 
+                <p className="text-sm text-gray-600 text-center">
+                    ⚠️ <span className="font-extrabold">Medical Disclaimer:</span> This AI analysis is for informational purposes only. 
                     Always consult with a qualified healthcare professional for medical advice, diagnosis, and treatment.
                 </p>
             </div>
