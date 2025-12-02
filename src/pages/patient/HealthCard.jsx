@@ -1,8 +1,8 @@
 import React from 'react';
-import { Calendar, Eye, Trash2 } from 'lucide-react';
+import { Calendar, Eye, Trash2, FileText } from 'lucide-react';
 import { getDiseaseConfig } from '../../utils/diseaseConfig';
 
-const HealthCard = ({ log, onViewDetails, onDelete, formatDate }) => {
+const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate }) => {
     const config = getDiseaseConfig(log.diseaseType);
 
     const readingsArray = log.readings || [];
@@ -27,9 +27,16 @@ const HealthCard = ({ log, onViewDetails, onDelete, formatDate }) => {
                     </div>
                     <div className="flex items-center space-x-2">
                         <button
+                            onClick={() => onViewFullReport && onViewFullReport(log)}
+                            className="p-2 text-purple-600 cursor-pointer hover:bg-purple-50 rounded-lg transition-colors"
+                            title="View Full Report"
+                        >
+                            <FileText className="w-4 h-4" />
+                        </button>
+                        <button
                             onClick={() => onViewDetails(log)}
                             className="p-2 text-[#00a896] cursor-pointer hover:bg-[#f0f3bd] rounded-lg transition-colors"
-                            title="View Details"
+                            title="Quick View"
                         >
                             <Eye className="w-4 h-4" />
                         </button>
@@ -110,7 +117,7 @@ const HealthCard = ({ log, onViewDetails, onDelete, formatDate }) => {
                         </p>
                     </div>
                 )}
-
+                
                 {log.detectedDisease && log.detectedDisease !== log.diseaseType && (
                     <div className="mt-3">
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">

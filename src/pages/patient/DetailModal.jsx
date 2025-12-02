@@ -40,7 +40,7 @@ const DetailModal = ({ log, onClose }) => {
                                     <div key={key} className="bg-gray-50 rounded-lg p-4">
                                         <p className="text-sm text-gray-600 mb-1">{readingObject.testName || field?.label || key}</p>
                                         <p className="text-xl font-bold text-gray-900">
-                                            {readingObject.value}
+                                            {readingObject.value} <span>   </span>
                                             <span className="text-sm text-gray-500">{readingObject.unit || field?.unit || ''}</span>
                                         </p>
                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1

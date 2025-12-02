@@ -2,18 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHealth } from '../../context/HealthContext';
 
+// Import all components
 import AddHealthLog from './AddHealthLog';
 import AddVitalsModal from './AddVitalsModal';
 import WelcomeHeader from './WelcomeHeader';
 import VitalsCard from './VitalsCard';
 import HealthCard from './HealthCard';
 import DetailModal from './DetailModal';
+import FullReportModal from './FullReportModal';
 import HealthCalendar from './HealthCalendar';
 import AIHealthAssistant from './AIHealthAssistant';
 import EmptyState from './EmptyState';
 
 const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     const [selectedLog, setSelectedLog] = useState(null);
+    const [selectedFullReport, setSelectedFullReport] = useState(null);
     const [currentVitals, setCurrentVitals] = useState(null);
     const [vitalsLoading, setVitalsLoading] = useState(true);
     const [showVitalsModal, setShowVitalsModal] = useState(false);
@@ -75,7 +78,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     const filteredLogs = logs.filter(log => log.fileType !== 'manual');
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
                 <WelcomeHeader 
                     user={user}
@@ -100,6 +103,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                                     key={log._id} 
                                     log={log}
                                     onViewDetails={setSelectedLog}
+                                    onViewFullReport={setSelectedFullReport}
                                     onDelete={handleDelete}
                                     formatDate={formatDate}
                                 />
@@ -133,6 +137,13 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                 <DetailModal
                     log={selectedLog}
                     onClose={() => setSelectedLog(null)}
+                />
+            )}
+
+            {selectedFullReport && (
+                <FullReportModal
+                    log={selectedFullReport}
+                    onClose={() => setSelectedFullReport(null)}
                 />
             )}
 
