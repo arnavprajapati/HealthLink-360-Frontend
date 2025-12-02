@@ -5,11 +5,15 @@ import App from './App.jsx'
 import store from './app/store.js'
 import { Provider } from 'react-redux'
 import { HealthProvider } from './context/HealthContext.jsx'
+import { GoalsProvider } from './context/GoalsContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <HealthProvider>
-      <App />
-    </HealthProvider>
+    <GoalsProvider>
+      <HealthProvider>
+        <App />
+      </HealthProvider>
+    </GoalsProvider>
+
   </Provider>
 )

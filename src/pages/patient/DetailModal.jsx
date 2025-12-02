@@ -24,7 +24,7 @@ const DetailModal = ({ log, onClose }) => {
                 </div>
                 <div className="p-6 space-y-6">
                     <div>
-                        <p className="text-sm text-gray-500">Record Date</p>
+                        <p className="text-base text-gray-500">Record Date</p>
                         <p className="text-lg font-semibold text-gray-900">
                             {new Date(log.testDate || log.createdAt).toLocaleDateString('en-US', {
                                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -38,12 +38,12 @@ const DetailModal = ({ log, onClose }) => {
                                 const field = config.fields.find(f => f.name.toLowerCase() === key.toLowerCase());
                                 return (
                                     <div key={key} className="bg-gray-50 rounded-lg p-4">
-                                        <p className="text-sm text-gray-600 mb-1">{readingObject.testName || field?.label || key}</p>
+                                        <p className="text-base text-gray-600 mb-1">{readingObject.testName || field?.label || key}</p>
                                         <p className="text-xl font-bold text-gray-900">
                                             {readingObject.value} <span>   </span>
-                                            <span className="text-sm text-gray-500">{readingObject.unit || field?.unit || ''}</span>
+                                            <span className="text-base text-gray-500">{readingObject.unit || field?.unit || ''}</span>
                                         </p>
-                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-base font-medium mt-1
                                             ${readingObject.status === 'high' || readingObject.status === 'low' || readingObject.status === 'critical' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                                             Status: {readingObject.status}
                                         </span>

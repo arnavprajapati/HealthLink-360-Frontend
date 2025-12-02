@@ -38,7 +38,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                     onError={(e) => e.target.src = 'https://placehold.co/40x40/00a896/FFF?text=' + (user.email?.[0]?.toUpperCase() || 'U')}
                                 />
                             ) : (
-                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#02c39a] to-[#028090] flex items-center justify-center text-white font-semibold text-sm">
+                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#02c39a] to-[#028090] flex items-center justify-center text-white font-semibold text-base">
                                     {user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                                 </div>
                             )}
@@ -54,16 +54,16 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                 ></div>
                                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
                                     <div className="px-4 py-3 border-b border-gray-100">
-                                        <p className="text-sm font-semibold text-gray-800">
+                                        <p className="text-base font-semibold text-gray-800">
                                             {user?.displayName || 'User'}
                                         </p>
-                                        <p className="text-xs text-gray-500 truncate">
+                                        <p className="text-base text-gray-500 truncate">
                                             {user?.email}
                                         </p>
                                     </div>
 
                                     <button
-                                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                        className="w-full flex items-center px-4 py-2 text-base text-gray-700 hover:bg-gray-100 transition-colors"
                                         onClick={() => setShowProfileMenu(false)}
                                     >
                                         <User className="w-4 h-4 mr-3" />
@@ -71,7 +71,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                     </button>
 
                                     <button
-                                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                        className="w-full flex items-center px-4 py-2 text-base text-gray-700 hover:bg-gray-100 transition-colors"
                                         onClick={() => setShowProfileMenu(false)}
                                     >
                                         <Settings className="w-4 h-4 mr-3" />
@@ -84,7 +84,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                                 setShowProfileMenu(false);
                                                 onLogout();
                                             }}
-                                            className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                            className="w-full flex items-center px-4 py-2 text-base text-red-600 hover:bg-red-50 transition-colors"
                                         >
                                             <LogOut className="w-4 h-4 mr-3" />
                                             Sign Out

@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Provider } from 'react-redux';
 import store from './app/store';
 import { HealthProvider } from './context/HealthContext';
+import { GoalsProvider } from './context/GoalsContext';
 import useAuthListener from "./hooks/useAuthListener";
 import { useSelector } from "react-redux";
 
@@ -15,6 +16,7 @@ import PrivateRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import HomePage from "./pages/common/HomePage";
 import Layout from "./components/Layout";
+import TrackProgress from "./pages/patient/TrackProgress";
 
 function App() {
   useAuthListener();
@@ -38,11 +40,11 @@ function App() {
 
   const PatientDashboardWrapper = () => {
     const [showAddModal, setShowAddModal] = useState(false);
-    
+
     return (
       <Layout onAddRecord={() => setShowAddModal(true)}>
-        <PatientDashboard 
-          showAddModal={showAddModal} 
+        <PatientDashboard
+          showAddModal={showAddModal}
           setShowAddModal={setShowAddModal}
         />
       </Layout>
@@ -101,6 +103,19 @@ function App() {
             ) : (
               <HomePage />
             )
+          }
+        />
+
+        <Route
+          path="/patient-track-progress"
+          element={
+            <PrivateRoute allowedRoles={['patient']}>
+              <Layout>
+                <GoalsProvider>
+                  <TrackProgress />
+                </GoalsProvider>
+              </Layout>
+            </PrivateRoute>
           }
         />
 

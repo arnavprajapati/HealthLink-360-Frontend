@@ -23,7 +23,7 @@ const FullReportModal = ({ log, onClose }) => {
                             <FileText className="w-6 h-6 mr-2" />
                             Complete Medical Report
                         </h2>
-                        <div className="flex items-center space-x-4 mt-2 text-[#f0f3bd] text-sm">
+                        <div className="flex items-center space-x-4 mt-2 text-[#f0f3bd] text-base">
                             <span className="flex items-center">
                                 <Calendar className="w-4 h-4 mr-1" />
                                 {formatDate(log.testDate || log.createdAt)}
@@ -67,7 +67,7 @@ const FullReportModal = ({ log, onClose }) => {
                                                     {reading.testName}
                                                 </h4>
                                                 {reading.category && (
-                                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                                    <span className="text-base bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                                                         {reading.category}
                                                     </span>
                                                 )}
@@ -85,7 +85,7 @@ const FullReportModal = ({ log, onClose }) => {
                                             </div>
 
                                             {reading.normalRange && (
-                                                <div className="text-xs text-gray-600 mb-2">
+                                                <div className="text-base text-gray-600 mb-2">
                                                     <span className="font-medium">Normal Range: </span>
                                                     {reading.normalRange.text ||
                                                         `${reading.normalRange.min}-${reading.normalRange.max} ${reading.unit || ''}`}
@@ -93,9 +93,9 @@ const FullReportModal = ({ log, onClose }) => {
                                             )}
 
                                             {reading.status && (
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${['high', 'low', 'critical'].includes(reading.status.toLowerCase())
-                                                        ? 'bg-red-100 text-red-800 border border-red-300'
-                                                        : 'bg-green-100 text-green-800 border border-green-300'
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-base font-medium ${['high', 'low', 'critical'].includes(reading.status.toLowerCase())
+                                                    ? 'bg-red-100 text-red-800 border border-red-300'
+                                                    : 'bg-green-100 text-green-800 border border-green-300'
                                                     }`}>
                                                     Status: {reading.status}
                                                 </span>
@@ -119,7 +119,7 @@ const FullReportModal = ({ log, onClose }) => {
                     )}
 
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-base">
                             <div>
                                 <p className="text-gray-500 mb-1">Disease Type</p>
                                 <p className="font-semibold text-gray-900 capitalize">{log.diseaseType}</p>
@@ -137,10 +137,10 @@ const FullReportModal = ({ log, onClose }) => {
                             <div>
                                 <p className="text-gray-500 mb-1">Risk Level</p>
                                 <p className={`font-semibold uppercase ${log.aiAnalysis?.riskLevel === 'low' ? 'text-green-600' :
-                                        log.aiAnalysis?.riskLevel === 'moderate' ? 'text-yellow-600' :
-                                            log.aiAnalysis?.riskLevel === 'high' ? 'text-orange-600' :
-                                                'text-red-600'
-                                            }`}>
+                                    log.aiAnalysis?.riskLevel === 'moderate' ? 'text-yellow-600' :
+                                        log.aiAnalysis?.riskLevel === 'high' ? 'text-orange-600' :
+                                            'text-red-600'
+                                    }`}>
                                     {log.aiAnalysis?.riskLevel || 'N/A'}
                                 </p>
                             </div>

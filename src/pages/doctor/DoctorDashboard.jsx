@@ -75,10 +75,10 @@ const DoctorDashboard = () => {
                                     <Icon className="w-6 h-6 text-white" />
                                 </div>
                             </div>
-                            <h3 className="text-gray-600 text-sm font-medium mb-1">{stat.name}</h3>
+                            <h3 className="text-gray-600 text-base font-medium mb-1">{stat.name}</h3>
                             <div className="flex items-baseline justify-between">
                                 <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                                <span className={`text-sm font-medium ${stat.changeType === 'positive' ? 'text-green-600' :
+                                <span className={`text-base font-medium ${stat.changeType === 'positive' ? 'text-green-600' :
                                     stat.changeType === 'negative' ? 'text-red-600' :
                                         'text-gray-600'
                                     }`}>
@@ -94,7 +94,7 @@ const DoctorDashboard = () => {
                 <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-gray-900">Today's Appointments</h2>
-                        <button className="text-sm text-[#00a896] hover:text-[#028090] font-medium">
+                        <button className="text-base text-[#00a896] hover:text-[#028090] font-medium">
                             View All
                         </button>
                     </div>
@@ -110,11 +110,11 @@ const DoctorDashboard = () => {
                                     </div>
                                     <div>
                                         <p className="font-semibold text-gray-900">{appointment.patient}</p>
-                                        <p className="text-sm text-gray-600">{appointment.type}</p>
+                                        <p className="text-base text-gray-600">{appointment.type}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-3">
-                                    <span className="text-sm font-medium text-gray-700">{appointment.time}</span>
+                                    <span className="text-base font-medium text-gray-700">{appointment.time}</span>
                                     {appointment.status === 'confirmed' ? (
                                         <CheckCircle className="w-5 h-5 text-green-500" />
                                     ) : (
@@ -144,7 +144,7 @@ const DoctorDashboard = () => {
                     </div>
 
                     <div className="mt-6 pt-6 border-t border-gray-200">
-                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Your Profile</h3>
+                        <h3 className="text-base font-semibold text-gray-700 mb-3">Your Profile</h3>
                         <div className="flex items-center space-x-3">
                             {user?.photoURL ? (
                                 <img
@@ -161,7 +161,7 @@ const DoctorDashboard = () => {
                                 <p className="font-semibold text-gray-900">
                                     Dr. {user?.displayName || user?.email?.split('@')[0]}
                                 </p>
-                                <p className="text-xs text-gray-500">{user?.email}</p>
+                                <p className="text-base text-gray-500">{user?.email}</p>
                             </div>
                         </div>
                     </div>
