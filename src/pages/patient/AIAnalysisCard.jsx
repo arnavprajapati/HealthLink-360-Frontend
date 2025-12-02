@@ -1,7 +1,7 @@
 import React from 'react'; // useState हटा दिया गया है
-import { 
-    Brain, AlertTriangle, CheckCircle, TrendingUp, 
-    FileText, ChevronDown, ChevronUp, Info 
+import {
+    Brain, AlertTriangle, CheckCircle, TrendingUp,
+    FileText, ChevronDown, ChevronUp, Info
 } from 'lucide-react';
 
 const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
@@ -10,7 +10,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
     if (!aiAnalysis) return null;
 
     const getRiskColor = (riskLevel) => {
-        switch(riskLevel?.toLowerCase()) {
+        switch (riskLevel?.toLowerCase()) {
             case 'low': return 'bg-green-100 text-green-800 border-green-300';
             case 'moderate': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
             case 'high': return 'bg-orange-100 text-orange-800 border-orange-300';
@@ -20,7 +20,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
     };
 
     const getRiskIcon = (riskLevel) => {
-        switch(riskLevel?.toLowerCase()) {
+        switch (riskLevel?.toLowerCase()) {
             case 'low': return <CheckCircle className="w-5 h-5" />;
             case 'moderate': return <Info className="w-5 h-5" />;
             case 'high': return <TrendingUp className="w-5 h-5" />;
@@ -39,14 +39,14 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-white">AI Health Analysis</h3>
-                            <p className="text-[#f0f3bd] text-sm">Powered by Advanced AI</p>
+                            <p className="text-[#f0f3bd] text-base">Powered by Advanced AI</p>
                         </div>
                     </div>
-                    
+
                     {aiAnalysis.riskLevel && (
                         <div className={`flex items-center space-x-2 px-4 py-2 rounded-full font-semibold border-2 ${getRiskColor(aiAnalysis.riskLevel)}`}>
                             {getRiskIcon(aiAnalysis.riskLevel)}
-                            <span className="uppercase text-sm">{aiAnalysis.riskLevel} RISK</span>
+                            <span className="uppercase text-base">{aiAnalysis.riskLevel} RISK</span>
                         </div>
                     )}
                 </div>
@@ -72,9 +72,9 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                     </h4>
                     <div className="flex flex-wrap gap-2">
                         {(aiAnalysis.detectedConditions || detectedConditions || []).map((condition, idx) => (
-                            <span 
+                            <span
                                 key={idx}
-                                className="px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-medium border border-purple-300 shadow-sm"
+                                className="px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-base font-medium border border-purple-300 shadow-sm"
                             >
                                 {condition}
                             </span>
@@ -91,7 +91,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                     </h4>
                     <ul className="space-y-2">
                         {aiAnalysis.keyFindings.map((finding, idx) => (
-                            <li 
+                            <li
                                 key={idx}
                                 className="flex items-start space-x-2 text-yellow-900 bg-yellow-100 p-3 rounded-lg border border-yellow-300"
                             >
@@ -111,12 +111,12 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                     </h4>
                     <div className="grid grid-cols-2 gap-3">
                         {aiAnalysis.abnormalTests.map((test, idx) => (
-                            <div 
+                            <div
                                 key={idx}
                                 className="bg-red-100 border border-red-300 rounded-lg p-3 flex items-center space-x-2"
                             >
                                 <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-                                <span className="text-red-900 font-medium text-sm">{test}</span>
+                                <span className="text-red-900 font-medium text-base">{test}</span>
                             </div>
                         ))}
                     </div>
@@ -133,15 +133,15 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                             ✅ Recommendations ({aiAnalysis.recommendations.length})
                         </div>
                     </div>
-                    
+
                     <div className="px-5 pb-5 pt-0">
                         <ul className="space-y-3">
                             {aiAnalysis.recommendations.map((rec, idx) => (
-                                <li 
+                                <li
                                     key={idx}
                                     className="flex items-start space-x-3 bg-green-100 p-4 rounded-lg border border-green-300 shadow-sm"
                                 >
-                                    <div className="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                    <div className="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-base font-bold">
                                         {idx + 1}
                                     </div>
                                     <span className="flex-1 text-green-900 leading-relaxed">{rec}</span>
@@ -153,8 +153,8 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
             )}
 
             <div className="p-4 bg-gray-100 border-t-2 border-gray-300">
-                <p className="text-sm text-gray-600 text-center">
-                    ⚠️ <span className="font-extrabold">Medical Disclaimer:</span> This AI analysis is for informational purposes only. 
+                <p className="text-base text-gray-600 text-center">
+                    ⚠️ <span className="font-extrabold">Medical Disclaimer:</span> This AI analysis is for informational purposes only.
                     Always consult with a qualified healthcare professional for medical advice, diagnosis, and treatment.
                 </p>
             </div>

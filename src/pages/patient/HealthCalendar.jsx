@@ -10,10 +10,10 @@ const HealthCalendar = () => {
             </h3>
 
             <div className="text-center py-8">
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-base text-gray-600 mb-2">
                     🗓️ Calendar View Coming Soon
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-base text-gray-500">
                     Track your log dates, upcoming checkups, and medication reminders here.
                 </p>
                 <div className="mt-4 bg-gray-100 rounded-lg p-4 border border-gray-200">
@@ -21,7 +21,7 @@ const HealthCalendar = () => {
                     <div className="h-24 w-full bg-gray-200 mt-2 rounded"></div>
                 </div>
             </div>
-            <button className="w-full mt-4 px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors text-sm font-medium">
+            <button className="w-full mt-4 px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors text-base font-medium">
                 View Full Calendar
             </button>
         </div>

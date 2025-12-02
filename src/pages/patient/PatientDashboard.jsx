@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useHealth } from '../../context/HealthContext';
 
-// Import all components
 import AddHealthLog from './AddHealthLog';
 import AddVitalsModal from './AddVitalsModal';
 import WelcomeHeader from './WelcomeHeader';
@@ -14,6 +13,9 @@ import HealthCalendar from './HealthCalendar';
 import AIHealthAssistant from './AIHealthAssistant';
 import EmptyState from './EmptyState';
 
+import GoalSettingModal from './GoalSettingModal';
+import TrendsDashboard from './TrendsDashboard';
+
 const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     const [selectedLog, setSelectedLog] = useState(null);
     const [selectedFullReport, setSelectedFullReport] = useState(null);
@@ -23,6 +25,9 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
 
     const { logs, loading, getHealthLogs, deleteHealthLog, getCurrentVitals } = useHealth();
     const { user } = useSelector((state) => state.auth);
+
+    const [showGoalModal, setShowGoalModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('logs');
 
     const formatDate = (date) => {
         if (!date) return '-';
@@ -80,7 +85,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                <WelcomeHeader 
+                <WelcomeHeader
                     user={user}
                     onAddClick={() => setShowAddModal(true)}
                     filteredLogs={filteredLogs}
@@ -99,8 +104,8 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {filteredLogs.map((log) => (
-                                <HealthCard 
-                                    key={log._id} 
+                                <HealthCard
+                                    key={log._id}
                                     log={log}
                                     onViewDetails={setSelectedLog}
                                     onViewFullReport={setSelectedFullReport}
@@ -114,7 +119,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
             </div>
 
             <div className="space-y-6">
-                <VitalsCard 
+                <VitalsCard
                     vitals={currentVitals}
                     loading={vitalsLoading}
                     onUpdateClick={() => setShowVitalsModal(true)}
