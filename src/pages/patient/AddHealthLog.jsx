@@ -70,8 +70,8 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm p-4  ">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden ">
                 <div className="bg-gradient-to-r from-[#00a896] to-[#02c39a] px-6 py-5 flex justify-between items-center">
                     <div>
                         <h2 className="text-2xl font-bold text-white">Upload Medical Report</h2>
@@ -87,7 +87,7 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 100px)' }}>
+                <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto overflow-y-auto overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ maxHeight: 'calc(90vh - 100px)' }}>
                     {error && (
                         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg flex items-center">
                             <span className="mr-2">⚠️</span>

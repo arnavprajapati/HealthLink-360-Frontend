@@ -25,7 +25,7 @@ const Layout = ({ children, onAddRecord }) => {
     };
 
     return (
-        <div className="flex h-screen bg-gray-100 overflow-hidden">
+        <div className="flex h-screen bg-gray-100 overflow-hidden ">
             <div
                 className={`sidebar-wrapper transform transition-all duration-300 ease-in-out fixed lg:relative z-40 h-full ${
                     isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
@@ -49,7 +49,7 @@ const Layout = ({ children, onAddRecord }) => {
                     onAddRecord={onAddRecord}
                 />
 
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 overflow-y-auto overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         {children}
                     </div>
