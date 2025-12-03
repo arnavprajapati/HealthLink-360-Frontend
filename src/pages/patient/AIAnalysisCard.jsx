@@ -1,11 +1,10 @@
-import React from 'react'; // useState हटा दिया गया है
+import React from 'react';
 import {
     Brain, AlertTriangle, CheckCircle, TrendingUp,
     FileText, ChevronDown, ChevronUp, Info
 } from 'lucide-react';
 
 const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
-    // const [isExpanded, setIsExpanded] = useState(false); // अब इसकी आवश्यकता नहीं है
 
     if (!aiAnalysis) return null;
 

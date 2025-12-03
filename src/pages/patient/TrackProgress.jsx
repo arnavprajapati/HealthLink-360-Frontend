@@ -8,7 +8,6 @@ import {
 import { useGoals } from '../../context/GoalsContext';
 import GoalDetailModal from './GoalDetailModal';
 
-// Set Goal Modal Component
 const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
     const { createGoal, editGoal, loading } = useGoals();
     const [formData, setFormData] = useState({

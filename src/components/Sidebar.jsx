@@ -18,7 +18,6 @@ import {
 
 const patientNavigation = [
     { name: 'Dashboard', href: '/patient-dashboard', icon: LayoutDashboard },
-    { name: 'My Health Logs', href: '/patient-health-logs', icon: Activity },
     { name: 'Track Progress', href: '/patient-track-progress', icon: Target },
     { name: 'Appointments', href: '/patient-appointments', icon: Calendar },
     { name: 'Reports', href: '/patient-reports', icon: FileText },
