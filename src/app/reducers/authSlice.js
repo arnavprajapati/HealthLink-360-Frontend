@@ -51,7 +51,23 @@ export const loginWithGoogle = createAsyncThunk(
                 return rejectWithValue("Firebase is not configured. Please check your environment variables.");
             }
 
-            const result = await signInWithPopup(auth, googleProvider);
+            let result;
+            try {
+                result = await signInWithPopup(auth, googleProvider);
+            } catch (firebaseError) {
+                console.error("Firebase Sign-in Error:", firebaseError);
+                if (firebaseError.code === 'auth/popup-closed-by-user') {
+                    return rejectWithValue("Sign-in cancelled. Please try again.");
+                }
+                if (firebaseError.code === 'auth/popup-blocked') {
+                    return rejectWithValue("Popup was blocked. Please allow popups for this site.");
+                }
+                if (firebaseError.code === 'auth/unauthorized-domain') {
+                    return rejectWithValue("This domain is not authorized for Google Sign-in. Please check Firebase console settings.");
+                }
+                return rejectWithValue(firebaseError.message || "Google sign-in failed");
+            }
+
             const firebaseToken = await result.user.getIdToken();
 
             const response = await axios.post(`${API_URL}/google-login`, {
