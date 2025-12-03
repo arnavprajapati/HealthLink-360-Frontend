@@ -3,7 +3,9 @@ import axios from 'axios';
 
 const HealthContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth/health-logs";
+const BASE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
+const API_URL = `${BASE_API_URL}/health-logs`;
+
 axios.defaults.withCredentials = true;
 
 export const HealthProvider = ({ children }) => {

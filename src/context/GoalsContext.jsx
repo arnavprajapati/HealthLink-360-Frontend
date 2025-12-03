@@ -3,7 +3,9 @@ import axios from 'axios';
 
 const GoalsContext = createContext();
 
-const GOALS_API_URL = import.meta.env.VITE_API_URL?.replace('/health-logs', '/goals') || "http://localhost:5000/api/auth/goals";
+const BASE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
+const GOALS_API_URL = `${BASE_API_URL}/goals`;
+
 axios.defaults.withCredentials = true;
 
 export const GoalsProvider = ({ children }) => {
