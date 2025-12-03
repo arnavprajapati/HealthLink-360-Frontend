@@ -3,8 +3,8 @@ import axios from 'axios';
 
 const HealthContext = createContext();
 
-const BASE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
-const API_URL = `${BASE_API_URL}/health-logs`;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_URL = `${BASE_URL}/api/auth/health-logs`;
 
 axios.defaults.withCredentials = true;
 
@@ -54,7 +54,7 @@ export const HealthProvider = ({ children }) => {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            setLogs(prevLogs => [response.data.data, ...prevLogs]); 
+            setLogs(prevLogs => [response.data.data, ...prevLogs]);
             return response.data.data;
         } catch (err) {
             const errorMsg = err.response?.data?.message || "Failed to create health log";
@@ -134,8 +134,8 @@ export const HealthProvider = ({ children }) => {
         getHealthLogs,
         getHealthLogById,
         deleteHealthLog,
-        getCurrentVitals, 
-        createManualLog, 
+        getCurrentVitals,
+        createManualLog,
         clearError,
         clearCurrentLog
     };

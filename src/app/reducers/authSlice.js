@@ -3,7 +3,8 @@ import axios from "axios";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_URL = `${BASE_URL}/api/auth`;
 
 axios.defaults.withCredentials = true;
 
