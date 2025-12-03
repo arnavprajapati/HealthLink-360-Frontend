@@ -101,11 +101,16 @@ const FullReportModal = ({ log, onClose }) => {
                                 <div className="p-4">
                                     {isPdf ? (
                                         <div className="w-full">
-                                            <iframe
-                                                src={fullFileUrl}
-                                                className="w-full h-[500px] rounded-lg border border-gray-300 bg-white"
-                                                title="PDF Document"
-                                            />
+                                            <div className="w-full h-[500px] rounded-lg border border-gray-300 bg-gray-50 flex flex-col items-center justify-center p-6">
+                                                <File className="w-16 h-16 text-red-500 mb-4" />
+                                                <p className="text-gray-700 text-lg font-medium mb-2">PDF Document</p>
+                                                <p className="text-gray-500 text-sm mb-4 text-center">
+                                                    {log.fileName || 'Medical Report PDF'}
+                                                </p>
+                                                <p className="text-gray-400 text-xs mb-4">
+                                                    Click below to view the PDF in a new tab
+                                                </p>
+                                            </div>
                                             <div className="flex justify-center gap-3 mt-4">
                                                 <a
                                                     href={fullFileUrl}
@@ -114,7 +119,15 @@ const FullReportModal = ({ log, onClose }) => {
                                                     className="flex items-center gap-2 bg-[#00a896] text-white px-4 py-2 rounded-lg hover:bg-[#028090] transition-colors"
                                                 >
                                                     <ExternalLink className="w-4 h-4" />
-                                                    Open in New Tab
+                                                    Open PDF in New Tab
+                                                </a>
+                                                <a
+                                                    href={fullFileUrl}
+                                                    download={log.fileName || 'medical-report.pdf'}
+                                                    className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                                                >
+                                                    <FileText className="w-4 h-4" />
+                                                    Download PDF
                                                 </a>
                                             </div>
                                         </div>
