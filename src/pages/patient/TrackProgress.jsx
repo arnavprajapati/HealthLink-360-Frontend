@@ -770,7 +770,7 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
 
 // Main Component
 const TrackProgress = () => {
-    const { goals, stats, loading, getGoals, getGoalStats, deleteGoal, addMilestone, analyzeGoal } = useGoals();
+    const { goals, stats, loading, getGoals, getGoalStats, deleteGoal, addMilestone, editMilestone, deleteMilestone, analyzeGoal } = useGoals();
     const [showGoalModal, setShowGoalModal] = useState(false);
     const [editingGoal, setEditingGoal] = useState(null);
     const [selectedGoal, setSelectedGoal] = useState(null);
@@ -834,6 +834,30 @@ const TrackProgress = () => {
             loadData();
         } catch (error) {
             console.error('Failed to add milestone:', error);
+        }
+    };
+
+    const handleEditMilestone = async (goalId, milestoneIndex, milestoneData) => {
+        try {
+            const updatedGoal = await editMilestone(goalId, milestoneIndex, milestoneData);
+            if (updatedGoal) {
+                setSelectedGoal(updatedGoal);
+            }
+            loadData();
+        } catch (error) {
+            console.error('Failed to edit milestone:', error);
+        }
+    };
+
+    const handleDeleteMilestone = async (goalId, milestoneIndex) => {
+        try {
+            const updatedGoal = await deleteMilestone(goalId, milestoneIndex);
+            if (updatedGoal) {
+                setSelectedGoal(updatedGoal);
+            }
+            loadData();
+        } catch (error) {
+            console.error('Failed to delete milestone:', error);
         }
     };
 
@@ -1012,6 +1036,8 @@ const TrackProgress = () => {
                     goal={selectedGoal}
                     onClose={() => setSelectedGoal(null)}
                     onAddMilestone={handleAddMilestone}
+                    onEditMilestone={handleEditMilestone}
+                    onDeleteMilestone={handleDeleteMilestone}
                     onAnalyze={handleAnalyzeGoal}
                 />
             )}

@@ -2,20 +2,24 @@ import React, { useState, useEffect } from 'react';
 import {
     X, Target, TrendingUp, TrendingDown, Activity, Calendar,
     Clock, Award, Sparkles, Plus, ChevronRight, AlertCircle,
-    CheckCircle, Loader2, BarChart3
+    CheckCircle, Loader2, BarChart3, Edit2, Trash2
 } from 'lucide-react';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
     ResponsiveContainer, ReferenceLine, Area, AreaChart
 } from 'recharts';
 
-const GoalDetailModal = ({ goal, onClose, onAddMilestone, onAnalyze }) => {
+const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDeleteMilestone, onAnalyze }) => {
     const [analyzing, setAnalyzing] = useState(false);
     const [aiAnalysis, setAiAnalysis] = useState(null);
     const [showAddEntry, setShowAddEntry] = useState(false);
     const [newValue, setNewValue] = useState('');
     const [newNote, setNewNote] = useState('');
     const [addingEntry, setAddingEntry] = useState(false);
+    const [editingMilestone, setEditingMilestone] = useState(null);
+    const [editValue, setEditValue] = useState('');
+    const [editNote, setEditNote] = useState('');
+    const [savingEdit, setSavingEdit] = useState(false);
 
     if (!goal) return null;
 
@@ -91,6 +95,45 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onAnalyze }) => {
             console.error('Failed to add entry:', error);
         } finally {
             setAddingEntry(false);
+        }
+    };
+
+    const handleEditMilestone = (milestone, actualIndex) => {
+        setEditingMilestone(actualIndex);
+        setEditValue(milestone.value.toString());
+        setEditNote(milestone.note || '');
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editValue || savingEdit) return;
+
+        setSavingEdit(true);
+        try {
+            await onEditMilestone(goal._id, editingMilestone, {
+                value: parseFloat(editValue),
+                note: editNote
+            });
+            setEditingMilestone(null);
+            setEditValue('');
+            setEditNote('');
+        } catch (error) {
+            console.error('Failed to edit milestone:', error);
+        } finally {
+            setSavingEdit(false);
+        }
+    };
+
+    const handleDeleteMilestone = async (actualIndex) => {
+        if (goal.milestones.length === 1) {
+            alert('Cannot delete the last entry. Delete the goal instead.');
+            return;
+        }
+        if (window.confirm('Are you sure you want to delete this entry?')) {
+            try {
+                await onDeleteMilestone(goal._id, actualIndex);
+            } catch (error) {
+                console.error('Failed to delete milestone:', error);
+            }
         }
     };
 
@@ -496,29 +539,94 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onAnalyze }) => {
                                         Milestone History ({goal.milestones.length} entries)
                                     </h5>
                                     <div className="space-y-3 max-h-60  overflow-y-auto  overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pr-1">
-                                        {[...goal.milestones].reverse().map((m, idx) => (
-                                            <div key={idx} className="flex items-center justify-between py-3 px-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-3 h-3 rounded-full bg-[#00a896] flex-shrink-0" />
-                                                    <div className="flex items-baseline gap-2">
-                                                        <span className="text-lg font-bold text-[#028090]">
-                                                            {m.value}
-                                                        </span>
-                                                        <span className="text-lg text-gray-600 font-medium">
-                                                            {goal.unit}
-                                                        </span>
-                                                    </div>
-                                                    {m.note && (
-                                                        <span className="text-lg text-gray-500 ml-4 hidden sm:inline-block">
-                                                            • {m.note}
-                                                        </span>
+                                        {[...goal.milestones].reverse().map((m, reversedIdx) => {
+                                            const actualIndex = goal.milestones.length - 1 - reversedIdx;
+                                            const isEditing = editingMilestone === actualIndex;
+
+                                            return (
+                                                <div key={reversedIdx} className="py-3 px-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                                    {isEditing ? (
+                                                        <div className="space-y-3">
+                                                            <div className="grid grid-cols-2 gap-3">
+                                                                <div>
+                                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Value</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        step="0.1"
+                                                                        value={editValue}
+                                                                        onChange={(e) => setEditValue(e.target.value)}
+                                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] text-base"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Note</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={editNote}
+                                                                        onChange={(e) => setEditNote(e.target.value)}
+                                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] text-base"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex gap-2 justify-end">
+                                                                <button
+                                                                    onClick={() => setEditingMilestone(null)}
+                                                                    className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer"
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                                <button
+                                                                    onClick={handleSaveEdit}
+                                                                    disabled={savingEdit || !editValue}
+                                                                    className="px-3 py-1.5 text-sm bg-[#00a896] text-white rounded-lg hover:bg-[#028090] disabled:opacity-50 cursor-pointer flex items-center gap-1"
+                                                                >
+                                                                    {savingEdit ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                                                                    Save
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-3 h-3 rounded-full bg-[#00a896] flex-shrink-0" />
+                                                                <div className="flex items-baseline gap-2">
+                                                                    <span className="text-lg font-bold text-[#028090]">
+                                                                        {m.value}
+                                                                    </span>
+                                                                    <span className="text-lg text-gray-600 font-medium">
+                                                                        {goal.unit}
+                                                                    </span>
+                                                                </div>
+                                                                {m.note && (
+                                                                    <span className="text-lg text-gray-500 ml-4 hidden sm:inline-block">
+                                                                        • {m.note}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-lg font-medium text-gray-600 flex-shrink-0">
+                                                                    {new Date(m.date).toLocaleDateString()}
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => handleEditMilestone(m, actualIndex)}
+                                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+                                                                    title="Edit entry"
+                                                                >
+                                                                    <Edit2 className="w-4 h-4" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteMilestone(actualIndex)}
+                                                                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg cursor-pointer transition-colors"
+                                                                    title="Delete entry"
+                                                                >
+                                                                    <Trash2 className="w-4 h-4" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     )}
                                                 </div>
-                                                <span className="text-lg font-medium text-gray-600 flex-shrink-0">
-                                                    {new Date(m.date).toLocaleDateString()}
-                                                </span>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}

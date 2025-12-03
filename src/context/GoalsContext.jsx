@@ -164,6 +164,40 @@ export const GoalsProvider = ({ children }) => {
         }
     }, []);
 
+    // Edit milestone in goal
+    const editMilestone = useCallback(async (goalId, milestoneIndex, milestoneData) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.put(`${GOALS_API_URL}/${goalId}/milestone/${milestoneIndex}`, milestoneData);
+            setGoals(prev => prev.map(g => g._id === goalId ? response.data.data : g));
+            return response.data.data;
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "Failed to edit milestone";
+            setError(errorMsg);
+            throw new Error(errorMsg);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Delete milestone from goal
+    const deleteMilestone = useCallback(async (goalId, milestoneIndex) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.delete(`${GOALS_API_URL}/${goalId}/milestone/${milestoneIndex}`);
+            setGoals(prev => prev.map(g => g._id === goalId ? response.data.data : g));
+            return response.data.data;
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || "Failed to delete milestone";
+            setError(errorMsg);
+            throw new Error(errorMsg);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     // Analyze goal with Gemini AI
     const analyzeGoal = useCallback(async (id) => {
         try {
@@ -194,6 +228,8 @@ export const GoalsProvider = ({ children }) => {
         updateAllGoalsProgress,
         getGoalStats,
         addMilestone,
+        editMilestone,
+        deleteMilestone,
         analyzeGoal,
         clearError
     };
