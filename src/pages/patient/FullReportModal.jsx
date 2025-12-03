@@ -21,14 +21,11 @@ const FullReportModal = ({ log, onClose }) => {
     const isPdf = log.fileType === 'pdf' || log.fileUrl?.toLowerCase().endsWith('.pdf');
     const isImage = log.fileType === 'image' || /\.(jpg|jpeg|png|gif|webp)$/i.test(log.fileUrl || '');
 
-    // Get full URL - handle both local paths and Cloudinary URLs
     const getFullFileUrl = () => {
         if (!log.fileUrl) return '';
-        // If it's already a full URL (Cloudinary), return as-is
         if (log.fileUrl.startsWith('http')) {
             return log.fileUrl;
         }
-        // If it's a local path (/uploads/...), prepend API URL
         return `${API_URL}${log.fileUrl}`;
     };
 
