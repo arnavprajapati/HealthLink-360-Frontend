@@ -1,8 +1,12 @@
-import React from 'react';
-import { X, FileText, Calendar, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, FileText, Calendar, Eye, ExternalLink, Image, File } from 'lucide-react';
 import AIAnalysisCard from './AIAnalysisCard';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const FullReportModal = ({ log, onClose }) => {
+    const [showDocument, setShowDocument] = useState(false);
+
     if (!log) return null;
 
     const formatDate = (date) => {
@@ -12,6 +16,32 @@ const FullReportModal = ({ log, onClose }) => {
             month: 'long',
             day: 'numeric'
         });
+    };
+
+    const isPdf = log.fileType === 'pdf' || log.fileUrl?.toLowerCase().endsWith('.pdf');
+    const isImage = log.fileType === 'image' || /\.(jpg|jpeg|png|gif|webp)$/i.test(log.fileUrl || '');
+
+    // Get full URL - handle both local paths and Cloudinary URLs
+    const getFullFileUrl = () => {
+        if (!log.fileUrl) return '';
+        // If it's already a full URL (Cloudinary), return as-is
+        if (log.fileUrl.startsWith('http')) {
+            return log.fileUrl;
+        }
+        // If it's a local path (/uploads/...), prepend API URL
+        return `${API_URL}${log.fileUrl}`;
+    };
+
+    const fullFileUrl = getFullFileUrl();
+
+    const handleViewDocument = () => {
+        setShowDocument(true);
+    };
+
+    const handleOpenInNewTab = () => {
+        if (fullFileUrl) {
+            window.open(fullFileUrl, '_blank', 'noopener,noreferrer');
+        }
     };
 
     return (
@@ -45,6 +75,70 @@ const FullReportModal = ({ log, onClose }) => {
                 </div>
 
                 <div className="p-6 space-y-6">
+                    {log.fileUrl && (
+                        <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
+                            <div className="bg-gray-100 px-5 py-3 border-b-2 border-gray-200 flex justify-between items-center">
+                                <h3 className="font-bold text-gray-900 text-lg flex items-center">
+                                    {isPdf ? <File className="w-5 h-5 mr-2 text-red-500" /> : <Image className="w-5 h-5 mr-2 text-blue-500" />}
+                                    📄 Original Document
+                                </h3>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setShowDocument(!showDocument)}
+                                        className="flex items-center gap-1 px-3 py-1.5 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors text-sm cursor-pointer"
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                        {showDocument ? 'Hide' : 'View'}
+                                    </button>
+                                    <button
+                                        onClick={handleOpenInNewTab}
+                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm cursor-pointer"
+                                    >
+                                        <ExternalLink className="w-4 h-4" />
+                                        Open
+                                    </button>
+                                </div>
+                            </div>
+
+                            {showDocument && (
+                                <div className="p-4">
+                                    {isPdf ? (
+                                        <div className="w-full">
+                                            <iframe
+                                                src={fullFileUrl}
+                                                className="w-full h-[500px] rounded-lg border border-gray-300 bg-white"
+                                                title="PDF Document"
+                                            />
+                                            <div className="flex justify-center gap-3 mt-4">
+                                                <a
+                                                    href={fullFileUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 bg-[#00a896] text-white px-4 py-2 rounded-lg hover:bg-[#028090] transition-colors"
+                                                >
+                                                    <ExternalLink className="w-4 h-4" />
+                                                    Open in New Tab
+                                                </a>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex justify-center">
+                                            <img
+                                                src={fullFileUrl}
+                                                alt="Medical Report"
+                                                className="max-w-full max-h-[500px] rounded-lg border border-gray-300 object-contain"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><text x="50%" y="50%" text-anchor="middle" fill="gray">Image not available</text></svg>';
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <AIAnalysisCard
                         aiAnalysis={log.aiAnalysis}
                         detectedConditions={log.aiAnalysis?.detectedConditions}
