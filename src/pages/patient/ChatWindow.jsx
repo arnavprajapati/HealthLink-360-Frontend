@@ -124,7 +124,7 @@ const ChatWindow = ({ chatMessages, isTyping, handleQuickAction }) => {
                 </div>
             )}
 
-            <div className="flex-1 overflow-y-auto p-6 pt-10 bg-gray-50 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
+            <div className="flex-1 p-6 pt-10 bg-gray-50 overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ">
                 {chatMessages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex items-start space-x-3 ${msg.role === 'user' ? 'max-w-[70%] flex-row-reverse space-x-reverse' : 'max-w-[85%]'}`}>
