@@ -4,7 +4,7 @@ import axios from 'axios';
 const HealthContext = createContext();
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-const API_URL = `${BASE_URL}/api/auth/health-logs`;
+const API_URL = `${BASE_URL}/api/health-logs`;
 
 axios.defaults.withCredentials = true;
 

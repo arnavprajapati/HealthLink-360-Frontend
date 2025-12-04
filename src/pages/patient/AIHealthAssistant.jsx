@@ -239,7 +239,7 @@ const AIHealthAssistant = () => {
             const { contextSummary, chatHistory } = preparePatientContext();
 
             const response = await axios.post(
-                `${BASE_URL}/api/auth/ai/chat`,
+                `${BASE_URL}/api/ai/chat`,
                 {
                     query: query,
                     contextSummary: contextSummary,

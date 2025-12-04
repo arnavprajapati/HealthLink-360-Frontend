@@ -29,7 +29,8 @@ const patientNavigation = [
 
 const doctorNavigation = [
     { name: 'Dashboard', href: '/doctor-dashboard', icon: LayoutDashboard },
-    { name: 'Profile', href: '/doctor-profile', icon: Users }, // Using Users icon for Profile
+    { name: 'My Patients', href: '/doctor-patients', icon: Users },
+    { name: 'Profile', href: '/doctor-profile', icon: Stethoscope },
 ];
 
 const NavItem = ({ name, href, icon: Icon, active, onClick }) => {

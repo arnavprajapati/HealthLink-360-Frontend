@@ -13,22 +13,26 @@ const renderMessageText = (text) => {
     return lines.map((line, idx) => {
         const trimmedLine = line.trim();
 
+        // Handle bold text with **
         if (trimmedLine.includes('**')) {
             const formattedLine = trimmedLine.split(/\*\*(.*?)\*\*/g).map((part, i) =>
-                i % 2 === 1 ? <span key={i} className="font-medium text-gray-800">{part}</span> : part
+                i % 2 === 1 ? <span key={i} className="font-semibold text-gray-800">{part}</span> : part
             );
 
+            // Numbered point with bold text (e.g., "1. **Title:**")
             if (/^\d+\.\s*\*\*/.test(trimmedLine)) {
+                const number = trimmedLine.match(/^\d+/)[0];
                 return (
-                    <div key={idx} className="mt-3 mb-2 pb-2 border-b border-gray-100">
-                        <h3 className="text-lg font-medium text-[#028090] flex items-center gap-1">
-                            <span className="text-[#00a896]">{trimmedLine.match(/^\d+/)[0]}.</span>
-                            <span>{formattedLine.slice(1)}</span>
-                        </h3>
+                    <div key={idx} className="flex items-start gap-2 mt-4 mb-1">
+                        <span className="flex-shrink-0 w-6 h-6 bg-[#00a896] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                            {number}
+                        </span>
+                        <span className="text-gray-700 text-lg leading-relaxed flex-1">{formattedLine.slice(1)}</span>
                     </div>
                 );
             }
 
+            // Bullet point with asterisk
             if (trimmedLine.startsWith('*') && !trimmedLine.startsWith('**')) {
                 const cleanedLine = formattedLine.map((part, i) => {
                     if (i === 0 && typeof part === 'string') {
@@ -37,45 +41,51 @@ const renderMessageText = (text) => {
                     return part;
                 });
                 return (
-                    <div key={idx} className="flex items-start gap-2 ml-2 my-0.5">
-                        <span className="text-[#00a896] text-lg mt-1.5">●</span>
-                        <span className="text-gray-600 text-lg">{cleanedLine}</span>
+                    <div key={idx} className="flex items-start gap-2 ml-8 my-1">
+                        <span className="text-[#00a896] text-lg mt-0.5">•</span>
+                        <span className="text-gray-600 text-lg leading-relaxed">{cleanedLine}</span>
                     </div>
                 );
             }
 
-            return <p key={idx} className="mb-1 text-lg text-gray-600">{formattedLine}</p>;
+            return <p key={idx} className="mb-1 text-lg text-gray-600 leading-relaxed">{formattedLine}</p>;
         }
 
+        // Bullet points with • or -
         if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
             return (
-                <div key={idx} className="flex items-start gap-2 ml-2 my-0.5">
-                    <span className="text-[#00a896] text-lg mt-1.5">●</span>
-                    <span className="text-gray-600 text-lg">{trimmedLine.replace(/^[•-]\s*/, '')}</span>
+                <div key={idx} className="flex items-start gap-2 ml-8 my-1">
+                    <span className="text-[#00a896] text-lg mt-0.5">•</span>
+                    <span className="text-gray-600 text-lg leading-relaxed">{trimmedLine.replace(/^[•-]\s*/, '')}</span>
                 </div>
             );
         }
 
-        if (/^\d+\./.test(trimmedLine) && !trimmedLine.includes('**')) {
+        // Numbered list items (e.g., "1. Some text")
+        if (/^\d+\.\s/.test(trimmedLine) && !trimmedLine.includes('**')) {
+            const number = trimmedLine.match(/^\d+/)[0];
+            const content = trimmedLine.replace(/^\d+\.\s*/, '');
             return (
-                <div key={idx} className="mt-3 mb-2 pb-2 border-b border-gray-100">
-                    <h3 className="text-lg font-medium text-[#028090] flex items-center gap-1">
-                        <span className="text-[#00a896]">{trimmedLine.match(/^\d+/)[0]}.</span>
-                        <span>{trimmedLine.replace(/^\d+\.\s*/, '')}</span>
-                    </h3>
+                <div key={idx} className="flex items-start gap-2 mt-4 mb-1">
+                    <span className="flex-shrink-0 w-6 h-6 bg-[#00a896] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                        {number}
+                    </span>
+                    <span className="text-gray-700 text-lg leading-relaxed flex-1">{content}</span>
                 </div>
             );
         }
 
+        // Headers ending with colon
         if (trimmedLine.endsWith(':') && trimmedLine.length < 60 && !trimmedLine.includes('**')) {
             return (
-                <p key={idx} className="font-medium text-[#028090] mt-2 mb-1 text-lg">
+                <p key={idx} className="font-semibold text-[#028090] mt-3 mb-1 text-lg">
                     {trimmedLine}
                 </p>
             );
         }
 
-        return trimmedLine ? <p key={idx} className="mb-1 text-gray-600 text-lg leading-relaxed">{trimmedLine}</p> : <div key={idx} className="h-1" />;
+        // Regular text
+        return trimmedLine ? <p key={idx} className="mb-1 text-gray-600 text-lg leading-relaxed ml-8">{trimmedLine}</p> : <div key={idx} className="h-2" />;
     });
 };
 

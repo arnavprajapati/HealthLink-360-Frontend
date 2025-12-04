@@ -1,55 +1,285 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getPatientHealthData, getLinkedPatients, getPatientNotes, createNote, clearConnectionMessage, generatePatientSummary } from '../../app/reducers/connectionSlice';
+import { useSelector } from 'react-redux';
+import { useConnection } from '../../context/ConnectionContext';
 import {
     ArrowLeft,
     Activity,
     Calendar,
     FileText,
-    TrendingUp,
-    AlertCircle,
     Plus,
     X,
     Save,
-    Sparkles
+    Sparkles,
+    ClipboardList,
+    Target,
+    TrendingUp,
+    TrendingDown,
+    Trophy,
+    Clock,
+    Eye,
+    ChevronRight,
+    BarChart3
 } from 'lucide-react';
 import ScheduleAppointmentModal from './ScheduleAppointmentModal';
-import HealthLogDetailsModal from './HealthLogDetailsModal';
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    Legend
-} from 'recharts';
+import GoalDetailModal from '../patient/GoalDetailModal';
+
+// Reuse patient components
+import HealthCard from '../patient/HealthCard';
+import FullReportModal from '../patient/FullReportModal';
+import DetailModal from '../patient/DetailModal';
+
+// Goal Card Component for Doctor (Read-only - no edit/delete)
+const GoalCard = ({ goal, onView }) => {
+    const getProgressColor = (progress) => {
+        if (progress >= 75) return 'from-green-500 to-green-600';
+        if (progress >= 50) return 'from-[#00a896] to-[#02c39a]';
+        if (progress >= 25) return 'from-yellow-500 to-orange-500';
+        return 'from-red-500 to-red-600';
+    };
+
+    const getProgressBg = (progress) => {
+        if (progress >= 75) return 'bg-green-50';
+        if (progress >= 50) return 'bg-[#f0f3bd]';
+        if (progress >= 25) return 'bg-yellow-50';
+        return 'bg-red-50';
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'achieved': return 'bg-green-100 text-green-800 border-green-300';
+            case 'in-progress': return 'bg-[#f0f3bd] text-[#028090] border-[#02c39a]';
+            case 'expired': return 'bg-gray-100 text-gray-800 border-gray-300';
+            default: return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        }
+    };
+
+    const getGoalIcon = (param) => {
+        const icons = {
+            'Blood Sugar': '🩸',
+            'Blood Pressure Systolic': '❤️',
+            'Blood Pressure Diastolic': '💓',
+            'Hemoglobin': '🔴',
+            'Cholesterol': '🫀',
+            'Weight': '⚖️',
+            'BMI': '📊',
+            'Creatinine': '🧪',
+            'TSH': '🦋'
+        };
+        return icons[param] || '🎯';
+    };
+
+    const daysRemaining = goal.deadline
+        ? Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24))
+        : null;
+    const hasDeadline = goal.deadline !== null && goal.deadline !== undefined;
+
+    return (
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
+            {/* Card Header with Progress Bar */}
+            <div className={`h-1.5 bg-gradient-to-r ${getProgressColor(goal.progress)}`}
+                style={{ width: `${Math.min(goal.progress, 100)}%` }} />
+
+            <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                        <div className={`w-14 h-14 rounded-xl ${getProgressBg(goal.progress)} flex items-center justify-center text-3xl flex-shrink-0`}>
+                            {getGoalIcon(goal.parameter)}
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-bold text-gray-900 leading-tight">{goal.parameter}</h3>
+                            <span className={`inline-flex items-center px-2 py-0.5 mt-1 rounded-full text-base font-medium border ${getStatusColor(goal.status)}`}>
+                                {goal.status === 'achieved' && <Trophy className="w-3 h-3 mr-1" />}
+                                {goal.status.replace('-', ' ').toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+                    {/* Only View button for doctor */}
+                    <button
+                        onClick={() => onView(goal)}
+                        className="p-2 cursor-pointer text-[#00a896] hover:bg-[#f0f3bd] rounded-full transition-colors"
+                        title="View Details"
+                    >
+                        <Eye className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Progress Circle & Values */}
+                <div className="flex items-center gap-5 border-t border-b border-gray-100 py-4 mb-4">
+                    <div className="relative w-20 h-20 flex-shrink-0">
+                        <svg className="w-20 h-20 transform -rotate-90">
+                            <circle
+                                cx="40"
+                                cy="40"
+                                r="36"
+                                stroke="#e5e7eb"
+                                strokeWidth="6"
+                                fill="none"
+                            />
+                            <circle
+                                cx="40"
+                                cy="40"
+                                r="36"
+                                stroke="url(#progressGradientDoctor)"
+                                strokeWidth="6"
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeDasharray={`${(goal.progress / 100) * 226} 226`}
+                            />
+                            <defs>
+                                <linearGradient id="progressGradientDoctor" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#00a896" />
+                                    <stop offset="100%" stopColor="#02c39a" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-xl font-bold text-gray-900">{Math.round(goal.progress)}%</span>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 space-y-2">
+                        {goal.initialValue !== undefined && goal.initialValue !== null && (
+                            <div className="flex justify-between items-center">
+                                <span className="text-base text-gray-500">Initial Value</span>
+                                <span className="text-base font-medium text-gray-600">
+                                    {goal.initialValue} {goal.unit}
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex justify-between items-center">
+                            <span className="text-base text-gray-500">Current Value</span>
+                            <span className="text-base font-bold text-[#028090]">
+                                {goal.currentValue !== null && goal.currentValue !== undefined ? `${goal.currentValue} ${goal.unit}` : '—'}
+                            </span>
+                        </div>
+                        {goal.goalType === 'range' || (goal.minValue !== null || goal.maxValue !== null) ? (
+                            <div className="flex justify-between items-center">
+                                <span className="text-base text-gray-500">Target Range</span>
+                                <span className="text-base font-bold text-gray-900">
+                                    {goal.minValue !== null && goal.maxValue !== null
+                                        ? `${goal.minValue} - ${goal.maxValue} ${goal.unit}`
+                                        : goal.minValue !== null
+                                            ? `≥ ${goal.minValue} ${goal.unit}`
+                                            : `≤ ${goal.maxValue} ${goal.unit}`
+                                    }
+                                </span>
+                            </div>
+                        ) : goal.targetValue !== null && goal.targetValue !== undefined ? (
+                            <div className="flex justify-between items-center">
+                                <span className="text-base text-gray-500">Target Value</span>
+                                <span className="text-base font-bold text-gray-900">{goal.targetValue} {goal.unit}</span>
+                            </div>
+                        ) : null}
+                        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                            <span className="text-base text-gray-500">Goal Type</span>
+                            <span className="text-base font-medium text-gray-700 capitalize flex items-center gap-1">
+                                {goal.goalType === 'decrease' && <TrendingDown className="w-3 h-3 text-red-500" />}
+                                {goal.goalType === 'increase' && <TrendingUp className="w-3 h-3 text-green-500" />}
+                                {goal.goalType === 'maintain' && <Activity className="w-3 h-3 text-blue-500" />}
+                                {goal.goalType === 'range' && <BarChart3 className="w-3 h-3 text-purple-500" />}
+                                {goal.goalType}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Timeline */}
+                {hasDeadline ? (
+                    <div className="bg-gray-50 rounded-xl p-3 mb-4">
+                        <div className="flex items-center justify-between text-base text-gray-600 mb-2">
+                            <span>Start: {new Date(goal.startDate || goal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                            <span className={daysRemaining > 0 ? 'text-[#028090] font-medium' : 'text-red-500 font-medium'}>
+                                {daysRemaining > 0 ? `${daysRemaining} days left` : 'Overdue'}
+                            </span>
+                            <span>Deadline: {new Date(goal.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        </div>
+                        <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                                className="absolute left-0 top-0 h-full bg-gradient-to-r from-[#00a896] to-[#02c39a] rounded-full"
+                                style={{
+                                    width: `${Math.min(100, Math.max(0,
+                                        ((Date.now() - new Date(goal.startDate || goal.createdAt)) /
+                                            (new Date(goal.deadline) - new Date(goal.startDate || goal.createdAt))) * 100
+                                    ))}%`
+                                }}
+                            />
+                        </div>
+                    </div>
+                ) : (
+                    <div className="bg-gray-50 rounded-xl p-3 mb-4">
+                        <div className="flex items-center justify-between text-base text-gray-600">
+                            <span>Started: {new Date(goal.startDate || goal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                            <span className="text-[#028090] font-medium">No deadline</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* View Details Button */}
+                <button
+                    onClick={() => onView(goal)}
+                    className="w-full cursor-pointer py-2.5 text-base font-semibold bg-gray-100 text-[#028090] hover:bg-[#f0f3bd]/80 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                >
+                    <Eye className="w-4 h-4" />
+                    View Details & Analysis ({goal.milestones ? goal.milestones.length : 0} Entries)
+                    <ChevronRight className="w-4 h-4" />
+                </button>
+            </div>
+        </div>
+    );
+};
 
 const PatientDetailsPage = () => {
     const { patientId } = useParams();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
-    const { linkedPatients, patientLogs, patientNotes, loading, error, successMessage, aiSummary } = useSelector((state) => state.connection);
+    const {
+        linkedPatients,
+        patientLogs,
+        patientNotes,
+        patientGoals,
+        loading,
+        successMessage,
+        aiSummary,
+        getPatientHealthData,
+        getLinkedPatients,
+        getPatientNotes,
+        getPatientGoals,
+        analyzePatientGoal,
+        createNote,
+        clearConnectionMessage,
+        generatePatientSummary
+    } = useConnection();
     const { user } = useSelector((state) => state.auth);
     const [patient, setPatient] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState('all');
     const [showNoteForm, setShowNoteForm] = useState(false);
     const [showAppointmentModal, setShowAppointmentModal] = useState(false);
     const [selectedLog, setSelectedLog] = useState(null);
+    const [selectedFullReport, setSelectedFullReport] = useState(null);
     const [noteTitle, setNoteTitle] = useState('');
     const [noteDescription, setNoteDescription] = useState('');
+    const [activeTab, setActiveTab] = useState('records'); // 'records', 'notes', or 'progress'
+    const [selectedGoal, setSelectedGoal] = useState(null);
+
+    // Handler for analyzing patient goal
+    const handleAnalyzeGoal = async (goalId) => {
+        try {
+            const analysis = await analyzePatientGoal(patientId, goalId);
+            return analysis;
+        } catch (error) {
+            console.error('Failed to analyze goal:', error);
+            throw error;
+        }
+    };
 
     useEffect(() => {
-        // If linkedPatients is empty (e.g. refresh), fetch them to get patient details
         if (!linkedPatients || linkedPatients.length === 0) {
-            dispatch(getLinkedPatients());
+            getLinkedPatients();
         }
-        dispatch(getPatientHealthData(patientId));
-        dispatch(getPatientNotes(patientId));
-    }, [dispatch, patientId, linkedPatients?.length]);
+        getPatientHealthData(patientId);
+        getPatientNotes(patientId);
+        getPatientGoals(patientId);
+    }, [patientId, linkedPatients?.length]);
 
     useEffect(() => {
         if (linkedPatients) {
@@ -61,52 +291,37 @@ const PatientDetailsPage = () => {
     }, [linkedPatients, patientId]);
 
     const formatDate = (date) => {
+        if (!date) return '-';
         return new Date(date).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            year: 'numeric'
         });
     };
-
-    // Filter logs based on category
-    const filteredLogs = selectedCategory === 'all'
-        ? patientLogs
-        : patientLogs.filter(log => log.diseaseType === selectedCategory);
-
-    // Prepare data for charts
-    const getChartData = (category) => {
-        return patientLogs
-            .filter(log => log.diseaseType === category)
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .map(log => ({
-                date: new Date(log.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                value: parseFloat(log.value),
-                unit: log.unit
-            }));
-    };
-
-    const categories = ['Diabetes', 'Hypertension', 'Thyroid']; // Add more as needed or derive from logs
 
     const handleAddNote = async (e) => {
         e.preventDefault();
         if (!noteTitle || !noteDescription) return;
 
-        await dispatch(createNote({
+        await createNote({
             patientId,
             title: noteTitle,
             description: noteDescription
-        }));
-        
+        });
+
         setNoteTitle('');
         setNoteDescription('');
         setShowNoteForm(false);
-        setTimeout(() => dispatch(clearConnectionMessage()), 3000);
+        getPatientNotes(patientId);
+        setTimeout(() => clearConnectionMessage(), 3000);
     };
+
+    // Filter logs - exclude manual entries
+    const filteredLogs = patientLogs?.filter(log => log.fileType !== 'manual') || [];
 
     if (loading && !patient) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="flex items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]"></div>
             </div>
         );
@@ -114,14 +329,14 @@ const PatientDetailsPage = () => {
 
     if (!patient) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="flex items-center justify-center py-20">
                 <div className="text-center">
                     <h2 className="text-xl font-bold text-gray-900">Patient Not Found</h2>
                     <button
-                        onClick={() => navigate('/doctor-dashboard')}
-                        className="mt-4 text-[#00a896] hover:underline"
+                        onClick={() => navigate('/doctor-patients')}
+                        className="mt-4 cursor-pointer text-[#00a896] hover:underline"
                     >
-                        Return to Dashboard
+                        Return to My Patients
                     </button>
                 </div>
             </div>
@@ -129,309 +344,275 @@ const PatientDetailsPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto space-y-6">
-                {/* Header */}
-                <div className="flex items-center justify-between">
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <button
+                    onClick={() => navigate('/doctor-patients')}
+                    className="flex items cursor-pointer text-gray-600 hover:text-[#00a896] transition-colors"
+                >
+                    <ArrowLeft className="w-5 h-5 mr-2" />
+                    Back to My Patients
+                </button>
+                <div className="flex items-center space-x-3">
                     <button
-                        onClick={() => navigate('/doctor-dashboard')}
-                        className="flex items-center text-gray-600 hover:text-[#00a896] transition-colors"
+                        onClick={() => setShowAppointmentModal(true)}
+                        className="px-4 cursor-pointer py-2 bg-white border border-[#00a896] text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center text-base"
                     >
-                        <ArrowLeft className="w-5 h-5 mr-2" />
-                        Back to Dashboard
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Schedule Appointment
                     </button>
-                    <div className="flex items-center space-x-4">
-                        <button 
-                            onClick={() => setShowAppointmentModal(true)}
-                            className="px-4 py-2 bg-white border border-[#00a896] text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center"
-                        >
-                            <Calendar className="w-4 h-4 mr-2" />
-                            Schedule Appointment
-                        </button>
-                        <button 
-                            onClick={() => setShowNoteForm(!showNoteForm)}
-                            className="px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors flex items-center"
-                        >
-                            {showNoteForm ? <X className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-                            {showNoteForm ? 'Cancel Note' : 'Add Clinical Note'}
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => setShowNoteForm(!showNoteForm)}
+                        className="px-4 cursor-pointer py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors flex items-center text-base"
+                    >
+                        {showNoteForm ? <X className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                        {showNoteForm ? 'Cancel' : 'Add Note'}
+                    </button>
                 </div>
+            </div>
 
-                {successMessage && (
-                    <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative">
-                        {successMessage}
-                    </div>
-                )}
+            {successMessage && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                    {successMessage}
+                </div>
+            )}
 
-                {/* Add Note Form */}
-                {showNoteForm && (
-                    <div className="bg-white rounded-lg shadow-sm p-6 animate-fade-in-down">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">New Clinical Note</h3>
-                        <form onSubmit={handleAddNote} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                <input
-                                    type="text"
-                                    value={noteTitle}
-                                    onChange={(e) => setNoteTitle(e.target.value)}
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
-                                    placeholder="e.g. Follow-up Consultation"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                <textarea
-                                    value={noteDescription}
-                                    onChange={(e) => setNoteDescription(e.target.value)}
-                                    rows={4}
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
-                                    placeholder="Enter clinical observations and recommendations..."
-                                    required
-                                />
-                            </div>
-                            <div className="flex justify-end">
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] flex items-center"
-                                >
-                                    <Save className="w-4 h-4 mr-2" />
-                                    Save Note
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
-
-                {/* Patient Profile Card */}
-                <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+            {/* Patient Profile Card */}
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                     {patient.photoURL ? (
                         <img
                             src={patient.photoURL}
                             alt={patient.displayName}
-                            className="w-24 h-24 rounded-full border-4 border-teal-50"
+                            className="w-20 h-20 rounded-full border-4 border-teal-100 object-cover"
                         />
                     ) : (
-                        <div className="w-24 h-24 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-3xl">
-                            {patient.displayName?.[0] || 'P'}
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00a896] to-[#028090] flex items-center justify-center text-white font-bold text-2xl">
+                            {patient.displayName?.[0]?.toUpperCase() || 'P'}
                         </div>
                     )}
                     <div className="flex-1 text-center md:text-left">
                         <h1 className="text-2xl font-bold text-gray-900">{patient.displayName}</h1>
                         <p className="text-gray-500">{patient.email}</p>
-                        <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
-                            {/* Mock Data for MVP - In real app, this comes from patient profile */}
-                            <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                Male, 45
+                        <div className="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
+                            <span className="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-base font-medium">
+                                {filteredLogs.length} Health Records
                             </span>
-                            <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm font-medium">
-                                Type 2 Diabetes
+                            <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-base font-medium">
+                                {patientNotes?.length || 0} Clinical Notes
                             </span>
-                            <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm font-medium">
-                                Hypertension
+                            <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-base font-medium">
+                                {patientGoals?.length || 0} Health Goals
                             </span>
                         </div>
                     </div>
+                    {/* AI Summary Button */}
+                    <button
+                        onClick={() => generatePatientSummary(patientId)}
+                        disabled={loading} 
+                        className="px-4 py-2 cursor-pointer bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-base font-medium disabled:opacity-50 flex items-center gap-2"
+                    >
+                        <Sparkles className="w-4 h-4" />
+                        {loading ? 'Generating...' : 'AI Summary'}
+                    </button>
                 </div>
 
-
-
-                {/* AI Summary Section */}
-                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg shadow-sm p-6 border border-purple-100">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-bold text-purple-900 flex items-center">
-                            <Sparkles className="w-5 h-5 mr-2 text-purple-600" />
+                {/* AI Summary */}
+                {aiSummary && (
+                    <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-100">
+                        <h4 className="text-base font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
                             AI Health Summary
-                        </h3>
-                        <button
-                            onClick={() => dispatch(generatePatientSummary(patientId))}
-                            disabled={loading}
-                            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium disabled:opacity-50"
-                        >
-                            {loading && !aiSummary ? 'Generating...' : 'Generate New Summary'}
-                        </button>
+                        </h4>
+                        <p className="text-base text-gray-700 whitespace-pre-wrap">{aiSummary}</p>
                     </div>
-                    
-                    {aiSummary ? (
-                        <div className="prose prose-purple max-w-none">
-                            <div className="bg-white rounded-lg p-4 border border-purple-100 shadow-sm">
-                                <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">{aiSummary}</p>
-                            </div>
-                            <p className="text-xs text-purple-500 mt-2 italic">
-                                * This summary is generated by AI based on recent health logs and notes. Always verify with clinical data.
-                            </p>
+                )}
+            </div>
+
+            {/* Add Note Form */}
+            {showNoteForm && (
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">New Clinical Note</h3>
+                    <form onSubmit={handleAddNote} className="space-y-4">
+                        <div>
+                            <label className="block text-base font-medium text-gray-700 mb-1">Title</label>
+                            <input
+                                type="text"
+                                value={noteTitle}
+                                onChange={(e) => setNoteTitle(e.target.value)}
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
+                                placeholder="e.g. Follow-up Consultation"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-base font-medium text-gray-700 mb-1">Description</label>
+                            <textarea
+                                value={noteDescription}
+                                onChange={(e) => setNoteDescription(e.target.value)}
+                                rows={3}
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
+                                placeholder="Enter clinical observations..."
+                                required
+                            />
+                        </div>
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                className="px-4 cursor-pointer py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] flex items-center text-base"
+                            >
+                                <Save className="w-4 h-4 mr-2" />
+                                Save Note
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {/* Tabs */}
+            <div className="flex gap-2 border-b border-gray-200">
+                <button
+                    onClick={() => setActiveTab('records')}
+                    className={`px-4 cursor-pointer py-3 font-medium text-base flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'records'
+                        ? 'border-[#00a896] text-[#00a896]'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                        }`}
+                >
+                    <Activity className="w-4 h-4" />
+                    Health Records ({filteredLogs.length})
+                </button>
+                <button
+                    onClick={() => setActiveTab('progress')}
+                    className={`px-4 cursor-pointer py-3 font-medium text-base flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'progress'
+                        ? 'border-[#00a896] text-[#00a896]'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                        }`}
+                >
+                    <Target className="w-4 h-4" />
+                    Track Progress ({patientGoals?.length || 0})
+                </button>
+                <button
+                    onClick={() => setActiveTab('notes')}
+                    className={`px-4 cursor-pointer py-3 font-medium text-base flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notes'
+                        ? 'border-[#00a896] text-[#00a896]'
+                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                        }`}
+                >
+                    <ClipboardList className="w-4 h-4" />
+                    Clinical Notes ({patientNotes?.length || 0})
+                </button>
+            </div>
+
+            {/* Content based on active tab */}
+            {activeTab === 'records' ? (
+                <div>
+                    {loading ? (
+                        <div className="flex justify-center items-center py-12">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]"></div>
+                        </div>
+                    ) : filteredLogs.length === 0 ? (
+                        <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
+                            <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Health Records</h3>
+                            <p className="text-gray-500">This patient hasn't uploaded any health records yet.</p>
                         </div>
                     ) : (
-                        <div className="text-center py-8 text-purple-400">
-                            <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                            <p>Click "Generate New Summary" to get an AI-powered analysis of the patient's recent health data.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {filteredLogs.map((log) => (
+                                <HealthCard
+                                    key={log._id}
+                                    log={log}
+                                    onViewDetails={setSelectedLog}
+                                    onViewFullReport={setSelectedFullReport}
+                                    onDelete={() => { }} // Doctors can't delete patient logs
+                                    formatDate={formatDate}
+                                />
+                            ))}
                         </div>
                     )}
                 </div>
-
-                {/* Trends Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {categories.map(category => {
-                        const data = getChartData(category);
-                        if (data.length === 0) return null;
-
-                        return (
-                            <div key={category} className="bg-white rounded-lg shadow-sm p-6">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                                    <TrendingUp className="w-5 h-5 mr-2 text-[#00a896]" />
-                                    {category} Trends
-                                </h3>
-                                <div className="h-64 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={data}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                            <XAxis dataKey="date" />
-                                            <YAxis />
-                                            <Tooltip />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="value"
-                                                stroke="#00a896"
-                                                strokeWidth={2}
-                                                dot={{ r: 4, fill: '#00a896' }}
-                                                activeDot={{ r: 6 }}
-                                            />
-                                        </LineChart>
-                                    </ResponsiveContainer>
+            ) : activeTab === 'progress' ? (
+                <div>
+                    {loading ? (
+                        <div className="flex justify-center items-center py-12">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]"></div>
+                        </div>
+                    ) : patientGoals && patientGoals.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {patientGoals.map((goal) => (
+                                <GoalCard
+                                    key={goal._id}
+                                    goal={goal}
+                                    onView={setSelectedGoal}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
+                            <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Health Goals</h3>
+                            <p className="text-gray-500">This patient hasn't set any health goals yet.</p>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {patientNotes && patientNotes.length > 0 ? (
+                        patientNotes.map((note) => (
+                            <div key={note._id} className="bg-white rounded-xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-shadow">
+                                <div className="flex justify-between items-start mb-3">
+                                    <h4 className="text-lg font-semibold text-gray-900">{note.title}</h4>
+                                    <span className="text-base text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        {formatDate(note.date)}
+                                    </span>
+                                </div>
+                                <p className="text-gray-700 whitespace-pre-wrap text-base">{note.description}</p>
+                                <div className="mt-3 pt-3 border-t border-gray-100 text-base text-gray-500">
+                                    By Dr. {note.doctor?.displayName || user?.displayName || 'You'}
                                 </div>
                             </div>
-                        );
-                    })}
+                        ))
+                    ) : (
+                        <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
+                            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Clinical Notes</h3>
+                            <p className="text-gray-500">Click "Add Note" to create your first clinical note for this patient.</p>
+                        </div>
+                    )}
                 </div>
+            )}
 
-                {/* Health Logs List */}
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                        <h3 className="text-lg font-bold text-gray-900 flex items-center">
-                            <Activity className="w-5 h-5 mr-2 text-[#00a896]" />
-                            Health Logs
-                        </h3>
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#00a896] focus:border-[#00a896] sm:text-sm rounded-md"
-                        >
-                            <option value="all">All Categories</option>
-                            {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
-                    </div>
-                    
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Date & Time
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Category
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Detected Disease
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Risk Level
-                                    </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {filteredLogs.length > 0 ? (
-                                    filteredLogs.map((log) => (
-                                        <tr key={log._id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {formatDate(log.recordDate)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-teal-100 text-teal-800">
-                                                    {log.diseaseType}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                                {log.detectedDisease || 'N/A'}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                    log.aiAnalysis?.riskLevel === 'critical' ? 'bg-red-100 text-red-800' :
-                                                    log.aiAnalysis?.riskLevel === 'high' ? 'bg-orange-100 text-orange-800' :
-                                                    log.aiAnalysis?.riskLevel === 'moderate' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-green-100 text-green-800'
-                                                }`}>
-                                                    {log.aiAnalysis?.riskLevel?.toUpperCase() || 'NORMAL'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                <button 
-                                                    onClick={() => setSelectedLog(log)}
-                                                    className="text-[#00a896] hover:text-[#028090] font-medium"
-                                                >
-                                                    View Full Report
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5" className="px-6 py-10 text-center text-gray-500">
-                                            No health logs found for this category.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            {/* Modals */}
+            <ScheduleAppointmentModal
+                isOpen={showAppointmentModal}
+                onClose={() => setShowAppointmentModal(false)}
+                patientId={patientId}
+                patientName={patient?.displayName}
+            />
 
-                {/* Clinical Notes List */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                        <FileText className="w-5 h-5 mr-2 text-[#00a896]" />
-                        Clinical Notes History
-                    </h3>
-                    <div className="space-y-4">
-                        {patientNotes && patientNotes.length > 0 ? (
-                            patientNotes.map((note) => (
-                                <div key={note._id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h4 className="text-base font-semibold text-gray-900">{note.title}</h4>
-                                        <span className="text-sm text-gray-500">{formatDate(note.date)}</span>
-                                    </div>
-                                    <p className="text-gray-700 whitespace-pre-wrap">{note.description}</p>
-                                    <div className="mt-2 text-xs text-gray-500">
-                                        By Dr. {user?.displayName || 'You'}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500 text-center py-4">No clinical notes added yet.</p>
-                        )}
-                    </div>
-                </div>
-
-
-                {/* Schedule Appointment Modal */}
-                <ScheduleAppointmentModal
-                    isOpen={showAppointmentModal}
-                    onClose={() => setShowAppointmentModal(false)}
-                    patientId={patientId}
-                    patientName={patient?.displayName}
-                />
-
-                {/* Health Log Details Modal */}
-                <HealthLogDetailsModal
-                    isOpen={!!selectedLog}
-                    onClose={() => setSelectedLog(null)}
+            {selectedLog && (
+                <DetailModal
                     log={selectedLog}
+                    onClose={() => setSelectedLog(null)}
                 />
-            </div>
+            )}
+
+            {selectedFullReport && (
+                <FullReportModal
+                    log={selectedFullReport}
+                    onClose={() => setSelectedFullReport(null)}
+                />
+            )}
+
+            {selectedGoal && (
+                <GoalDetailModal
+                    goal={selectedGoal}
+                    onClose={() => setSelectedGoal(null)}
+                    onAnalyze={handleAnalyzeGoal}
+                    readOnly={true}
+                />
+            )}
         </div>
     );
 };
