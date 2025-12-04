@@ -8,7 +8,16 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
 
     if (!aiAnalysis) return null;
 
+    const isInvalidDocument = () => {
+        const summary = aiAnalysis.summary?.toLowerCase() || '';
+        return summary.includes('not contain any medical') ||
+            summary.includes('no medical test') ||
+            summary.includes('no health') ||
+            (aiAnalysis.riskLevel === 'low' && !detectedConditions?.length && summary.includes('not'));
+    };
+
     const getRiskColor = (riskLevel) => {
+        if (isInvalidDocument()) return 'bg-gray-100 text-gray-600 border-gray-400';
         switch (riskLevel?.toLowerCase()) {
             case 'low': return 'bg-green-100 text-green-800 border-green-300';
             case 'moderate': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
@@ -19,6 +28,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
     };
 
     const getRiskIcon = (riskLevel) => {
+        if (isInvalidDocument()) return <AlertTriangle className="w-5 h-5" />;
         switch (riskLevel?.toLowerCase()) {
             case 'low': return <CheckCircle className="w-5 h-5" />;
             case 'moderate': return <Info className="w-5 h-5" />;
@@ -26,6 +36,11 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
             case 'critical': return <AlertTriangle className="w-5 h-5" />;
             default: return <Info className="w-5 h-5" />;
         }
+    };
+
+    const getRiskLabel = () => {
+        if (isInvalidDocument()) return 'INVALID DOCUMENT';
+        return `${aiAnalysis.riskLevel} RISK`;
     };
 
     return (
@@ -45,7 +60,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                     {aiAnalysis.riskLevel && (
                         <div className={`flex items-center space-x-2 px-4 py-2 rounded-full font-semibold border-2 ${getRiskColor(aiAnalysis.riskLevel)}`}>
                             {getRiskIcon(aiAnalysis.riskLevel)}
-                            <span className="uppercase text-base">{aiAnalysis.riskLevel} RISK</span>
+                            <span className="uppercase text-base">{getRiskLabel()}</span>
                         </div>
                     )}
                 </div>
@@ -57,7 +72,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                         <FileText className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
                         <div className="flex-1">
                             <h4 className="font-semibold text-blue-900 mb-2 text-lg">📋 Summary</h4>
-                            <p className="text-blue-800 leading-relaxed">{aiAnalysis.summary}</p>
+                            <p className="text-blue-800 text-base leading-relaxed">{aiAnalysis.summary}</p>
                         </div>
                     </div>
                 </div>

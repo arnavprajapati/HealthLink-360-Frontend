@@ -240,13 +240,28 @@ const FullReportModal = ({ log, onClose }) => {
                             </div>
                             <div>
                                 <p className="text-gray-500 mb-1">Risk Level</p>
-                                <p className={`font-semibold uppercase ${log.aiAnalysis?.riskLevel === 'low' ? 'text-green-600' :
-                                    log.aiAnalysis?.riskLevel === 'moderate' ? 'text-yellow-600' :
-                                        log.aiAnalysis?.riskLevel === 'high' ? 'text-orange-600' :
-                                            'text-red-600'
-                                    }`}>
-                                    {log.aiAnalysis?.riskLevel || 'N/A'}
-                                </p>
+                                {(() => {
+                                    const summary = log.aiAnalysis?.summary?.toLowerCase() || '';
+                                    const isInvalid = summary.includes('resume') ||
+                                        summary.includes('not contain any medical') ||
+                                        summary.includes('no medical test') ||
+                                        summary.includes('no health') ||
+                                        (log.aiAnalysis?.riskLevel === 'low' && !log.readings?.length && !log.aiAnalysis?.detectedConditions?.length && summary.includes('not'));
+
+                                    if (isInvalid) {
+                                        return <p className="font-semibold uppercase text-gray-500">INVALID</p>;
+                                    }
+
+                                    return (
+                                        <p className={`font-semibold uppercase ${log.aiAnalysis?.riskLevel === 'low' ? 'text-green-600' :
+                                            log.aiAnalysis?.riskLevel === 'moderate' ? 'text-yellow-600' :
+                                                log.aiAnalysis?.riskLevel === 'high' ? 'text-orange-600' :
+                                                    'text-red-600'
+                                            }`}>
+                                            {log.aiAnalysis?.riskLevel || 'N/A'}
+                                        </p>
+                                    );
+                                })()}
                             </div>
                         </div>
                     </div>

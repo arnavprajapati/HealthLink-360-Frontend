@@ -11,6 +11,39 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
         return acc;
     }, {});
 
+    // Check if document is invalid (non-medical) - defined first as it's used by getDisplayTitle
+    const isInvalidDocument = () => {
+        const summary = log.aiAnalysis?.summary?.toLowerCase() || '';
+        const hasNoMedicalData = summary.includes('resume') ||
+            summary.includes('not contain any medical') ||
+            summary.includes('no medical test') ||
+            summary.includes('no health') ||
+            (log.aiAnalysis?.riskLevel === 'low' && !log.readings?.length && !log.aiAnalysis?.detectedConditions?.length);
+        return hasNoMedicalData;
+    };
+
+    // Get display title - for 'Other' type, use detected condition or first detected condition from AI
+    const getDisplayTitle = () => {
+        // First check if invalid document
+        if (isInvalidDocument()) {
+            return 'Invalid Document';
+        }
+
+        if (log.diseaseType !== 'other') return config.label;
+
+        // Check if AI detected any conditions
+        if (log.aiAnalysis?.detectedConditions?.length > 0) {
+            return log.aiAnalysis.detectedConditions[0];
+        }
+
+        // Check detected disease
+        if (log.detectedDisease && log.detectedDisease !== 'other') {
+            return getDiseaseConfig(log.detectedDisease).label;
+        }
+
+        return 'Medical Report';
+    };
+
     return (
         <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
             <div className="bg-gradient-to-r from-[#f0f3bd] to-[#02c39a]/20 p-4 border-b border-gray-100">
@@ -18,7 +51,7 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                     <div className="flex items-center space-x-3">
                         <div className="text-3xl">{config.icon}</div>
                         <div>
-                            <h3 className="text-lg font-bold text-gray-800">{config.label}</h3>
+                            <h3 className="text-lg font-bold text-gray-800">{getDisplayTitle()}</h3>
                             <p className="text-base text-gray-500 flex items-center mt-1">
                                 <Calendar className="w-3 h-3 mr-1" />
                                 {formatDate(log.testDate || log.createdAt)}
@@ -106,7 +139,23 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                         </div>
                     </div>
                 ) : (
-                    <p className="text-base text-gray-500 text-center py-4">No readings available</p>
+                    <div className="space-y-4">
+                        {isInvalidDocument() ? (
+                            <div className="text-center py-2">
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600 border border-gray-300">
+                                    ⚠️ Non-medical document
+                                </span>
+                                <p className="text-sm text-gray-500 mt-2">This file doesn't contain medical test data</p>
+                            </div>
+                        ) : log.aiAnalysis?.summary ? (
+                            <div className="pt-3 border-t border-gray-100">
+                                <h4 className="text-base font-semibold text-gray-700 mb-2">📋 Summary</h4>
+                                <p className="text-sm text-gray-600 line-clamp-3">{log.aiAnalysis.summary}</p>
+                            </div>
+                        ) : (
+                            <p className="text-base text-gray-500 text-center py-2">View full report for details</p>
+                        )}
+                    </div>
                 )}
 
                 {log.description && (

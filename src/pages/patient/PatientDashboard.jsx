@@ -9,7 +9,6 @@ import VitalsCard from './VitalsCard';
 import HealthCard from './HealthCard';
 import DetailModal from './DetailModal';
 import FullReportModal from './FullReportModal';
-import HealthCalendar from './HealthCalendar';
 import AIHealthAssistant from './AIHealthAssistant';
 import EmptyState from './EmptyState';
 
@@ -126,7 +125,6 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                     formatDate={formatDate}
                 />
 
-                <HealthCalendar />
 
                 <AIHealthAssistant />
             </div>
