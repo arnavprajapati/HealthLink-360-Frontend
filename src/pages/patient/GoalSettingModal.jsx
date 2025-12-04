@@ -156,7 +156,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                             <Target className="w-6 h-6 mr-2" />
                             Set Health Goal
                         </h2>
-                        <p className="text-purple-100 text-base mt-1">
+                        <p className="text-purple-100 text-lg mt-1">
                             Define your target and track your progress
                         </p>
                     </div>
@@ -170,7 +170,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
 
                 <div className="p-6 space-y-6">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p className="text-base text-blue-800">
+                        <p className="text-lg text-blue-800">
                             💡 <span className="font-semibold">Tip:</span> Set realistic, achievable goals.
                             We'll track your progress automatically with each health log you add.
                         </p>
@@ -178,7 +178,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
 
                     {/* Goal Mode Selector */}
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             🎯 Goal Mode *
                         </label>
                         <div className="grid grid-cols-2 gap-3">
@@ -191,8 +191,8 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                     }`}
                             >
                                 <Target className="w-5 h-5" />
-                                <span className="mt-2 text-base font-medium">Fixed Goal</span>
-                                <span className="text-xs text-gray-500 mt-1">Track to specific target</span>
+                                <span className="mt-2 text-lg font-medium">Fixed Goal</span>
+                                <span className="text-lg text-gray-500 mt-1">Track to specific target</span>
                             </button>
                             <button
                                 type="button"
@@ -203,14 +203,14 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                     }`}
                             >
                                 <BarChart3 className="w-5 h-5" />
-                                <span className="mt-2 text-base font-medium">Range Goal</span>
-                                <span className="text-xs text-gray-500 mt-1">Stay within a range</span>
+                                <span className="mt-2 text-lg font-medium">Range Goal</span>
+                                <span className="text-lg text-gray-500 mt-1">Stay within a range</span>
                             </button>
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             📊 Health Parameter *
                         </label>
                         <select
@@ -229,11 +229,11 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                     {/* Custom Parameter Fields - Only shown when "Other" is selected */}
                     {isCustomParameter && (
                         <div className="space-y-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                            <p className="text-base text-amber-800 font-medium">
+                            <p className="text-lg text-amber-800 font-medium">
                                 ✏️ Define your custom health metric
                             </p>
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     🏷️ Custom Parameter Name *
                                 </label>
                                 <input
@@ -247,11 +247,11 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                     placeholder="e.g., Uric Acid, Vitamin D, CRP, Liver Enzyme..."
                                 />
                                 {errors.customParameterName && (
-                                    <p className="text-base text-red-500 mt-1">{errors.customParameterName}</p>
+                                    <p className="text-lg text-red-500 mt-1">{errors.customParameterName}</p>
                                 )}
                             </div>
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     📏 Unit *
                                 </label>
                                 <input
@@ -265,7 +265,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                     placeholder="e.g., mg/dL, IU/mL, ng/mL, mmol/L..."
                                 />
                                 {errors.customUnit && (
-                                    <p className="text-base text-red-500 mt-1">{errors.customUnit}</p>
+                                    <p className="text-lg text-red-500 mt-1">{errors.customUnit}</p>
                                 )}
                             </div>
                         </div>
@@ -274,7 +274,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                     {/* Goal Type - Only for Fixed mode */}
                     {goalMode === 'fixed' && (
                         <div>
-                            <label className="block text-base font-semibold text-gray-700 mb-2">
+                            <label className="block text-lg font-semibold text-gray-700 mb-2">
                                 🎯 Goal Type *
                             </label>
                             <div className="grid grid-cols-3 gap-3">
@@ -288,7 +288,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                             }`}
                                     >
                                         {getGoalTypeIcon(type)}
-                                        <span className="mt-2 text-base font-medium capitalize">{type}</span>
+                                        <span className="mt-2 text-lg font-medium capitalize">{type}</span>
                                     </button>
                                 ))}
                             </div>
@@ -298,7 +298,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                     {/* Initial Value - For Fixed mode */}
                     {goalMode === 'fixed' && (
                         <div>
-                            <label className="block text-base font-semibold text-gray-700 mb-2">
+                            <label className="block text-lg font-semibold text-gray-700 mb-2">
                                 📍 Initial Value *
                             </label>
                             <div className="flex items-center space-x-3">
@@ -318,9 +318,9 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                 </span>
                             </div>
                             {errors.initialValue && (
-                                <p className="text-base text-red-500 mt-1">{errors.initialValue}</p>
+                                <p className="text-lg text-red-500 mt-1">{errors.initialValue}</p>
                             )}
-                            <p className="text-base text-gray-500 mt-1">
+                            <p className="text-lg text-gray-500 mt-1">
                                 Your starting point for this goal
                             </p>
                         </div>
@@ -329,7 +329,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                     {/* Target Value - For Fixed mode */}
                     {goalMode === 'fixed' && (
                         <div>
-                            <label className="block text-base font-semibold text-gray-700 mb-2">
+                            <label className="block text-lg font-semibold text-gray-700 mb-2">
                                 🎯 Target Value *
                             </label>
                             <div className="flex items-center space-x-3">
@@ -349,9 +349,9 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                 </span>
                             </div>
                             {errors.targetValue && (
-                                <p className="text-base text-red-500 mt-1">{errors.targetValue}</p>
+                                <p className="text-lg text-red-500 mt-1">{errors.targetValue}</p>
                             )}
-                            <p className="text-base text-gray-500 mt-1">
+                            <p className="text-lg text-gray-500 mt-1">
                                 {formData.goalType === 'decrease' && 'Enter a value lower than your current reading'}
                                 {formData.goalType === 'increase' && 'Enter a value higher than your current reading'}
                                 {formData.goalType === 'maintain' && 'Enter the value you want to maintain'}
@@ -363,7 +363,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                     {goalMode === 'range' && (
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     📉 Minimum Value
                                 </label>
                                 <div className="flex items-center space-x-3">
@@ -384,7 +384,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     📈 Maximum Value
                                 </label>
                                 <div className="flex items-center space-x-3">
@@ -405,15 +405,15 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                 </div>
                             </div>
                             {errors.range && (
-                                <p className="text-base text-red-500">{errors.range}</p>
+                                <p className="text-lg text-red-500">{errors.range}</p>
                             )}
-                            <p className="text-base text-gray-500">
+                            <p className="text-lg text-gray-500">
                                 Set the healthy range you want to maintain. You can specify just a minimum, just a maximum, or both.
                             </p>
 
                             {/* Optional Initial Value for Range */}
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     📍 Current Value (Optional)
                                 </label>
                                 <div className="flex items-center space-x-3">
@@ -435,7 +435,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
 
                     {/* Tracking Frequency */}
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             🔄 Tracking Frequency
                         </label>
                         <div className="grid grid-cols-3 gap-3">
@@ -444,7 +444,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                     key={freq}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, trackingFrequency: freq })}
-                                    className={`p-3 rounded-lg border-2 transition-all text-base font-medium capitalize ${formData.trackingFrequency === freq
+                                    className={`p-3 rounded-lg border-2 transition-all text-lg font-medium capitalize ${formData.trackingFrequency === freq
                                         ? 'border-purple-500 bg-purple-50 text-purple-700'
                                         : 'border-gray-300 hover:border-purple-300'
                                         }`}
@@ -456,7 +456,7 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2 flex items-center">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2 flex items-center">
                             <Calendar className="w-4 h-4 mr-2" />
                             Target Date (Optional)
                         </label>
@@ -467,13 +467,13 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                             min={minDateStr}
                             className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         />
-                        <p className="text-base text-gray-500 mt-1">
+                        <p className="text-lg text-gray-500 mt-1">
                             Leave empty to track progress without a deadline
                         </p>
                     </div>
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             📝 Notes (Optional)
                         </label>
                         <textarea
@@ -484,14 +484,14 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                             className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
                             placeholder="Why is this goal important to you? Add any notes or motivation..."
                         />
-                        <p className="text-base text-gray-500 mt-1">
+                        <p className="text-lg text-gray-500 mt-1">
                             {formData.notes.length}/500 characters
                         </p>
                     </div>
 
                     <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
                         <h4 className="font-semibold text-purple-900 mb-2">📈 Your Goal Preview</h4>
-                        <p className="text-base text-purple-800">
+                        <p className="text-lg text-purple-800">
                             {goalMode === 'fixed' ? (
                                 <>
                                     <span className="font-semibold capitalize">{formData.goalType}</span> your{' '}

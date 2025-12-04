@@ -3,13 +3,13 @@ import {
     Target, Plus, TrendingUp, TrendingDown, Activity,
     Calendar, CheckCircle, Clock, AlertCircle, Edit, Trash2,
     Award, BarChart3, Filter, X, Eye, Sparkles, ChevronRight,
-    Zap, Trophy, Flame
+    Zap, Trophy, Flame, CalendarCheck
 } from 'lucide-react';
 import { useGoals } from '../../context/GoalsContext';
 import GoalDetailModal from './GoalDetailModal';
 
 const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
-    const { createGoal, editGoal, loading } = useGoals();
+    const { createGoal, editGoal, loading, checkGoogleCalendarStatus, createGoogleCalendarEvent, googleCalendarConnected } = useGoals();
     const [formData, setFormData] = useState({
         parameter: editingGoal?.parameter || 'Blood Sugar',
         parameterKey: editingGoal?.parameterKey || 'blood_sugar',
@@ -28,6 +28,19 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
     const [goalMode, setGoalMode] = useState(
         editingGoal?.minValue || editingGoal?.maxValue ? 'range' : 'fixed'
     );
+    const [syncToCalendar, setSyncToCalendar] = useState(editingGoal?.syncToGoogleCalendar || false);
+    const [isCalendarConnected, setIsCalendarConnected] = useState(false);
+
+    // Check Google Calendar connection on mount
+    useEffect(() => {
+        const checkCalendar = async () => {
+            const connected = await checkGoogleCalendarStatus();
+            setIsCalendarConnected(connected);
+        };
+        checkCalendar();
+    }, [checkGoogleCalendarStatus]);
+
+    const isWeeklyGoal = formData.trackingFrequency === 'weekly';
 
     const parameters = [
         { name: 'Blood Sugar', key: 'blood_sugar', unit: 'mg/dL', defaultGoal: 'decrease', icon: '🩸' },
@@ -120,6 +133,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                 parameterKey: isCustomParameter ? 'custom' : formData.parameterKey,
                 customParameterName: isCustomParameter ? formData.customParameterName.trim() : null,
                 unit: formData.unit.trim(),
+                syncToGoogleCalendar: syncToCalendar && isWeeklyGoal,
             };
             if (goalMode === 'fixed') {
                 submitData.minValue = '';
@@ -127,11 +141,35 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
             } else if (goalMode === 'range') {
             }
 
+            let savedGoal;
             if (editingGoal) {
-                await editGoal(editingGoal._id, submitData);
+                savedGoal = await editGoal(editingGoal._id, submitData);
             } else {
-                await createGoal(submitData);
+                savedGoal = await createGoal(submitData);
             }
+
+            // Create Google Calendar event if sync is enabled and it's a weekly goal
+            if (syncToCalendar && isWeeklyGoal && isCalendarConnected && savedGoal && !editingGoal?.googleEventId) {
+                try {
+                    const startDate = new Date();
+                    startDate.setHours(9, 0, 0, 0); // 9 AM
+                    const endDate = new Date(startDate);
+                    endDate.setHours(10, 0, 0, 0); // 10 AM
+
+                    await createGoogleCalendarEvent({
+                        title: `Health Goal: ${submitData.parameter}`,
+                        description: `Weekly health goal tracking for ${submitData.parameter}. Target: ${submitData.targetValue || `${submitData.minValue}-${submitData.maxValue}`} ${submitData.unit}`,
+                        startDateTime: startDate.toISOString(),
+                        endDateTime: endDate.toISOString(),
+                        recurrence: 'RRULE:FREQ=WEEKLY',
+                        goalId: savedGoal._id
+                    });
+                } catch (calendarError) {
+                    console.error('Failed to sync with Google Calendar:', calendarError);
+                    // Don't fail the goal creation if calendar sync fails
+                }
+            }
+
             onSuccess();
             onClose();
         } catch (error) {
@@ -154,7 +192,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                             <Target className="w-6 h-6 mr-2" />
                             {editingGoal ? 'Edit Health Goal' : 'Set New Health Goal'}
                         </h2>
-                        <p className="text-white/80 text-base mt-1">
+                        <p className="text-white/80 text-lg mt-1">
                             Define your target and track progress automatically
                         </p>
                     </div>
@@ -168,13 +206,13 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
 
                 <div className="p-6 space-y-6">
                     <div className="bg-[#f0f3bd]/30 border border-[#02c39a]/30 rounded-lg p-4">
-                        <p className="text-base text-[#028090]">
+                        <p className="text-lg text-[#028090]">
                             💡 <span className="font-semibold">Tip:</span> Your goals will be automatically updated when you add new health logs!
                         </p>
                     </div>
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             📊 Health Parameter *
                         </label>
                         <div className="grid grid-cols-3 gap-2">
@@ -189,7 +227,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                         } ${editingGoal ? 'opacity-60 cursor-not-allowed' : ''}`}
                                 >
                                     <span className="text-lg">{param.icon}</span>
-                                    <p className="text-base font-medium mt-1 truncate">{param.name}</p>
+                                    <p className="text-lg font-medium mt-1 truncate">{param.name}</p>
                                 </button>
                             ))}
                         </div>
@@ -198,11 +236,11 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                     {/* Custom Parameter Fields - Only shown when "Other" is selected */}
                     {isCustomParameter && (
                         <div className="space-y-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                            <p className="text-base text-amber-800 font-medium">
+                            <p className="text-lg text-amber-800 font-medium">
                                 ✏️ Define your custom health metric
                             </p>
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     🏷️ Custom Parameter Name *
                                 </label>
                                 <input
@@ -216,11 +254,11 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                     placeholder="e.g., Uric Acid, Vitamin D, CRP, Liver Enzyme..."
                                 />
                                 {errors.customParameterName && (
-                                    <p className="text-base text-red-500 mt-1">{errors.customParameterName}</p>
+                                    <p className="text-lg text-red-500 mt-1">{errors.customParameterName}</p>
                                 )}
                             </div>
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     📏 Unit *
                                 </label>
                                 <input
@@ -234,14 +272,14 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                     placeholder="e.g., mg/dL, IU/mL, ng/mL, mmol/L..."
                                 />
                                 {errors.customUnit && (
-                                    <p className="text-base text-red-500 mt-1">{errors.customUnit}</p>
+                                    <p className="text-lg text-red-500 mt-1">{errors.customUnit}</p>
                                 )}
                             </div>
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             🎯 Goal Type *
                         </label>
                         <div className="grid grid-cols-3 gap-3">
@@ -258,7 +296,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                     {type === 'decrease' && <TrendingDown className="w-5 h-5" />}
                                     {type === 'increase' && <TrendingUp className="w-5 h-5" />}
                                     {type === 'maintain' && <Activity className="w-5 h-5" />}
-                                    <span className="mt-2 text-base font-medium capitalize">{type}</span>
+                                    <span className="mt-2 text-lg font-medium capitalize">{type}</span>
                                 </button>
                             ))}
                         </div>
@@ -266,7 +304,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
 
                     {/* Goal Mode Selector */}
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             📋 Goal Mode
                         </label>
                         <div className="grid grid-cols-2 gap-3">
@@ -278,7 +316,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                     }`}
                             >
                                 <p className="font-semibold">🎯 Fixed Goal</p>
-                                <p className="text-base text-gray-500 mt-1">Initial → Target value</p>
+                                <p className="text-lg text-gray-500 mt-1">Initial → Target value</p>
                             </button>
                             <button
                                 onClick={() => setGoalMode('range')}
@@ -288,10 +326,10 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                     }`}
                             >
                                 <p className="font-semibold">📊 Range Goal</p>
-                                <p className="text-base text-gray-500 mt-1">Stay within Min-Max</p>
+                                <p className="text-lg text-gray-500 mt-1">Stay within Min-Max</p>
                             </button>
                         </div>
-                        <p className="text-base text-gray-500 mt-2">
+                        <p className="text-lg text-gray-500 mt-2">
                             {goalMode === 'fixed'
                                 ? '💡 For normal goals, enter Initial + Target value.'
                                 : '💡 For balance goals (like blood sugar), enter Min/Max range.'}
@@ -300,13 +338,13 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
 
                     {errors.general && (
                         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                            <p className="text-base text-red-600">{errors.general}</p>
+                            <p className="text-lg text-red-600">{errors.general}</p>
                         </div>
                     )}
 
                     {/* Initial Value - shown for fixed mode or optionally for range */}
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             📍 Initial Value {goalMode === 'fixed' ? '*' : '(Optional)'}
                         </label>
                         <div className="flex items-center space-x-3">
@@ -326,9 +364,9 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                             </span>
                         </div>
                         {errors.initialValue && (
-                            <p className="text-base text-red-500 mt-1">{errors.initialValue}</p>
+                            <p className="text-lg text-red-500 mt-1">{errors.initialValue}</p>
                         )}
-                        <p className="text-base text-gray-500 mt-1">
+                        <p className="text-lg text-gray-500 mt-1">
                             Your starting point for this goal
                         </p>
                     </div>
@@ -336,7 +374,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                     {/* Target Value - for fixed mode */}
                     {goalMode === 'fixed' && (
                         <div>
-                            <label className="block text-base font-semibold text-gray-700 mb-2">
+                            <label className="block text-lg font-semibold text-gray-700 mb-2">
                                 🎯 Target Value (Optional)
                             </label>
                             <div className="flex items-center space-x-3">
@@ -356,9 +394,9 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                 </span>
                             </div>
                             {errors.targetValue && (
-                                <p className="text-base text-red-500 mt-1">{errors.targetValue}</p>
+                                <p className="text-lg text-red-500 mt-1">{errors.targetValue}</p>
                             )}
-                            <p className="text-base text-gray-500 mt-1">
+                            <p className="text-lg text-gray-500 mt-1">
                                 Leave empty if you just want to track without a specific target
                             </p>
                         </div>
@@ -368,7 +406,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                     {goalMode === 'range' && (
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     📉 Min Value (Optional)
                                 </label>
                                 <div className="flex items-center space-x-3">
@@ -388,11 +426,11 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                     </span>
                                 </div>
                                 {errors.minValue && (
-                                    <p className="text-base text-red-500 mt-1">{errors.minValue}</p>
+                                    <p className="text-lg text-red-500 mt-1">{errors.minValue}</p>
                                 )}
                             </div>
                             <div>
-                                <label className="block text-base font-semibold text-gray-700 mb-2">
+                                <label className="block text-lg font-semibold text-gray-700 mb-2">
                                     📈 Max Value (Optional)
                                 </label>
                                 <div className="flex items-center space-x-3">
@@ -412,10 +450,10 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                     </span>
                                 </div>
                                 {errors.maxValue && (
-                                    <p className="text-base text-red-500 mt-1">{errors.maxValue}</p>
+                                    <p className="text-lg text-red-500 mt-1">{errors.maxValue}</p>
                                 )}
                             </div>
-                            <p className="text-base text-gray-500">
+                            <p className="text-lg text-gray-500">
                                 At least one (min or max) is required for range goals
                             </p>
                         </div>
@@ -423,7 +461,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
 
                     {/* Tracking Frequency */}
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             🔄 Tracking Frequency
                         </label>
                         <div className="grid grid-cols-3 gap-3">
@@ -436,17 +474,17 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                         : 'border-gray-200 hover:border-[#00a896]/50'
                                         }`}
                                 >
-                                    <span className="text-base font-medium capitalize">{freq}</span>
+                                    <span className="text-lg font-medium capitalize">{freq}</span>
                                 </button>
                             ))}
                         </div>
-                        <p className="text-base text-gray-500 mt-1">
+                        <p className="text-lg text-gray-500 mt-1">
                             How often you want to track this metric
                         </p>
                     </div>
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             <Calendar className="w-4 h-4 mr-2 inline" />
                             Target Date (Optional)
                         </label>
@@ -457,13 +495,13 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                             min={minDateStr}
                             className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896]"
                         />
-                        <p className="text-base text-gray-500 mt-1">
+                        <p className="text-lg text-gray-500 mt-1">
                             Leave empty to track progress without a deadline
                         </p>
                     </div>
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             📝 Notes (Optional)
                         </label>
                         <textarea
@@ -476,10 +514,47 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                         />
                     </div>
 
+                    {/* Google Calendar Sync Toggle - Only for weekly goals */}
+                    {isWeeklyGoal && (
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <CalendarCheck className="w-5 h-5 text-blue-600" />
+                                    <div>
+                                        <p className="font-semibold text-gray-800">Sync to Google Calendar</p>
+                                        <p className="text-sm text-gray-600">
+                                            {isCalendarConnected
+                                                ? 'Create a recurring weekly reminder'
+                                                : 'Connect Google Calendar in Settings to enable'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={syncToCalendar}
+                                        onChange={(e) => setSyncToCalendar(e.target.checked)}
+                                        disabled={!isCalendarConnected}
+                                        className="sr-only peer"
+                                    />
+                                    <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${isCalendarConnected
+                                            ? 'bg-gray-300 peer-checked:bg-[#00a896]'
+                                            : 'bg-gray-200 cursor-not-allowed'
+                                        }`}></div>
+                                </label>
+                            </div>
+                            {!isCalendarConnected && (
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 Go to <a href="/calendar" className="underline font-medium">Calendar</a> page to connect your Google Calendar
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     {/* Preview */}
                     <div className="bg-gradient-to-r from-[#f0f3bd]/50 to-[#02c39a]/10 rounded-lg p-4 border border-[#02c39a]/30">
                         <h4 className="font-semibold text-[#028090] mb-2">📈 Your Goal Preview</h4>
-                        <p className="text-base text-gray-700">
+                        <p className="text-lg text-gray-700">
                             {goalMode === 'fixed' ? (
                                 <>
                                     <span className="font-semibold capitalize">{formData.goalType}</span> your{' '}
@@ -509,11 +584,11 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                 <span className="text-gray-500"> (no deadline)</span>
                             )}
                             <br />
-                            <span className="text-base text-gray-500">Tracking: {formData.trackingFrequency}</span>
+                            <span className="text-lg text-gray-500">Tracking: {formData.trackingFrequency}</span>
                         </p>
                     </div>
 
-                    <div className="flex space-x-3 pt-4 border-t">
+                    <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t">
                         <button
                             onClick={onClose}
                             className="flex-1 px-4 py-3 border-2 border-gray-300 cursor-pointer rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
@@ -523,7 +598,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                         <button
                             onClick={handleSubmit}
                             disabled={loading}
-                            className="flex-1 cursor-pointer bg-gradient-to-r from-[#00a896] to-[#028090] text-white py-3 px-6 rounded-lg hover:from-[#028090] hover:to-[#026f80] flex items-center justify-center font-medium transition-colors shadow-md disabled:opacity-50"
+                            className="flex-1 cursor-pointer bg-gradient-to-r from-[#00a896] to-[#028090] text-white py-3 px-4 sm:px-6 rounded-lg hover:from-[#028090] hover:to-[#026f80] flex items-center justify-center font-medium transition-colors shadow-md disabled:opacity-50"
                         >
                             {loading ? (
                                 <>
@@ -603,7 +678,7 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-gray-900 leading-tight">{goal.parameter}</h3>
-                            <span className={`inline-flex items-center px-2 py-0.5 mt-1 rounded-full text-base font-medium border ${getStatusColor(goal.status)}`}>
+                            <span className={`inline-flex items-center px-2 py-0.5 mt-1 rounded-full text-lg font-medium border ${getStatusColor(goal.status)}`}>
                                 {goal.status === 'achieved' && <Trophy className="w-3 h-3 mr-1" />}
                                 {goal.status.replace('-', ' ').toUpperCase()}
                             </span>
@@ -672,23 +747,23 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                         {/* Show Initial Value */}
                         {goal.initialValue !== undefined && goal.initialValue !== null && (
                             <div className="flex justify-between items-center">
-                                <span className="text-base text-gray-500">Initial Value</span>
-                                <span className="text-base font-medium text-gray-600">
+                                <span className="text-lg text-gray-500">Initial Value</span>
+                                <span className="text-lg font-medium text-gray-600">
                                     {goal.initialValue} {goal.unit}
                                 </span>
                             </div>
                         )}
                         <div className="flex justify-between items-center">
-                            <span className="text-base text-gray-500">Current Value</span>
-                            <span className="text-base font-bold text-[#028090]">
+                            <span className="text-lg text-gray-500">Current Value</span>
+                            <span className="text-lg font-bold text-[#028090]">
                                 {goal.currentValue !== null && goal.currentValue !== undefined ? `${goal.currentValue} ${goal.unit}` : '—'}
                             </span>
                         </div>
                         {/* Show Target or Range */}
                         {goal.goalType === 'range' || (goal.minValue !== null || goal.maxValue !== null) ? (
                             <div className="flex justify-between items-center">
-                                <span className="text-base text-gray-500">Target Range</span>
-                                <span className="text-base font-bold text-gray-900">
+                                <span className="text-lg text-gray-500">Target Range</span>
+                                <span className="text-lg font-bold text-gray-900">
                                     {goal.minValue !== null && goal.maxValue !== null
                                         ? `${goal.minValue} - ${goal.maxValue} ${goal.unit}`
                                         : goal.minValue !== null
@@ -699,12 +774,12 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                             </div>
                         ) : goal.targetValue !== null && goal.targetValue !== undefined ? (
                             <div className="flex justify-between items-center">
-                                <span className="text-base text-gray-500">Target Value</span>
+                                <span className="text-lg text-gray-500">Target Value</span>
                                 <span className="text-lg font-bold text-gray-900">{goal.targetValue} {goal.unit}</span>
                             </div>
                         ) : null}
                         <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                            <span className="text-base text-gray-500">Goal Type</span>
+                            <span className="text-lg text-gray-500">Goal Type</span>
                             <span className="font-medium text-gray-700 capitalize flex items-center gap-1">
                                 {goal.goalType === 'decrease' && <TrendingDown className="w-3 h-3 text-red-500" />}
                                 {goal.goalType === 'increase' && <TrendingUp className="w-3 h-3 text-green-500" />}
@@ -716,8 +791,8 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                         {/* Show Tracking Frequency */}
                         {goal.trackingFrequency && goal.trackingFrequency !== 'daily' && (
                             <div className="flex justify-between items-center">
-                                <span className="text-base text-gray-500">Tracking</span>
-                                <span className="text-base font-medium text-gray-600 capitalize">{goal.trackingFrequency}</span>
+                                <span className="text-lg text-gray-500">Tracking</span>
+                                <span className="text-lg font-medium text-gray-600 capitalize">{goal.trackingFrequency}</span>
                             </div>
                         )}
                     </div>
@@ -726,7 +801,7 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                 {/* Timeline - Only show if deadline exists */}
                 {hasDeadline ? (
                     <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                        <div className="flex items-center justify-between text-base text-gray-600 mb-2">
+                        <div className="flex items-center justify-between text-lg text-gray-600 mb-2">
                             <span>Start: {new Date(goal.startDate || goal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                             <span className={daysRemaining > 0 ? 'text-[#028090] font-medium' : 'text-red-500 font-medium'}>
                                 {daysRemaining > 0 ? `${daysRemaining} days left` : 'Overdue'}
@@ -747,7 +822,7 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                     </div>
                 ) : (
                     <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                        <div className="flex items-center justify-between text-base text-gray-600">
+                        <div className="flex items-center justify-between text-lg text-gray-600">
                             <span>Started: {new Date(goal.startDate || goal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                             <span className="text-[#028090] font-medium">No deadline</span>
                         </div>
@@ -757,7 +832,7 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                 {/* Milestones Preview and View Details Button */}
                 <button
                     onClick={() => onView(goal)}
-                    className="w-full py-2.5 text-base font-semibold bg-gray-100 text-[#028090] hover:bg-[#f0f3bd]/80 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                    className="w-full py-2.5 text-lg font-semibold bg-gray-100 text-[#028090] hover:bg-[#f0f3bd]/80 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                 >
                     <Eye className="w-4 h-4" />
                     View Details & Analysis ({goal.milestones ? goal.milestones.length : 0} Entries)
@@ -884,22 +959,22 @@ const TrackProgress = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#00a896] to-[#028090] rounded-2xl shadow-lg p-6 text-white">
-                <div className="flex items-center justify-between">
+            <div className="bg-gradient-to-r from-[#00a896] to-[#028090] rounded-2xl shadow-lg p-4 sm:p-6 text-white">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold flex items-center gap-3">
+                        <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-3">
                             <div className="p-2 bg-white/20 rounded-xl">
-                                <Target className="w-8 h-8" />
+                                <Target className="w-6 h-6 sm:w-8 sm:h-8" />
                             </div>
-                            Track Your Progress
+                            <span>Track Your<br className="sm:hidden" /> Progress</span>
                         </h1>
-                        <p className="text-white/80 mt-2">
+                        <p className="text-white/80 mt-2 text-lg sm:text-lg">
                             Set health goals, track milestones, and get AI-powered insights
                         </p>
                     </div>
                     <button
                         onClick={() => setShowGoalModal(true)}
-                        className="flex cursor-pointer items-center gap-2 px-6 py-3 bg-white text-[#028090] rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg"
+                        className="flex cursor-pointer items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-[#028090] rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg text-lg sm:text-lg w-full sm:w-auto"
                     >
                         <Plus className="w-5 h-5" />
                         Set New Goal
@@ -909,63 +984,63 @@ const TrackProgress = () => {
 
             {/* Stats Cards */}
             {stats && (
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                    <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-base text-gray-600 font-medium">Total Goals</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+                                <p className="text-lg sm:text-lg text-gray-600 font-medium">Total Goals</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.total}</p>
                             </div>
-                            <div className="p-3 bg-[#f0f3bd] rounded-xl">
-                                <Target className="w-6 h-6 text-[#028090]" />
+                            <div className="p-2 sm:p-3 bg-[#f0f3bd] rounded-xl">
+                                <Target className="w-5 h-5 sm:w-6 sm:h-6 text-[#028090]" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-base text-gray-600 font-medium">In Progress</p>
-                                <p className="text-3xl font-bold text-[#00a896]">{stats.inProgress}</p>
+                                <p className="text-lg sm:text-lg text-gray-600 font-medium">In Progress</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-[#00a896]">{stats.inProgress}</p>
                             </div>
-                            <div className="p-3 bg-[#f0f3bd] rounded-xl">
-                                <Zap className="w-6 h-6 text-[#028090]" />
+                            <div className="p-2 sm:p-3 bg-[#f0f3bd] rounded-xl">
+                                <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-[#028090]" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-base text-gray-600 font-medium">Achieved</p>
-                                <p className="text-3xl font-bold text-green-600">{stats.achieved}</p>
+                                <p className="text-lg sm:text-lg text-gray-600 font-medium">Achieved</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-green-600">{stats.achieved}</p>
                             </div>
-                            <div className="p-3 bg-green-100 rounded-xl">
-                                <Trophy className="w-6 h-6 text-green-600" />
+                            <div className="p-2 sm:p-3 bg-green-100 rounded-xl">
+                                <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-base text-gray-600 font-medium">Expired</p>
-                                <p className="text-3xl font-bold text-gray-500">{stats.expired}</p>
+                                <p className="text-lg sm:text-lg text-gray-600 font-medium">Expired</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-gray-500">{stats.expired}</p>
                             </div>
-                            <div className="p-3 bg-gray-100 rounded-xl">
-                                <Clock className="w-6 h-6 text-gray-500" />
+                            <div className="p-2 sm:p-3 bg-gray-100 rounded-xl">
+                                <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="col-span-2 sm:col-span-1 bg-white rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-base text-gray-600 font-medium">Avg Progress</p>
-                                <p className="text-3xl font-bold text-[#028090]">{stats.averageProgress}%</p>
+                                <p className="text-lg sm:text-lg text-gray-600 font-medium">Avg Progress</p>
+                                <p className="text-2xl sm:text-3xl font-bold text-[#028090]">{stats.averageProgress}%</p>
                             </div>
-                            <div className="p-3 bg-[#f0f3bd] rounded-xl">
-                                <BarChart3 className="w-6 h-6 text-[#028090]" />
+                            <div className="p-2 sm:p-3 bg-[#f0f3bd] rounded-xl">
+                                <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-[#028090]" />
                             </div>
                         </div>
                     </div>
@@ -973,21 +1048,23 @@ const TrackProgress = () => {
             )}
 
             {/* Filters */}
-            <div className="flex items-center gap-3 bg-white rounded-xl p-3 border border-gray-200 shadow-sm">
-                <Filter className="w-5 h-5 text-gray-500" />
-                <span className="text-base font-medium text-gray-700">Filter:</span>
-                {['all', 'in-progress', 'achieved', 'expired'].map(status => (
-                    <button
-                        key={status}
-                        onClick={() => handleFilterChange(status)}
-                        className={`px-4 py-2 cursor-pointer rounded-lg text-base font-medium transition-all ${filterStatus === status
-                            ? 'bg-gradient-to-r from-[#00a896] to-[#028090] text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                    >
-                        {status === 'all' ? 'All Goals' : status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </button>
-                ))}
+            <div className="flex items-center gap-2 sm:gap-3 bg-white rounded-xl p-2 sm:p-3 border border-gray-200 shadow-sm overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <Filter className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                <span className="text-lg sm:text-lg font-medium text-gray-700 flex-shrink-0">Filter:</span>
+                <div className="flex gap-2 flex-shrink-0">
+                    {['all', 'in-progress', 'achieved', 'expired'].map(status => (
+                        <button
+                            key={status}
+                            onClick={() => handleFilterChange(status)}
+                            className={`px-3 sm:px-4 py-1.5 sm:py-2 cursor-pointer rounded-lg text-lg sm:text-lg font-medium transition-all whitespace-nowrap ${filterStatus === status
+                                ? 'bg-gradient-to-r from-[#00a896] to-[#028090] text-white shadow-md'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                        >
+                            {status === 'all' ? 'All Goals' : status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Goals Grid */}

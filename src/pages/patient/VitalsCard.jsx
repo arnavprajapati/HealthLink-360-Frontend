@@ -5,7 +5,7 @@ const StatBox = ({ icon, label, value }) => (
     <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex items-center space-x-3">
         {icon}
         <div>
-            <p className="text-base text-gray-600">{label}</p>
+            <p className="text-lg text-gray-600">{label}</p>
             <p className="text-lg font-bold text-gray-900">{value}</p>
         </div>
     </div>
@@ -58,7 +58,7 @@ const VitalsCard = ({ vitals, loading, onUpdateClick, formatDate }) => {
                 </h3>
                 <button
                     onClick={onUpdateClick}
-                    className="text-base font-medium text-[#00a896] hover:text-[#028090] flex items-center transition-colors cursor-pointer"
+                    className="text-lg font-medium text-[#00a896] hover:text-[#028090] flex items-center transition-colors cursor-pointer"
                     title={`${buttonLabel} Vitals`}
                 >
                     <Plus className="w-4 h-4 mr-1" /> {buttonLabel}
@@ -81,18 +81,18 @@ const VitalsCard = ({ vitals, loading, onUpdateClick, formatDate }) => {
                     <div className="flex items-center space-x-3">
                         <Activity className="w-6 h-6 text-[#028090]" />
                         <div>
-                            <p className="text-base text-gray-600">BMI</p>
+                            <p className="text-lg text-gray-600">BMI</p>
                             <p className={`text-xl font-bold ${getBmiColor(bmiValue)}`}>{bmiDisplay}</p>
                         </div>
                     </div>
-                    <div className="text-base text-gray-500 text-right">
+                    <div className="text-lg text-gray-500 text-right">
                         {getBmiStatus(bmiValue)}
                     </div>
                 </div>
             </div>
 
             <div className="mb-4">
-                <p className="text-base text-gray-600">
+                <p className="text-lg text-gray-600">
                     Recorded on: <span className="font-semibold text-gray-800">
                         {recordedDate}
                     </span>
@@ -100,7 +100,7 @@ const VitalsCard = ({ vitals, loading, onUpdateClick, formatDate }) => {
             </div>
 
             {smokingStatus && (
-                <div className={`p-3 rounded-lg text-white font-medium text-base ${smokingStatus.toLowerCase().includes('smoker') ? 'bg-red-600' : 'bg-[#00a896]'}`}>
+                <div className={`p-3 rounded-lg text-white font-medium text-lg ${smokingStatus.toLowerCase().includes('smoker') ? 'bg-red-600' : 'bg-[#00a896]'}`}>
                     🚬 Smoking Status: {smokingStatus}
                 </div>
             )}

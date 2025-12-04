@@ -133,7 +133,7 @@ const TrendsDashboard = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-2">
+                        <label className="block text-lg font-medium text-gray-700 mb-2">
                             Parameter
                         </label>
                         <select
@@ -148,7 +148,7 @@ const TrendsDashboard = () => {
                     </div>
 
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-2">
+                        <label className="block text-lg font-medium text-gray-700 mb-2">
                             Time Range
                         </label>
                         <select
@@ -167,31 +167,31 @@ const TrendsDashboard = () => {
             {/* Statistics Cards */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                    <p className="text-base text-gray-600 mb-1">Latest</p>
+                    <p className="text-lg text-gray-600 mb-1">Latest</p>
                     <p className="text-2xl font-bold text-[#00a896]">{trendData.stats.latest}</p>
-                    <p className="text-base text-gray-500 mt-1">mg/dL</p>
+                    <p className="text-lg text-gray-500 mt-1">mg/dL</p>
                 </div>
 
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                    <p className="text-base text-gray-600 mb-1">Average</p>
+                    <p className="text-lg text-gray-600 mb-1">Average</p>
                     <p className="text-2xl font-bold text-gray-900">{trendData.stats.average}</p>
-                    <p className="text-base text-gray-500 mt-1">mg/dL</p>
+                    <p className="text-lg text-gray-500 mt-1">mg/dL</p>
                 </div>
 
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                    <p className="text-base text-gray-600 mb-1">Min</p>
+                    <p className="text-lg text-gray-600 mb-1">Min</p>
                     <p className="text-2xl font-bold text-green-600">{trendData.stats.min}</p>
-                    <p className="text-base text-gray-500 mt-1">mg/dL</p>
+                    <p className="text-lg text-gray-500 mt-1">mg/dL</p>
                 </div>
 
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                    <p className="text-base text-gray-600 mb-1">Max</p>
+                    <p className="text-lg text-gray-600 mb-1">Max</p>
                     <p className="text-2xl font-bold text-red-600">{trendData.stats.max}</p>
-                    <p className="text-base text-gray-500 mt-1">mg/dL</p>
+                    <p className="text-lg text-gray-500 mt-1">mg/dL</p>
                 </div>
 
                 <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                    <p className="text-base text-gray-600 mb-1">Change</p>
+                    <p className="text-lg text-gray-600 mb-1">Change</p>
                     <div className="flex items-center">
                         {getTrendIcon(trendData.stats.trend)}
                         <p className={`text-2xl font-bold ml-2 ${parseFloat(trendData.stats.changePercentage) < 0 ? 'text-green-600' : 'text-red-600'
@@ -287,7 +287,7 @@ const TrendsDashboard = () => {
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                     <p className="font-semibold mb-1">{alert.message}</p>
-                                    <p className="text-base">{alert.recommendation}</p>
+                                    <p className="text-lg">{alert.recommendation}</p>
                                 </div>
                             </div>
                         </div>
@@ -309,11 +309,11 @@ const TrendsDashboard = () => {
                                 <div className="flex items-center justify-between mb-3">
                                     <div>
                                         <h4 className="font-semibold text-gray-900">{goal.parameter}</h4>
-                                        <p className="text-base text-gray-600">
+                                        <p className="text-lg text-gray-600">
                                             Target: {goal.targetValue} {goal.unit} by {new Date(goal.deadline).toLocaleDateString()}
                                         </p>
                                     </div>
-                                    <span className={`px-3 py-1 rounded-full text-base font-medium ${goal.status === 'achieved' ? 'bg-green-100 text-green-800' :
+                                    <span className={`px-3 py-1 rounded-full text-lg font-medium ${goal.status === 'achieved' ? 'bg-green-100 text-green-800' :
                                         goal.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
                                             'bg-gray-100 text-gray-800'
                                         }`}>
@@ -322,7 +322,7 @@ const TrendsDashboard = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <div className="flex items-center justify-between text-base">
+                                    <div className="flex items-center justify-between text-lg">
                                         <span className="text-gray-600">Progress</span>
                                         <span className="font-semibold text-gray-900">{goal.progress}%</span>
                                     </div>
@@ -332,7 +332,7 @@ const TrendsDashboard = () => {
                                             style={{ width: `${goal.progress}%` }}
                                         />
                                     </div>
-                                    <div className="flex items-center justify-between text-base text-gray-600">
+                                    <div className="flex items-center justify-between text-lg text-gray-600">
                                         <span>Current: {goal.currentValue} {goal.unit}</span>
                                         <span>Target: {goal.targetValue} {goal.unit}</span>
                                     </div>

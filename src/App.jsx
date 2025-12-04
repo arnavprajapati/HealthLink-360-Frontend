@@ -19,6 +19,7 @@ import PublicRoute from "./components/PublicRoute";
 import HomePage from "./pages/common/HomePage";
 import Layout from "./components/Layout";
 import TrackProgress from "./pages/patient/TrackProgress";
+import CalendarPage from "./pages/patient/CalendarPage";
 
 function App() {
   useAuthListener();
@@ -138,6 +139,17 @@ function App() {
                 <GoalsProvider>
                   <TrackProgress />
                 </GoalsProvider>
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/calendar"
+          element={
+            <PrivateRoute allowedRoles={['patient']}>
+              <Layout>
+                <CalendarPage />
               </Layout>
             </PrivateRoute>
           }
