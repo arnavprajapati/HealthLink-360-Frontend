@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard,
     Calendar,
+    CalendarCheck,
     Users,
     FileText,
     Stethoscope,
@@ -19,6 +20,7 @@ import {
 const patientNavigation = [
     { name: 'Dashboard', href: '/patient-dashboard', icon: LayoutDashboard },
     { name: 'Track Progress', href: '/patient-track-progress', icon: Target },
+    { name: 'Calendar', href: '/calendar', icon: CalendarCheck },
     { name: 'Appointments', href: '/patient-appointments', icon: Calendar },
     { name: 'Reports', href: '/patient-reports', icon: FileText },
     { name: 'Messages', href: '/patient-messages', icon: MessageSquare },

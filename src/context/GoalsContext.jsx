@@ -5,6 +5,7 @@ const GoalsContext = createContext();
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const GOALS_API_URL = `${BASE_URL}/api/auth/goals`;
+const GOOGLE_API_URL = `${BASE_URL}/api/google`;
 
 axios.defaults.withCredentials = true;
 
@@ -14,6 +15,41 @@ export const GoalsProvider = ({ children }) => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [googleCalendarConnected, setGoogleCalendarConnected] = useState(false);
+
+    // Check Google Calendar connection status
+    const checkGoogleCalendarStatus = useCallback(async () => {
+        try {
+            const response = await axios.get(`${GOOGLE_API_URL}/status`);
+            setGoogleCalendarConnected(response.data.connected);
+            return response.data.connected;
+        } catch (err) {
+            console.error('Failed to check Google Calendar status:', err);
+            return false;
+        }
+    }, []);
+
+    // Create Google Calendar event
+    const createGoogleCalendarEvent = useCallback(async (eventData) => {
+        try {
+            const response = await axios.post(`${GOOGLE_API_URL}/create-event`, eventData);
+            return response.data;
+        } catch (err) {
+            console.error('Failed to create Google Calendar event:', err);
+            throw new Error(err.response?.data?.message || 'Failed to create calendar event');
+        }
+    }, []);
+
+    // Delete Google Calendar event
+    const deleteGoogleCalendarEvent = useCallback(async (eventId) => {
+        try {
+            const response = await axios.post(`${GOOGLE_API_URL}/delete-event`, { eventId });
+            return response.data;
+        } catch (err) {
+            console.error('Failed to delete Google Calendar event:', err);
+            throw new Error(err.response?.data?.message || 'Failed to delete calendar event');
+        }
+    }, []);
 
     // Create new goal
     const createGoal = useCallback(async (goalData) => {
@@ -21,8 +57,9 @@ export const GoalsProvider = ({ children }) => {
         setError(null);
         try {
             const response = await axios.post(GOALS_API_URL, goalData);
-            setGoals(prev => [response.data.data, ...prev]);
-            return response.data.data;
+            const newGoal = response.data.data;
+            setGoals(prev => [newGoal, ...prev]);
+            return newGoal;
         } catch (err) {
             const errorMsg = err.response?.data?.message || "Failed to create goal";
             setError(errorMsg);
@@ -219,6 +256,7 @@ export const GoalsProvider = ({ children }) => {
         stats,
         loading,
         error,
+        googleCalendarConnected,
         createGoal,
         getGoals,
         getGoalById,
@@ -231,7 +269,10 @@ export const GoalsProvider = ({ children }) => {
         editMilestone,
         deleteMilestone,
         analyzeGoal,
-        clearError
+        clearError,
+        checkGoogleCalendarStatus,
+        createGoogleCalendarEvent,
+        deleteGoogleCalendarEvent
     };
 
     return (
