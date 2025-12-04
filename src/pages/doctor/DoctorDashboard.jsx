@@ -1,58 +1,38 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { getIncomingRequests, getLinkedPatients, respondToRequest, getDoctorAppointments } from '../../app/reducers/connectionSlice';
 import {
-    Users,
-    Calendar,
-    Activity,
-    TrendingUp,
     Clock,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    UserPlus
 } from 'lucide-react';
 
 const DoctorDashboard = () => {
     const { user } = useSelector((state) => state.auth);
+    const { incomingRequests, linkedPatients, appointments, loading } = useSelector((state) => state.connection);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const stats = [
-        {
-            name: 'Total Patients',
-            value: '124',
-            change: '+12%',
-            changeType: 'positive',
-            icon: Users,
-            color: 'bg-[#00a896]'
-        },
-        {
-            name: 'Today\'s Appointments',
-            value: '8',
-            change: '3 pending',
-            changeType: 'neutral',
-            icon: Calendar,
-            color: 'bg-green-500'
-        },
-        {
-            name: 'Active Cases',
-            value: '42',
-            change: '+5 this week',
-            changeType: 'positive',
-            icon: Activity,
-            color: 'bg-purple-500'
-        },
-        {
-            name: 'Consultations',
-            value: '156',
-            change: '+23% vs last month',
-            changeType: 'positive',
-            icon: TrendingUp,
-            color: 'bg-orange-500'
+    useEffect(() => {
+        dispatch(getIncomingRequests());
+        dispatch(getLinkedPatients());
+        dispatch(getDoctorAppointments());
+
+        // Onboarding Check: If profile is incomplete, redirect to profile page
+        if (user && (!user.doctorProfile || !user.doctorProfile.speciality || !user.doctorProfile.clinicName)) {
+            navigate('/doctor-profile');
         }
-    ];
+    }, [dispatch, user, navigate]);
 
-    const upcomingAppointments = [
-        { id: 1, patient: 'John Doe', time: '10:00 AM', type: 'Follow-up', status: 'confirmed' },
-        { id: 2, patient: 'Jane Smith', time: '11:30 AM', type: 'Consultation', status: 'confirmed' },
-        { id: 3, patient: 'Mike Johnson', time: '2:00 PM', type: 'Check-up', status: 'pending' },
-    ];
+    const handleRespond = async (requestId, status) => {
+        await dispatch(respondToRequest({ requestId, status }));
+        dispatch(getIncomingRequests());
+        if (status === 'accepted') {
+            dispatch(getLinkedPatients());
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -124,23 +104,47 @@ const DoctorDashboard = () => {
                             </div>
                         ))}
                     </div>
-                </div>
+                )}
 
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-                    <div className="space-y-3">
-                        <button className="w-full flex items-center justify-center px-4 py-3 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors">
-                            <Users className="w-5 h-5 mr-2" />
-                            Add New Patient
-                        </button>
-                        <button className="w-full flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            <Calendar className="w-5 h-5 mr-2" />
-                            Schedule Appointment
-                        </button>
-                        <button className="w-full flex items-center justify-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                            <Activity className="w-5 h-5 mr-2" />
-                            View Reports
-                        </button>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Today's Appointments */}
+                    <div className="bg-white rounded-lg shadow-sm p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-gray-900">Today's Appointments</h2>
+                            <button className="text-base text-[#00a896] hover:text-[#028090] font-medium">
+                                View All
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {appointments && appointments.length > 0 ? (
+                                appointments.slice(0, 5).map((appointment) => (
+                                    <div
+                                        key={appointment._id}
+                                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                                    >
+                                        <div className="flex items-center space-x-4">
+                                            <div className="bg-[#f0f3bd] p-2 rounded-full">
+                                                <Clock className="w-5 h-5 text-[#028090]" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-gray-900">{appointment.patient.displayName}</p>
+                                                <p className="text-base text-gray-600">{appointment.type}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                            <span className="text-base font-medium text-gray-700">{appointment.time}</span>
+                                            {appointment.status === 'confirmed' || appointment.status === 'scheduled' ? (
+                                                <CheckCircle className="w-5 h-5 text-green-500" />
+                                            ) : (
+                                                <AlertCircle className="w-5 h-5 text-yellow-500" />
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 text-center py-4">No upcoming appointments.</p>
+                            )}
+                        </div>
                     </div>
 
                     <div className="mt-6 pt-6 border-t border-gray-200">
@@ -153,9 +157,7 @@ const DoctorDashboard = () => {
                                     className="w-12 h-12 rounded-full border-2 border-green-200"
                                 />
                             ) : (
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-lg">
-                                    {user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'D'}
-                                </div>
+                                <p className="text-gray-500 text-center py-4">No patients linked yet.</p>
                             )}
                             <div>
                                 <p className="font-semibold text-gray-900">

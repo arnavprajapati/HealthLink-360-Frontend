@@ -29,12 +29,7 @@ const patientNavigation = [
 
 const doctorNavigation = [
     { name: 'Dashboard', href: '/doctor-dashboard', icon: LayoutDashboard },
-    { name: 'Patients', href: '/doctor-patients', icon: Users },
-    { name: 'Appointments', href: '/doctor-appointments', icon: Calendar },
-    { name: 'Consultations', href: '/doctor-consultations', icon: Stethoscope },
-    { name: 'Reports', href: '/doctor-reports', icon: ClipboardList },
-    { name: 'Messages', href: '/doctor-messages', icon: MessageSquare },
-    { name: 'Settings', href: '/doctor-settings', icon: Settings },
+    { name: 'Profile', href: '/doctor-profile', icon: Users }, // Using Users icon for Profile
 ];
 
 const NavItem = ({ name, href, icon: Icon, active, onClick }) => {

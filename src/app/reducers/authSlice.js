@@ -3,7 +3,7 @@ import axios from "axios";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase/firebaseConfig";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 const API_URL = `${BASE_URL}/api/auth`;
 
 axios.defaults.withCredentials = true;
@@ -116,6 +116,22 @@ export const getCurrentUser = createAsyncThunk(
     }
 );
 
+
+
+export const updateUserProfile = createAsyncThunk(
+    "auth/updateUserProfile",
+    async (profileData, { rejectWithValue }) => {
+        try {
+            const response = await axios.put(`${API_URL}/profile`, profileData);
+            return response.data.user;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to update profile"
+            );
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: "auth",
     initialState: {
@@ -203,6 +219,19 @@ const authSlice = createSlice({
                 state.isAuthChecking = false;
                 state.user = null;
                 state.error = null
+            })
+            .addCase(updateUserProfile.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+                state.error = null;
+            })
+            .addCase(updateUserProfile.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });

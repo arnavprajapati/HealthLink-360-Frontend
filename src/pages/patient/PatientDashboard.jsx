@@ -14,13 +14,17 @@ import EmptyState from './EmptyState';
 
 import GoalSettingModal from './GoalSettingModal';
 import TrendsDashboard from './TrendsDashboard';
+import ConnectDoctorModal from './ConnectDoctorModal';
+import { UserPlus } from 'lucide-react';
 
 const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
     const [selectedLog, setSelectedLog] = useState(null);
     const [selectedFullReport, setSelectedFullReport] = useState(null);
     const [currentVitals, setCurrentVitals] = useState(null);
     const [vitalsLoading, setVitalsLoading] = useState(true);
+
     const [showVitalsModal, setShowVitalsModal] = useState(false);
+    const [showConnectModal, setShowConnectModal] = useState(false);
 
     const { logs, loading, getHealthLogs, deleteHealthLog, getCurrentVitals } = useHealth();
     const { user } = useSelector((state) => state.auth);
@@ -127,6 +131,17 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
 
 
                 <AIHealthAssistant />
+
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <button
+                        onClick={() => setShowConnectModal(true)}
+                        className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+                    >
+                        <UserPlus className="w-5 h-5 mr-2" />
+                        Connect with Doctor
+                    </button>
+                </div>
             </div>
 
             {showAddModal && (
@@ -157,6 +172,11 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                     initialVitals={currentVitals}
                 />
             )}
+
+            <ConnectDoctorModal
+                isOpen={showConnectModal}
+                onClose={() => setShowConnectModal(false)}
+            />
         </div>
     );
 };
