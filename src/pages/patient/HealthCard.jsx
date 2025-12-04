@@ -141,16 +141,16 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                 ) : (
                     <div className="space-y-4">
                         {isInvalidDocument() ? (
-                            <div className="text-center py-2">
-                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600 border border-gray-300">
+                            <div className="text-center py-8">
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-base font-medium bg-gray-100 text-gray-600 border border-gray-300">
                                     ⚠️ Non-medical document
                                 </span>
-                                <p className="text-sm text-gray-500 mt-2">This file doesn't contain medical test data</p>
+                                <p className="text-base text-gray-500 mt-2">This file doesn't contain medical test data</p>
                             </div>
                         ) : log.aiAnalysis?.summary ? (
                             <div className="pt-3 border-t border-gray-100">
                                 <h4 className="text-base font-semibold text-gray-700 mb-2">📋 Summary</h4>
-                                <p className="text-sm text-gray-600 line-clamp-3">{log.aiAnalysis.summary}</p>
+                                <p className="text-base text-gray-600 line-clamp-3">{log.aiAnalysis.summary}</p>
                             </div>
                         ) : (
                             <p className="text-base text-gray-500 text-center py-2">View full report for details</p>
