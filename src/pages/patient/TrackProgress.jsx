@@ -3,13 +3,13 @@ import {
     Target, Plus, TrendingUp, TrendingDown, Activity,
     Calendar, CheckCircle, Clock, AlertCircle, Edit, Trash2,
     Award, BarChart3, Filter, X, Eye, Sparkles, ChevronRight,
-    Zap, Trophy, Flame
+    Zap, Trophy, Flame, CalendarCheck
 } from 'lucide-react';
 import { useGoals } from '../../context/GoalsContext';
 import GoalDetailModal from './GoalDetailModal';
 
 const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
-    const { createGoal, editGoal, loading } = useGoals();
+    const { createGoal, editGoal, loading, checkGoogleCalendarStatus, createGoogleCalendarEvent, googleCalendarConnected } = useGoals();
     const [formData, setFormData] = useState({
         parameter: editingGoal?.parameter || 'Blood Sugar',
         parameterKey: editingGoal?.parameterKey || 'blood_sugar',
@@ -28,6 +28,19 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
     const [goalMode, setGoalMode] = useState(
         editingGoal?.minValue || editingGoal?.maxValue ? 'range' : 'fixed'
     );
+    const [syncToCalendar, setSyncToCalendar] = useState(editingGoal?.syncToGoogleCalendar || false);
+    const [isCalendarConnected, setIsCalendarConnected] = useState(false);
+
+    // Check Google Calendar connection on mount
+    useEffect(() => {
+        const checkCalendar = async () => {
+            const connected = await checkGoogleCalendarStatus();
+            setIsCalendarConnected(connected);
+        };
+        checkCalendar();
+    }, [checkGoogleCalendarStatus]);
+
+    const isWeeklyGoal = formData.trackingFrequency === 'weekly';
 
     const parameters = [
         { name: 'Blood Sugar', key: 'blood_sugar', unit: 'mg/dL', defaultGoal: 'decrease', icon: '🩸' },
@@ -120,6 +133,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                 parameterKey: isCustomParameter ? 'custom' : formData.parameterKey,
                 customParameterName: isCustomParameter ? formData.customParameterName.trim() : null,
                 unit: formData.unit.trim(),
+                syncToGoogleCalendar: syncToCalendar && isWeeklyGoal,
             };
             if (goalMode === 'fixed') {
                 submitData.minValue = '';
@@ -127,11 +141,35 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
             } else if (goalMode === 'range') {
             }
 
+            let savedGoal;
             if (editingGoal) {
-                await editGoal(editingGoal._id, submitData);
+                savedGoal = await editGoal(editingGoal._id, submitData);
             } else {
-                await createGoal(submitData);
+                savedGoal = await createGoal(submitData);
             }
+
+            // Create Google Calendar event if sync is enabled and it's a weekly goal
+            if (syncToCalendar && isWeeklyGoal && isCalendarConnected && savedGoal && !editingGoal?.googleEventId) {
+                try {
+                    const startDate = new Date();
+                    startDate.setHours(9, 0, 0, 0); // 9 AM
+                    const endDate = new Date(startDate);
+                    endDate.setHours(10, 0, 0, 0); // 10 AM
+
+                    await createGoogleCalendarEvent({
+                        title: `Health Goal: ${submitData.parameter}`,
+                        description: `Weekly health goal tracking for ${submitData.parameter}. Target: ${submitData.targetValue || `${submitData.minValue}-${submitData.maxValue}`} ${submitData.unit}`,
+                        startDateTime: startDate.toISOString(),
+                        endDateTime: endDate.toISOString(),
+                        recurrence: 'RRULE:FREQ=WEEKLY',
+                        goalId: savedGoal._id
+                    });
+                } catch (calendarError) {
+                    console.error('Failed to sync with Google Calendar:', calendarError);
+                    // Don't fail the goal creation if calendar sync fails
+                }
+            }
+
             onSuccess();
             onClose();
         } catch (error) {
@@ -475,6 +513,43 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                             placeholder="Why is this goal important to you?"
                         />
                     </div>
+
+                    {/* Google Calendar Sync Toggle - Only for weekly goals */}
+                    {isWeeklyGoal && (
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <CalendarCheck className="w-5 h-5 text-blue-600" />
+                                    <div>
+                                        <p className="font-semibold text-gray-800">Sync to Google Calendar</p>
+                                        <p className="text-sm text-gray-600">
+                                            {isCalendarConnected
+                                                ? 'Create a recurring weekly reminder'
+                                                : 'Connect Google Calendar in Settings to enable'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={syncToCalendar}
+                                        onChange={(e) => setSyncToCalendar(e.target.checked)}
+                                        disabled={!isCalendarConnected}
+                                        className="sr-only peer"
+                                    />
+                                    <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${isCalendarConnected
+                                            ? 'bg-gray-300 peer-checked:bg-[#00a896]'
+                                            : 'bg-gray-200 cursor-not-allowed'
+                                        }`}></div>
+                                </label>
+                            </div>
+                            {!isCalendarConnected && (
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 Go to <a href="/calendar" className="underline font-medium">Calendar</a> page to connect your Google Calendar
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     {/* Preview */}
                     <div className="bg-gradient-to-r from-[#f0f3bd]/50 to-[#02c39a]/10 rounded-lg p-4 border border-[#02c39a]/30">
