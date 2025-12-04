@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Bell,
     LogOut,
@@ -9,7 +10,16 @@ import {
 
 const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const navigate = useNavigate();
 
+    const handleProfileClick = () => {
+        setShowProfileMenu(false);
+        if (user?.role === 'doctor') {
+            navigate('/doctor-profile');
+        } else {
+            // navigate('/patient-profile'); // Uncomment when patient profile is ready
+        }
+    };
 
     return (
         <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 lg:px-8">
@@ -64,18 +74,10 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
 
                                     <button
                                         className="w-full flex items-center px-4 py-2 text-base text-gray-700 hover:bg-gray-100 transition-colors"
-                                        onClick={() => setShowProfileMenu(false)}
+                                        onClick={handleProfileClick}
                                     >
                                         <User className="w-4 h-4 mr-3" />
                                         Profile Settings
-                                    </button>
-
-                                    <button
-                                        className="w-full flex items-center px-4 py-2 text-base text-gray-700 hover:bg-gray-100 transition-colors"
-                                        onClick={() => setShowProfileMenu(false)}
-                                    >
-                                        <Settings className="w-4 h-4 mr-3" />
-                                        Account Settings
                                     </button>
 
                                     <div className="border-t border-gray-100 mt-1 pt-1">

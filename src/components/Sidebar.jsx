@@ -27,12 +27,7 @@ const patientNavigation = [
 
 const doctorNavigation = [
     { name: 'Dashboard', href: '/doctor-dashboard', icon: LayoutDashboard },
-    { name: 'Patients', href: '/doctor-patients', icon: Users },
-    { name: 'Appointments', href: '/doctor-appointments', icon: Calendar },
-    { name: 'Consultations', href: '/doctor-consultations', icon: Stethoscope },
-    { name: 'Reports', href: '/doctor-reports', icon: ClipboardList },
-    { name: 'Messages', href: '/doctor-messages', icon: MessageSquare },
-    { name: 'Settings', href: '/doctor-settings', icon: Settings },
+    { name: 'Profile', href: '/doctor-profile', icon: Users }, // Using Users icon for Profile
 ];
 
 const NavItem = ({ name, href, icon: Icon, active, onClick }) => {
@@ -96,25 +91,6 @@ const Sidebar = ({ userRole }) => {
                         />
                     ))}
                 </ul>
-
-                <div className="mt-8 pt-6 border-t border-gray-100">
-                    <div className={`bg-gradient-to-br ${roleColor} p-4 rounded-xl shadow-lg text-white text-center`}>
-                        <div className="flex justify-center mb-3">
-                            <Plus className="w-8 h-8 p-1 bg-white/20 rounded-full" />
-                        </div>
-                        <p className="text-base font-semibold mb-1">
-                            {userRole === 'doctor' ? 'Add Patient' : 'Book Appointment'}
-                        </p>
-                        <p className="text-base opacity-80">
-                            {userRole === 'doctor'
-                                ? 'Quick patient registration'
-                                : 'Schedule your next visit'}
-                        </p>
-                        <button className="mt-3 text-base font-bold bg-white text-[#028090] py-1.5 px-4 rounded-full shadow-md hover:bg-gray-100 transition duration-150">
-                            {userRole === 'doctor' ? 'Add Now →' : 'Book Now →'}
-                        </button>
-                    </div>
-                </div>
             </nav>
 
             <div className="p-4 border-t border-gray-100 text-center">

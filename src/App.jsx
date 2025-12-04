@@ -12,6 +12,8 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import PatientDashboard from "./pages/patient/PatientDashboard";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
+import DoctorProfile from "./pages/doctor/DoctorProfile";
+import PatientDetailsPage from "./pages/doctor/PatientDetailsPage";
 import PrivateRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import HomePage from "./pages/common/HomePage";
@@ -86,6 +88,28 @@ function App() {
             <PrivateRoute allowedRoles={['doctor']}>
               <Layout>
                 <DoctorDashboard />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/doctor-profile"
+          element={
+            <PrivateRoute allowedRoles={['doctor']}>
+              <Layout>
+                <DoctorProfile />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/doctor/patient/:patientId"
+          element={
+            <PrivateRoute allowedRoles={['doctor']}>
+              <Layout>
+                <PatientDetailsPage />
               </Layout>
             </PrivateRoute>
           }
