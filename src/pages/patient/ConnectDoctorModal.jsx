@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { sendConnectionRequest, clearConnectionMessage } from '../../app/reducers/connectionSlice';
+import { useConnection } from '../../context/ConnectionContext';
 import { X, UserPlus, Send, AlertCircle, CheckCircle } from 'lucide-react';
 
 const ConnectDoctorModal = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
-    const dispatch = useDispatch();
-    const { loading, error, successMessage } = useSelector((state) => state.connection);
+    const { loading, error, successMessage, sendConnectionRequest, clearConnectionMessage } = useConnection();
 
     if (!isOpen) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(clearConnectionMessage());
-        await dispatch(sendConnectionRequest(email));
+        clearConnectionMessage();
+        await sendConnectionRequest(email);
     };
 
     const handleClose = () => {
-        dispatch(clearConnectionMessage());
+        clearConnectionMessage();
         setEmail('');
         onClose();
     };
@@ -42,49 +40,49 @@ const ConnectDoctorModal = ({ isOpen, onClose }) => {
                                     Connect with a Doctor
                                 </h3>
                                 <div className="mt-2">
-                                    <p className="text-sm text-gray-500 mb-4">
+                                    <p className="text-base text-gray-500 mb-4">
                                         Enter your doctor's email address to send a connection request. Once accepted, they will be able to view your health logs.
                                     </p>
 
                                     {error && (
                                         <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative flex items-center">
                                             <AlertCircle className="w-5 h-5 mr-2" />
-                                            <span className="text-sm">{error}</span>
+                                            <span className="text-base">{error}</span>
                                         </div>
                                     )}
 
                                     {successMessage && (
                                         <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative flex items-center">
                                             <CheckCircle className="w-5 h-5 mr-2" />
-                                            <span className="text-sm">{successMessage}</span>
+                                            <span className="text-base">{successMessage}</span>
                                         </div>
                                     )}
 
                                     <form onSubmit={handleSubmit} className="mt-4">
-                                        <label htmlFor="doctor-email" className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label htmlFor="doctor-email" className="block text-base font-medium text-gray-700 mb-1">
                                             Doctor's Email
                                         </label>
                                         <input
                                             type="email"
                                             id="doctor-email"
                                             required
-                                            className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-3 border"
+                                            className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-base border-gray-300 rounded-md py-2 px-3 border"
                                             placeholder="doctor@example.com"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                         />
-                                        
+
                                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                                             <button
                                                 type="submit"
                                                 disabled={loading}
-                                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#00a896] text-base font-medium text-white hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:col-start-2 sm:text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                className={`w-full cursor-pointer inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#00a896] text-base font-medium text-white hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:col-start-2 sm:text-base ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                             >
                                                 {loading ? 'Sending...' : 'Send Request'}
                                             </button>
                                             <button
                                                 type="button"
-                                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                                                className="mt-3 cursor-pointer w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-base"
                                                 onClick={handleClose}
                                             >
                                                 Cancel

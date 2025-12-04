@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { createAppointment, clearConnectionMessage } from '../../app/reducers/connectionSlice';
+import { useConnection } from '../../context/ConnectionContext';
 import { Calendar, Clock, FileText, X, CheckCircle, AlertCircle } from 'lucide-react';
 
 const ScheduleAppointmentModal = ({ isOpen, onClose, patientId, patientName }) => {
-    const dispatch = useDispatch();
-    const { loading, error, successMessage } = useSelector((state) => state.connection);
+    const { loading, error, successMessage, createAppointment, clearConnectionMessage } = useConnection();
 
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
@@ -16,20 +14,17 @@ const ScheduleAppointmentModal = ({ isOpen, onClose, patientId, patientName }) =
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await dispatch(createAppointment({
+        await createAppointment({
             patientId,
             date,
             time,
             type,
             notes
-        }));
-        
-        // Clear form on success (handled by effect or manually if needed)
-        // For now, we rely on successMessage to show feedback
+        });
     };
 
     const handleClose = () => {
-        dispatch(clearConnectionMessage());
+        clearConnectionMessage();
         setDate('');
         setTime('');
         setType('Consultation');
@@ -116,7 +111,7 @@ const ScheduleAppointmentModal = ({ isOpen, onClose, patientId, patientName }) =
                                                 onChange={(e) => setNotes(e.target.value)}
                                             />
                                         </div>
-                                        
+
                                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                                             <button
                                                 type="submit"

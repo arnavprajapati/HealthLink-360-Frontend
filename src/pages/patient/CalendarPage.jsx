@@ -176,7 +176,7 @@ const CalendarPage = () => {
                                 Connection Status
                             </h2>
                             <div className="flex items-center mt-1">
-                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${isConnected
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-lg font-medium ${isConnected
                                         ? 'bg-green-100 text-green-800'
                                         : 'bg-gray-100 text-gray-600'
                                     }`}>
@@ -227,7 +227,7 @@ const CalendarPage = () => {
 
                 {!isConnected && (
                     <div className="mt-4 p-4 bg-[#f0f3bd]/30 border border-[#02c39a]/30 rounded-lg">
-                        <p className="text-sm text-[#028090]">
+                        <p className="text-lg text-[#028090]">
                             💡 Connect your Google Calendar to automatically sync weekly health goals as recurring events.
                             You'll receive reminders to help you stay on track!
                         </p>
@@ -271,7 +271,7 @@ const CalendarPage = () => {
                                             <h3 className="font-medium text-gray-800">
                                                 {event.title}
                                             </h3>
-                                            <div className="flex items-center space-x-3 mt-1 text-sm text-gray-500">
+                                            <div className="flex items-center space-x-3 mt-1 text-lg text-gray-500">
                                                 <span className="flex items-center">
                                                     <Clock className="w-3.5 h-3.5 mr-1" />
                                                     {event.frequency}

@@ -14,12 +14,14 @@ import PatientDashboard from "./pages/patient/PatientDashboard";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorProfile from "./pages/doctor/DoctorProfile";
 import PatientDetailsPage from "./pages/doctor/PatientDetailsPage";
+import DoctorPatients from "./pages/doctor/DoctorPatients";
 import PrivateRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import HomePage from "./pages/common/HomePage";
 import Layout from "./components/Layout";
 import TrackProgress from "./pages/patient/TrackProgress";
 import CalendarPage from "./pages/patient/CalendarPage";
+import PatientAppointments from "./pages/patient/PatientAppointments";
 
 function App() {
   useAuthListener();
@@ -106,6 +108,17 @@ function App() {
         />
 
         <Route
+          path="/doctor-patients"
+          element={
+            <PrivateRoute allowedRoles={['doctor']}>
+              <Layout>
+                <DoctorPatients />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
           path="/doctor/patient/:patientId"
           element={
             <PrivateRoute allowedRoles={['doctor']}>
@@ -150,6 +163,17 @@ function App() {
             <PrivateRoute allowedRoles={['patient']}>
               <Layout>
                 <CalendarPage />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/patient-appointments"
+          element={
+            <PrivateRoute allowedRoles={['patient']}>
+              <Layout>
+                <PatientAppointments />
               </Layout>
             </PrivateRoute>
           }

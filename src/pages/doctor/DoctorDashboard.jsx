@@ -1,170 +1,149 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getIncomingRequests, getLinkedPatients, respondToRequest, getDoctorAppointments } from '../../app/reducers/connectionSlice';
+import { useConnection } from '../../context/ConnectionContext';
 import {
-    Clock,
     CheckCircle,
     AlertCircle,
-    UserPlus
+    UserPlus,
+    Users,
+    Calendar
 } from 'lucide-react';
 
 const DoctorDashboard = () => {
     const { user } = useSelector((state) => state.auth);
-    const { incomingRequests, linkedPatients, appointments, loading } = useSelector((state) => state.connection);
+    const {
+        incomingRequests,
+        linkedPatients,
+        appointments,
+        getIncomingRequests,
+        getLinkedPatients,
+        getDoctorAppointments
+    } = useConnection();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getIncomingRequests());
-        dispatch(getLinkedPatients());
-        dispatch(getDoctorAppointments());
+        getIncomingRequests();
+        getLinkedPatients();
+        getDoctorAppointments();
 
         // Onboarding Check: If profile is incomplete, redirect to profile page
         if (user && (!user.doctorProfile || !user.doctorProfile.speciality || !user.doctorProfile.clinicName)) {
             navigate('/doctor-profile');
         }
-    }, [dispatch, user, navigate]);
-
-    const handleRespond = async (requestId, status) => {
-        await dispatch(respondToRequest({ requestId, status }));
-        dispatch(getIncomingRequests());
-        if (status === 'accepted') {
-            dispatch(getLinkedPatients());
-        }
-    };
+    }, [user, navigate]);
 
     return (
         <div className="space-y-6">
-            <div className="bg-gradient-to-r from-[#00a896] to-[#028090] rounded-lg shadow-lg p-6 text-white">
-                <h1 className="text-3xl font-bold mb-2">
+            <div className="bg-gradient-to-r from-[#00a896] to-[#028090] rounded-xl shadow-lg p-6 text-white">
+                <h1 className="text-2xl font-bold mb-2">
                     Welcome back, Dr. {user?.displayName || user?.email?.split('@')[0] || 'Doctor'}!
                 </h1>
-                <p className="text-[#f0f3bd]">
+                <p className="text-teal-100">
                     Here's what's happening with your patients today
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat) => {
-                    const Icon = stat.icon;
-                    return (
-                        <div key={stat.name} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={`${stat.color} p-3 rounded-lg`}>
-                                    <Icon className="w-6 h-6 text-white" />
-                                </div>
-                            </div>
-                            <h3 className="text-gray-600 text-lg font-medium mb-1">{stat.name}</h3>
-                            <div className="flex items-baseline justify-between">
-                                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
-                                <span className={`text-lg font-medium ${stat.changeType === 'positive' ? 'text-green-600' :
-                                    stat.changeType === 'negative' ? 'text-red-600' :
-                                        'text-gray-600'
-                                    }`}>
-                                    {stat.change}
-                                </span>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+            {/* Two Column Layout - Appointments & Quick Stats */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left - Today's Appointments */}
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-gray-900">Today's Appointments</h2>
-                        <button className="text-lg text-[#00a896] hover:text-[#028090] font-medium">
-                            View All
-                        </button>
+                        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                            <div className="w-2 h-6 bg-[#00a896] rounded-full"></div>
+                            Today's Appointments
+                        </h2>
                     </div>
                     <div className="space-y-3">
-                        {upcomingAppointments.map((appointment) => (
-                            <div
-                                key={appointment.id}
-                                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <div className="flex items-center space-x-4">
-                                    <div className="bg-[#f0f3bd] p-2 rounded-full">
-                                        <Clock className="w-5 h-5 text-[#028090]" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-gray-900">{appointment.patient}</p>
-                                        <p className="text-lg text-gray-600">{appointment.type}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <span className="text-lg font-medium text-gray-700">{appointment.time}</span>
-                                    {appointment.status === 'confirmed' ? (
-                                        <CheckCircle className="w-5 h-5 text-green-500" />
-                                    ) : (
-                                        <AlertCircle className="w-5 h-5 text-yellow-500" />
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Today's Appointments */}
-                    <div className="bg-white rounded-lg shadow-sm p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-bold text-gray-900">Today's Appointments</h2>
-                            <button className="text-base text-[#00a896] hover:text-[#028090] font-medium">
-                                View All
-                            </button>
-                        </div>
-                        <div className="space-y-3">
-                            {appointments && appointments.length > 0 ? (
-                                appointments.slice(0, 5).map((appointment) => (
-                                    <div
-                                        key={appointment._id}
-                                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                                    >
-                                        <div className="flex items-center space-x-4">
-                                            <div className="bg-[#f0f3bd] p-2 rounded-full">
-                                                <Clock className="w-5 h-5 text-[#028090]" />
+                        {appointments && appointments.length > 0 ? (
+                            appointments.slice(0, 4).map((appointment) => (
+                                <div
+                                    key={appointment._id}
+                                    className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors border border-gray-100"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        {appointment.patient?.photoURL ? (
+                                            <img
+                                                src={appointment.patient.photoURL}
+                                                alt={appointment.patient.displayName}
+                                                className="w-11 h-11 rounded-full border-2 border-teal-200 object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#00a896] to-[#028090] flex items-center justify-center text-white font-bold">
+                                                {appointment.patient?.displayName?.charAt(0)?.toUpperCase() || 'P'}
                                             </div>
-                                            <div>
-                                                <p className="font-semibold text-gray-900">{appointment.patient.displayName}</p>
-                                                <p className="text-base text-gray-600">{appointment.type}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center space-x-3">
-                                            <span className="text-base font-medium text-gray-700">{appointment.time}</span>
-                                            {appointment.status === 'confirmed' || appointment.status === 'scheduled' ? (
-                                                <CheckCircle className="w-5 h-5 text-green-500" />
-                                            ) : (
-                                                <AlertCircle className="w-5 h-5 text-yellow-500" />
-                                            )}
+                                        )}
+                                        <div>
+                                            <h3 className="font-semibold text-gray-900">
+                                                {appointment.patient?.displayName || 'Patient'}
+                                            </h3>
+                                            <p className="text-lg text-gray-500">{appointment.type}</p>
                                         </div>
                                     </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500 text-center py-4">No upcoming appointments.</p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-700 mb-3">Your Profile</h3>
-                        <div className="flex items-center space-x-3">
-                            {user?.photoURL ? (
-                                <img
-                                    src={user.photoURL}
-                                    alt="Profile"
-                                    className="w-12 h-12 rounded-full border-2 border-green-200"
-                                />
-                            ) : (
-                                <p className="text-gray-500 text-center py-4">No patients linked yet.</p>
-                            )}
-                            <div>
-                                <p className="font-semibold text-gray-900">
-                                    Dr. {user?.displayName || user?.email?.split('@')[0]}
-                                </p>
-                                <p className="text-lg text-gray-500">{user?.email}</p>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-lg font-medium text-gray-700">{appointment.time}</span>
+                                        {appointment.status === 'confirmed' || appointment.status === 'scheduled' ? (
+                                            <CheckCircle className="w-5 h-5 text-green-500" />
+                                        ) : (
+                                            <AlertCircle className="w-5 h-5 text-yellow-500" />
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8">
+                                <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                                <h3 className="font-semibold text-gray-700 mb-1">No Appointments Today</h3>
+                                <p className="text-lg text-gray-500">Schedule appointments with patients</p>
                             </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right - Quick Overview */}
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                            <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
+                            Quick Overview
+                        </h2>
+                    </div>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-100 rounded-lg">
+                                    <Users className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <span className="font-medium text-lg text-gray-700">Total Patients</span>
+                            </div>
+                            <span className="text-2xl font-bold text-blue-600">{linkedPatients?.length || 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-yellow-100 rounded-lg">
+                                    <UserPlus className="w-5 h-5 text-yellow-600" />
+                                </div>
+                                <span className="font-medium text-lg text-gray-700">Pending Requests</span>
+                            </div>
+                            <span className="text-2xl font-bold text-yellow-600">{incomingRequests?.length || 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-green-100 rounded-lg">
+                                    <Calendar className="w-5 h-5 text-green-600" />
+                                </div>
+                                <span className="font-medium text-lg text-gray-700">Total Appointments</span>
+                            </div>
+                            <span className="text-2xl font-bold text-green-600">{appointments?.length || 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-4 bg-teal-50 rounded-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-teal-100 rounded-lg">
+                                    <CheckCircle className="w-5 h-5 text-teal-600" />
+                                </div>
+                                <span className="font-medium text-lg text-gray-700">Completed</span>
+                            </div>
+                            <span className="text-2xl font-bold text-teal-600">{appointments?.filter(a => a.status === 'completed')?.length || 0}</span>
                         </div>
                     </div>
                 </div>

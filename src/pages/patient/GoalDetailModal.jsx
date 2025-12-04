@@ -9,7 +9,7 @@ import {
     ResponsiveContainer, ReferenceLine, Area, AreaChart
 } from 'recharts';
 
-const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDeleteMilestone, onAnalyze }) => {
+const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDeleteMilestone, onAnalyze, readOnly = false }) => {
     const [analyzing, setAnalyzing] = useState(false);
     const [aiAnalysis, setAiAnalysis] = useState(null);
     const [showAddEntry, setShowAddEntry] = useState(false);
@@ -169,7 +169,7 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-[#00a896] to-[#028090] px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-start flex-shrink-0">
                     <div className="flex-1 min-w-0">
@@ -420,16 +420,18 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                                     <Activity className="w-4 h-4 text-[#00a896]" />
                                     Progress Timeline
                                 </h4>
-                                <button
-                                    onClick={() => setShowAddEntry(!showAddEntry)}
-                                    className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-lg font-medium text-[#028090] hover:bg-[#f0f3bd]/50 rounded-lg transition-colors w-fit"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    Add Entry
-                                </button>
+                                {!readOnly && (
+                                    <button
+                                        onClick={() => setShowAddEntry(!showAddEntry)}
+                                        className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-lg font-medium text-[#028090] hover:bg-[#f0f3bd]/50 rounded-lg transition-colors w-fit"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        Add Entry
+                                    </button>
+                                )}
                             </div>
 
-                            {showAddEntry && (
+                            {showAddEntry && !readOnly && (
                                 <div className="mb-4 p-4 bg-[#f0f3bd]/30 rounded-lg border border-[#02c39a]/20">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                         <div>
@@ -610,20 +612,24 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                                                                 <span className="text-lg font-medium text-gray-600 flex-shrink-0">
                                                                     {new Date(m.date).toLocaleDateString()}
                                                                 </span>
-                                                                <button
-                                                                    onClick={() => handleEditMilestone(m, actualIndex)}
-                                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
-                                                                    title="Edit entry"
-                                                                >
-                                                                    <Edit2 className="w-4 h-4" />
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDeleteMilestone(actualIndex)}
-                                                                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg cursor-pointer transition-colors"
-                                                                    title="Delete entry"
-                                                                >
-                                                                    <Trash2 className="w-4 h-4" />
-                                                                </button>
+                                                                {!readOnly && (
+                                                                    <>
+                                                                        <button
+                                                                            onClick={() => handleEditMilestone(m, actualIndex)}
+                                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+                                                                            title="Edit entry"
+                                                                        >
+                                                                            <Edit2 className="w-4 h-4" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => handleDeleteMilestone(actualIndex)}
+                                                                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg cursor-pointer transition-colors"
+                                                                            title="Delete entry"
+                                                                        >
+                                                                            <Trash2 className="w-4 h-4" />
+                                                                        </button>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
@@ -642,23 +648,25 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                                     <Sparkles className="w-5 h-5 text-purple-600" />
                                     AI Health Analysis
                                 </h4>
-                                <button
-                                    onClick={handleAnalyze}
-                                    disabled={analyzing}
-                                    className="flex items-center  cursor-pointer gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium text-lg hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 transition-all shadow-md"
-                                >
-                                    {analyzing ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            Analyzing...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Sparkles className="w-4 h-4" />
-                                            Analyze with Gemini
-                                        </>
-                                    )}
-                                </button>
+                                {onAnalyze && (
+                                    <button
+                                        onClick={handleAnalyze}
+                                        disabled={analyzing}
+                                        className="flex items-center  cursor-pointer gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium text-lg hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 transition-all shadow-md"
+                                    >
+                                        {analyzing ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Analyzing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Sparkles className="w-4 h-4" />
+                                                Analyze with Gemini
+                                            </>
+                                        )}
+                                    </button>
+                                )}
                             </div>
 
                             {aiAnalysis ? (
@@ -731,12 +739,25 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                             ) : (
                                 <div className="text-center py-8">
                                     <Sparkles className="w-12 h-12 mx-auto mb-3 text-purple-300" />
-                                    <p className="text-lg text-gray-600 cursor-pointer">
-                                        Click "Analyze with Gemini" to get personalized insights about your goal progress
-                                    </p>
-                                    <p className="text-lg text-gray-400 mt-1">
-                                        AI will analyze your progress and provide recommendations
-                                    </p>
+                                    {onAnalyze ? (
+                                        <>
+                                            <p className="text-lg text-gray-600 cursor-pointer">
+                                                Click "Analyze with Gemini" to get AI-powered insights about this goal
+                                            </p>
+                                            <p className="text-lg text-gray-400 mt-1">
+                                                AI will analyze progress and provide recommendations
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="text-lg text-gray-600">
+                                                AI analysis not available
+                                            </p>
+                                            <p className="text-lg text-gray-400 mt-1">
+                                                Analysis can be generated from the patient dashboard
+                                            </p>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
