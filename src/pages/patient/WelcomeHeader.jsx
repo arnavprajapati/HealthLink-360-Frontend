@@ -5,13 +5,13 @@ const WelcomeHeader = ({ user, onAddClick, filteredLogs, formatDate }) => {
     const getRoleBadge = (role) => {
         if (role === 'doctor') {
             return (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-base font-medium bg-green-100 text-green-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-lg font-medium bg-green-100 text-green-800 w-fit">
                     Doctor
                 </span>
             );
         }
         return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-base font-medium bg-[#f0f3bd] text-[#028090]">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-lg font-medium bg-[#f0f3bd] text-[#028090] w-fit">
                 Patient
             </span>
         );
@@ -30,7 +30,7 @@ const WelcomeHeader = ({ user, onAddClick, filteredLogs, formatDate }) => {
                 {user?.role === 'patient' && (
                     <button
                         onClick={onAddClick}
-                        className="flex items-center px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors font-medium text-base cursor-pointer whitespace-nowrap"
+                        className="flex items-center px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors font-medium text-lg cursor-pointer whitespace-nowrap"
                         title="Add New Health Record"
                     >
                         <Plus className="w-4 h-4 mr-1 sm:mr-2" />
@@ -43,18 +43,18 @@ const WelcomeHeader = ({ user, onAddClick, filteredLogs, formatDate }) => {
             {filteredLogs.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-base text-gray-600 mb-1">Total Records</p>
+                        <p className="text-lg text-gray-600 mb-1">Total Records</p>
                         <p className="text-2xl font-bold text-gray-900">{filteredLogs.length}</p>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-base text-gray-600 mb-1">Categories</p>
+                        <p className="text-lg text-gray-600 mb-1">Categories</p>
                         <p className="text-2xl font-bold text-gray-900">
                             {[...new Set(filteredLogs.map(log => log.diseaseType))].length}
                         </p>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <p className="text-base text-gray-600 mb-1">Last Updated</p>
-                        <p className="text-base font-bold text-gray-900">
+                        <p className="text-lg text-gray-600 mb-1">Last Updated</p>
+                        <p className="text-lg font-bold text-gray-900">
                             {filteredLogs.length > 0 ? formatDate(filteredLogs[0].testDate || filteredLogs[0].createdAt) : '-'}
                         </p>
                     </div>

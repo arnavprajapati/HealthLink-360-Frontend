@@ -168,21 +168,21 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
     const prediction = calculatePrediction();
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[90vw]  max-h-[95vh] overflow-hidden flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-[#00a896] to-[#028090] px-6 py-5 flex justify-between items-start flex-shrink-0">
-                    <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-white/20 rounded-lg">
-                                <Target className="w-6 h-6 text-white" />
+                <div className="bg-gradient-to-r from-[#00a896] to-[#028090] px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-start flex-shrink-0">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                            <div className="p-1.5 sm:p-2 bg-white/20 rounded-lg">
+                                <Target className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             </div>
-                            <h2 className="text-2xl font-bold text-white">{goal.parameter}</h2>
-                            <span className={`px-3 py-1 rounded-full text-lg font-semibold border ${getStatusBadge(goal.status)}`}>
+                            <h2 className="text-xl sm:text-2xl font-bold text-white truncate">{goal.parameter}</h2>
+                            <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-lg sm:text-lg font-semibold border ${getStatusBadge(goal.status)}`}>
                                 {goal.status.replace('-', ' ').toUpperCase()}
                             </span>
                         </div>
-                        <p className="text-white/80 text-lg">
+                        <p className="text-white/80 text-lg sm:text-lg">
                             {goal.goalType === 'range'
                                 ? `Keep within range: ${goal.minValue !== null ? goal.minValue : ''}${goal.minValue !== null && goal.maxValue !== null ? ' - ' : ''}${goal.maxValue !== null ? goal.maxValue : ''} ${goal.unit}`
                                 : goal.targetValue !== null
@@ -202,10 +202,10 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                 </div>
 
                 {/* Split Content Area */}
-                <div className="flex flex-1 min-h-0">
+                <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
 
                     {/* Left Pane: Fixed Statistics Overview */}
-                    <div className="w-full md:w-1/3 p-6 space-y-4 border-r border-gray-100 flex-shrink-0  overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="w-full md:w-1/3 p-4 sm:p-6 space-y-4 border-b md:border-b-0 md:border-r border-gray-100 flex-shrink-0 overflow-y-auto max-h-[40vh] md:max-h-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         <h3 className="text-lg font-bold text-gray-900 mb-2">Goal Metrics</h3>
 
                         {/* Big Progress Circle */}
@@ -411,18 +411,18 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                     </div>
 
                     {/* Right Pane: Scrollable Content (Chart & Analysis) */}
-                    <div className="w-full md:w-2/3 p-6 space-y-6 overflow-y-auto  overflow-y-auto  overflow-y-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="w-full md:w-2/3 p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
                         {/* Monthly Timeline Chart */}
-                        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm ">
-                            <div className="flex items-center justify-between mb-4 ">
+                        <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                                 <h4 className="font-semibold text-gray-900 flex items-center gap-2">
                                     <Activity className="w-4 h-4 text-[#00a896]" />
                                     Progress Timeline
                                 </h4>
                                 <button
                                     onClick={() => setShowAddEntry(!showAddEntry)}
-                                    className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-lg font-medium text-[#028090] hover:bg-[#f0f3bd]/50 rounded-lg transition-colors"
+                                    className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-lg font-medium text-[#028090] hover:bg-[#f0f3bd]/50 rounded-lg transition-colors w-fit"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add Entry
@@ -474,59 +474,62 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                             )}
 
                             {chartData.length > 1 ? (
-                                <ResponsiveContainer width="100%" height={250}>
-                                    <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                        <defs>
-                                            <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#00a896" stopOpacity={0.3} />
-                                                <stop offset="95%" stopColor="#00a896" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                        <XAxis
-                                            dataKey="date"
-                                            tick={{ fontSize: 12, fill: '#6b7280' }}
-                                            axisLine={{ stroke: '#e5e7eb' }}
-                                        />
-                                        <YAxis
-                                            tick={{ fontSize: 12, fill: '#6b7280' }}
-                                            axisLine={{ stroke: '#e5e7eb' }}
-                                            domain={['dataMin - 10', 'dataMax + 10']}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{
-                                                backgroundColor: '#fff',
-                                                border: '1px solid #e5e7eb',
-                                                borderRadius: '8px',
-                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                                            }}
-                                            formatter={(value, name) => [
-                                                `${value} ${goal.unit}`,
-                                                name === 'value' ? 'Reading' : name
-                                            ]}
-                                        />
-                                        <ReferenceLine
-                                            y={goal.targetValue}
-                                            stroke="#028090"
-                                            strokeDasharray="5 5"
-                                            label={{ value: 'Target', position: 'right', fill: '#028090', fontSize: 12 }}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="value"
-                                            stroke="#00a896"
-                                            strokeWidth={3}
-                                            fillOpacity={1}
-                                            fill="url(#colorProgress)"
-                                            dot={{ fill: '#00a896', strokeWidth: 2, r: 5 }}
-                                            activeDot={{ r: 7, fill: '#028090' }}
-                                        />
-                                    </AreaChart>
-                                </ResponsiveContainer>
+                                <div className="w-full h-[180px] sm:h-[250px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                                            <defs>
+                                                <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#00a896" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#00a896" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                            <XAxis
+                                                dataKey="date"
+                                                tick={{ fontSize: 10, fill: '#6b7280' }}
+                                                axisLine={{ stroke: '#e5e7eb' }}
+                                            />
+                                            <YAxis
+                                                tick={{ fontSize: 10, fill: '#6b7280' }}
+                                                axisLine={{ stroke: '#e5e7eb' }}
+                                                domain={['dataMin - 10', 'dataMax + 10']}
+                                                width={35}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    backgroundColor: '#fff',
+                                                    border: '1px solid #e5e7eb',
+                                                    borderRadius: '8px',
+                                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                }}
+                                                formatter={(value, name) => [
+                                                    `${value} ${goal.unit}`,
+                                                    name === 'value' ? 'Reading' : name
+                                                ]}
+                                            />
+                                            <ReferenceLine
+                                                y={goal.targetValue}
+                                                stroke="#028090"
+                                                strokeDasharray="5 5"
+                                                label={{ value: 'Target', position: 'right', fill: '#028090', fontSize: 10 }}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="value"
+                                                stroke="#00a896"
+                                                strokeWidth={2}
+                                                fillOpacity={1}
+                                                fill="url(#colorProgress)"
+                                                dot={{ fill: '#00a896', strokeWidth: 2, r: 4 }}
+                                                activeDot={{ r: 6, fill: '#028090' }}
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
                             ) : (
-                                <div className="h-48 flex flex-col items-center justify-center text-gray-500">
-                                    <Activity className="w-12 h-12 mb-3 opacity-30" />
-                                    <p className="text-lg">Not enough data to show timeline</p>
+                                <div className="h-40 sm:h-48 flex flex-col items-center justify-center text-gray-500">
+                                    <Activity className="w-10 h-10 sm:w-12 sm:h-12 mb-3 opacity-30" />
+                                    <p className="text-lg sm:text-lg">Not enough data to show timeline</p>
                                     <p className="text-lg text-gray-400">Add more entries to see your progress chart</p>
                                 </div>
                             )}
@@ -549,36 +552,36 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                                                         <div className="space-y-3">
                                                             <div className="grid grid-cols-2 gap-3">
                                                                 <div>
-                                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Value</label>
+                                                                    <label className="block text-lg font-medium text-gray-600 mb-1">Value</label>
                                                                     <input
                                                                         type="number"
                                                                         step="0.1"
                                                                         value={editValue}
                                                                         onChange={(e) => setEditValue(e.target.value)}
-                                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] text-base"
+                                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] text-lg"
                                                                     />
                                                                 </div>
                                                                 <div>
-                                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Note</label>
+                                                                    <label className="block text-lg font-medium text-gray-600 mb-1">Note</label>
                                                                     <input
                                                                         type="text"
                                                                         value={editNote}
                                                                         onChange={(e) => setEditNote(e.target.value)}
-                                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] text-base"
+                                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] text-lg"
                                                                     />
                                                                 </div>
                                                             </div>
                                                             <div className="flex gap-2 justify-end">
                                                                 <button
                                                                     onClick={() => setEditingMilestone(null)}
-                                                                    className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer"
+                                                                    className="px-3 py-1.5 text-lg text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer"
                                                                 >
                                                                     Cancel
                                                                 </button>
                                                                 <button
                                                                     onClick={handleSaveEdit}
                                                                     disabled={savingEdit || !editValue}
-                                                                    className="px-3 py-1.5 text-sm bg-[#00a896] text-white rounded-lg hover:bg-[#028090] disabled:opacity-50 cursor-pointer flex items-center gap-1"
+                                                                    className="px-3 py-1.5 text-lg bg-[#00a896] text-white rounded-lg hover:bg-[#028090] disabled:opacity-50 cursor-pointer flex items-center gap-1"
                                                                 >
                                                                     {savingEdit ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
                                                                     Save
@@ -738,19 +741,19 @@ const GoalDetailModal = ({ goal, onClose, onAddMilestone, onEditMilestone, onDel
                             )}
                         </div>
                     </div>
-                </div>
+                </div >
 
                 {/* Footer */}
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 flex-shrink-0">
+                < div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 flex-shrink-0" >
                     <button
                         onClick={onClose}
                         className="px-6 py-2.5 cursor-pointer text-gray-700 font-medium hover:bg-gray-200 rounded-lg transition-colors"
                     >
                         Close
                     </button>
-                </div>
-            </div>
-        </div>
+                </div >
+            </div >
+        </div >
     );
 };
 

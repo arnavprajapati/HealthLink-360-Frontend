@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, User, Send, Loader2, Sparkles, AlertCircle, X, RotateCcw } from 'lucide-react';
-import ChatWindow from './ChatWindow'; 
+import ChatWindow from './ChatWindow';
 
 const AIHealthAssistantModal = ({ isOpen, onClose, onReset, initialMessages, onSendMessage, isTyping, error, resetKey }) => {
     const [chatMessages, setChatMessages] = useState(initialMessages);
@@ -39,9 +39,9 @@ const AIHealthAssistantModal = ({ isOpen, onClose, onReset, initialMessages, onS
                             <div>
                                 <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
                                     AI Health Assistant
-                                    <span className="px-2 py-0.5 bg-white/20 rounded-full text-base">Beta</span>
+                                    <span className="px-2 py-0.5 bg-white/20 rounded-full text-lg">Beta</span>
                                 </h2>
-                                <p className="text-white/80 text-base">
+                                <p className="text-white/80 text-lg">
                                     • Real-time Analysis
                                 </p>
                             </div>
@@ -68,12 +68,12 @@ const AIHealthAssistantModal = ({ isOpen, onClose, onReset, initialMessages, onS
                 <ChatWindow
                     chatMessages={chatMessages}
                     isTyping={isTyping}
-                    handleQuickAction={handleSendMessage} 
+                    handleQuickAction={handleSendMessage}
                 />
 
                 <div className="p-4 bg-white border-t border-gray-200 flex-shrink-0">
                     {error && (
-                        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-base text-red-700">
+                        <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-lg text-red-700">
                             <AlertCircle className="w-4 h-4" />
                             <span>{error}</span>
                         </div>
@@ -84,7 +84,7 @@ const AIHealthAssistantModal = ({ isOpen, onClose, onReset, initialMessages, onS
                             onChange={(e) => setChatInput(e.target.value)}
                             onKeyPress={handleKeyPress}
                             placeholder="Ask about your health records, goals, or get recommendations..."
-                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] resize-none text-base"
+                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00a896] focus:border-[#00a896] resize-none text-lg"
                             rows="1"
                             disabled={isTyping}
                         />
@@ -100,7 +100,7 @@ const AIHealthAssistantModal = ({ isOpen, onClose, onReset, initialMessages, onS
                             )}
                         </button>
                     </div>
-                    <p className="text-base text-center text-gray-500 mt-2">
+                    <p className="text-lg text-center text-gray-500 mt-2">
                         💡 I can analyze your reports, track goals, and provide personalized health insights
                     </p>
                 </div>

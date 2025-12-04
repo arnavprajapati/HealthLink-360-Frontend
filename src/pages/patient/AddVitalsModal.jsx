@@ -91,10 +91,10 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg text-base">{error}</div>}
+                    {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg text-lg">{error}</div>}
 
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-2 flex items-center">
+                        <label className="block text-lg font-medium text-gray-700 mb-2 flex items-center">
                             <Scale className="w-4 h-4 mr-2" /> Weight
                         </label>
                         <input
@@ -106,11 +106,11 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
                             required
                             min="1"
                         />
-                        <p className="text-base text-gray-500 mt-1">Units: kg (Kilograms)</p>
+                        <p className="text-lg text-gray-500 mt-1">Units: kg (Kilograms)</p>
                     </div>
 
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-2 flex items-center">
+                        <label className="block text-lg font-medium text-gray-700 mb-2 flex items-center">
                             <FileText className="w-4 h-4 mr-2" /> Height
                         </label>
                         <div className="grid grid-cols-2 gap-4">
@@ -133,11 +133,11 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
                                 max="11"
                             />
                         </div>
-                        <p className="text-base text-gray-500 mt-1">Units: Feet and Inches</p>
+                        <p className="text-lg text-gray-500 mt-1">Units: Feet and Inches</p>
                     </div>
 
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-2 flex items-center">
+                        <label className="block text-lg font-medium text-gray-700 mb-2 flex items-center">
                             <span className="text-lg mr-2">🚬</span> Smoking Status
                         </label>
                         <select
@@ -154,7 +154,7 @@ const AddVitalsModal = ({ onClose, onSuccess, initialVitals }) => {
                     </div>
 
                     <div>
-                        <label className="block text-base font-medium text-gray-700 mb-2">Notes</label>
+                        <label className="block text-lg font-medium text-gray-700 mb-2">Notes</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}

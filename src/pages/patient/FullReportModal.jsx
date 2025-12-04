@@ -50,7 +50,7 @@ const FullReportModal = ({ log, onClose }) => {
                             <FileText className="w-6 h-6 mr-2" />
                             Complete Medical Report
                         </h2>
-                        <div className="flex items-center space-x-4 mt-2 text-[#f0f3bd] text-base">
+                        <div className="flex items-center space-x-4 mt-2 text-[#f0f3bd] text-lg">
                             <span className="flex items-center">
                                 <Calendar className="w-4 h-4 mr-1" />
                                 {formatDate(log.testDate || log.createdAt)}
@@ -82,14 +82,14 @@ const FullReportModal = ({ log, onClose }) => {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setShowDocument(!showDocument)}
-                                        className="flex items-center gap-1 px-3 py-1.5 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors text-sm cursor-pointer"
+                                        className="flex items-center gap-1 px-3 py-1.5 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors text-lg cursor-pointer"
                                     >
                                         <Eye className="w-4 h-4" />
                                         {showDocument ? 'Hide' : 'View'}
                                     </button>
                                     <button
                                         onClick={handleOpenInNewTab}
-                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm cursor-pointer"
+                                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-lg cursor-pointer"
                                     >
                                         <ExternalLink className="w-4 h-4" />
                                         Open
@@ -104,10 +104,10 @@ const FullReportModal = ({ log, onClose }) => {
                                             <div className="w-full h-[500px] rounded-lg border border-gray-300 bg-gray-50 flex flex-col items-center justify-center p-6">
                                                 <File className="w-16 h-16 text-red-500 mb-4" />
                                                 <p className="text-gray-700 text-lg font-medium mb-2">PDF Document</p>
-                                                <p className="text-gray-500 text-sm mb-4 text-center">
+                                                <p className="text-gray-500 text-lg mb-4 text-center">
                                                     {log.fileName || 'Medical Report PDF'}
                                                 </p>
-                                                <p className="text-gray-400 text-xs mb-4">
+                                                <p className="text-gray-400 text-lg mb-4">
                                                     Click below to view the PDF in a new tab
                                                 </p>
                                             </div>
@@ -171,7 +171,7 @@ const FullReportModal = ({ log, onClose }) => {
                                                     {reading.testName}
                                                 </h4>
                                                 {reading.category && (
-                                                    <span className="text-base bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                                    <span className="text-lg bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                                                         {reading.category}
                                                     </span>
                                                 )}
@@ -189,7 +189,7 @@ const FullReportModal = ({ log, onClose }) => {
                                             </div>
 
                                             {reading.normalRange && (
-                                                <div className="text-base text-gray-600 mb-2">
+                                                <div className="text-lg text-gray-600 mb-2">
                                                     <span className="font-medium">Normal Range: </span>
                                                     {reading.normalRange.text ||
                                                         `${reading.normalRange.min}-${reading.normalRange.max} ${reading.unit || ''}`}
@@ -197,7 +197,7 @@ const FullReportModal = ({ log, onClose }) => {
                                             )}
 
                                             {reading.status && (
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-base font-medium ${['high', 'low', 'critical'].includes(reading.status.toLowerCase())
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-lg font-medium ${['high', 'low', 'critical'].includes(reading.status.toLowerCase())
                                                     ? 'bg-red-100 text-red-800 border border-red-300'
                                                     : 'bg-green-100 text-green-800 border border-green-300'
                                                     }`}>
@@ -223,7 +223,7 @@ const FullReportModal = ({ log, onClose }) => {
                     )}
 
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-base">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-lg">
                             <div>
                                 <p className="text-gray-500 mb-1">Disease Type</p>
                                 <p className="font-semibold text-gray-900 capitalize">{log.diseaseType}</p>

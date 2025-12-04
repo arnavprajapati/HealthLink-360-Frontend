@@ -52,7 +52,7 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                         <div className="text-3xl">{config.icon}</div>
                         <div>
                             <h3 className="text-lg font-bold text-gray-800">{getDisplayTitle()}</h3>
-                            <p className="text-base text-gray-500 flex items-center mt-1">
+                            <p className="text-lg text-gray-500 flex items-center mt-1">
                                 <Calendar className="w-3 h-3 mr-1" />
                                 {formatDate(log.testDate || log.createdAt)}
                             </p>
@@ -89,7 +89,7 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                     <div className="space-y-4">
                         {config.fields[0] && readings[config.fields[0].name] && (
                             <div className="bg-gradient-to-br from-[#00a896]/10 to-[#02c39a]/5 rounded-lg p-4 border border-[#00a896]/20">
-                                <p className="text-base text-gray-600 mb-1">{config.fields[0].label}</p>
+                                <p className="text-lg text-gray-600 mb-1">{config.fields[0].label}</p>
                                 <div className="flex items-baseline">
                                     <span className="text-4xl font-bold text-[#028090]">
                                         {readings[config.fields[0].name]}
@@ -100,7 +100,7 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                                 </div>
 
                                 <div className="mt-2">
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-base font-medium bg-green-100 text-green-800">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-lg font-medium bg-green-100 text-green-800">
                                         ✓ Reading Recorded
                                     </span>
                                 </div>
@@ -113,10 +113,10 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                                     if (!readings[field.name]) return null;
                                     return (
                                         <div key={field.name} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                            <p className="text-base text-gray-500 mb-1">{field.label}</p>
+                                            <p className="text-lg text-gray-500 mb-1">{field.label}</p>
                                             <p className="text-lg font-bold text-gray-800">
                                                 {readings[field.name]}
-                                                <span className="text-base text-gray-500 ml-1">{field.unit}</span>
+                                                <span className="text-lg text-gray-500 ml-1">{field.unit}</span>
                                             </p>
                                         </div>
                                     );
@@ -125,8 +125,8 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                         )}
 
                         <div className="pt-3 border-t border-gray-100">
-                            <h4 className="text-base font-semibold text-gray-700 mb-2">📊 Quick Analysis</h4>
-                            <div className="space-y-2 text-base">
+                            <h4 className="text-lg font-semibold text-gray-700 mb-2">📊 Quick Analysis</h4>
+                            <div className="space-y-2 text-lg">
                                 <div className="flex items-center justify-between">
                                     <span className="text-gray-600">Total Parameters:</span>
                                     <span className="font-semibold text-gray-800">{readingsArray.length}</span>
@@ -142,25 +142,25 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                     <div className="space-y-4">
                         {isInvalidDocument() ? (
                             <div className="text-center py-8">
-                                <span className="inline-flex items-center px-3 py-1 rounded-full text-base font-medium bg-gray-100 text-gray-600 border border-gray-300">
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-lg font-medium bg-gray-100 text-gray-600 border border-gray-300">
                                     ⚠️ Non-medical document
                                 </span>
-                                <p className="text-base text-gray-500 mt-2">This file doesn't contain medical test data</p>
+                                <p className="text-lg text-gray-500 mt-2">This file doesn't contain medical test data</p>
                             </div>
                         ) : log.aiAnalysis?.summary ? (
                             <div className="pt-3 border-t border-gray-100">
-                                <h4 className="text-base font-semibold text-gray-700 mb-2">📋 Summary</h4>
-                                <p className="text-base text-gray-600 line-clamp-3">{log.aiAnalysis.summary}</p>
+                                <h4 className="text-lg font-semibold text-gray-700 mb-2">📋 Summary</h4>
+                                <p className="text-lg text-gray-600 line-clamp-3">{log.aiAnalysis.summary}</p>
                             </div>
                         ) : (
-                            <p className="text-base text-gray-500 text-center py-2">View full report for details</p>
+                            <p className="text-lg text-gray-500 text-center py-2">View full report for details</p>
                         )}
                     </div>
                 )}
 
                 {log.description && (
                     <div className="mt-4 pt-3 border-t border-gray-100">
-                        <p className="text-base text-gray-600">
+                        <p className="text-lg text-gray-600">
                             <span className="font-medium">📝 Notes: </span>
                             {log.description}
                         </p>
@@ -169,7 +169,7 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
 
                 {log.detectedDisease && log.detectedDisease !== log.diseaseType && (
                     <div className="mt-3">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-base font-medium bg-yellow-100 text-yellow-800">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-lg font-medium bg-yellow-100 text-yellow-800">
                             🤖 AI Detected: {getDiseaseConfig(log.detectedDisease).label}
                         </span>
                     </div>

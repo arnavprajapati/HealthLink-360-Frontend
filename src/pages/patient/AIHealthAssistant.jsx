@@ -87,7 +87,7 @@ const AIHealthAssistant = () => {
                     • Recommendations: ${ai.recommendations?.join('; ') || 'None'}`;
                 }
 
-                                return `
+                return `
                 📋 REPORT #${index + 1}: ${log.diseaseType?.toUpperCase() || 'GENERAL'}
                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                 📅 Test Date: ${date}
@@ -99,9 +99,9 @@ const AIHealthAssistant = () => {
                 📊 TEST READINGS:
                 ${readingsText || '    No readings available'}
                 ${aiAnalysisText}`;
-                            }).join('\n\n')
-                            : 'No health reports available.';
-                        
+            }).join('\n\n')
+            : 'No health reports available.';
+
 
         const goalsDetails = goals.length > 0
             ? goals.map(g => {
@@ -109,7 +109,7 @@ const AIHealthAssistant = () => {
                 const milestoneCount = g.milestones?.length || 0;
                 const latestValue = milestoneCount > 0 ? g.milestones[milestoneCount - 1].value : g.currentValue;
 
-                            let goalDescription = `
+                let goalDescription = `
             📊 Goal: ${g.parameter}
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             Status: ${g.status.toUpperCase()} | Progress: ${g.progress}%
@@ -118,79 +118,79 @@ const AIHealthAssistant = () => {
             📈 VALUES:
             • Initial Value: ${g.initialValue !== null && g.initialValue !== undefined ? `${g.initialValue} ${g.unit}` : 'Not set'}
             • Current Value: ${latestValue !== null && latestValue !== undefined ? `${latestValue} ${g.unit}` : 'No data'}`;
-                        
-                            if (g.goalType === 'range' || (g.minValue !== null || g.maxValue !== null)) {
-                                if (g.minValue !== null && g.maxValue !== null) {
-                                    goalDescription += `
+
+                if (g.goalType === 'range' || (g.minValue !== null || g.maxValue !== null)) {
+                    if (g.minValue !== null && g.maxValue !== null) {
+                        goalDescription += `
             • Target Range: ${g.minValue} - ${g.maxValue} ${g.unit}`;
-                                } else if (g.minValue !== null) {
-                                    goalDescription += `
+                    } else if (g.minValue !== null) {
+                        goalDescription += `
             • Minimum Target: ≥ ${g.minValue} ${g.unit}`;
-                                } else if (g.maxValue !== null) {
-                                    goalDescription += `
+                    } else if (g.maxValue !== null) {
+                        goalDescription += `
             • Maximum Target: ≤ ${g.maxValue} ${g.unit}`;
-                                }
-                            } else if (g.targetValue !== null && g.targetValue !== undefined) {
-                                goalDescription += `
+                    }
+                } else if (g.targetValue !== null && g.targetValue !== undefined) {
+                    goalDescription += `
             • Target Value: ${g.targetValue} ${g.unit}`;
-                            }
-                        
-                            if (g.initialValue !== null && latestValue !== null && g.initialValue !== latestValue) {
-                                const change = latestValue - g.initialValue;
-                                const changePercent = ((change / g.initialValue) * 100).toFixed(1);
-                                goalDescription += `
+                }
+
+                if (g.initialValue !== null && latestValue !== null && g.initialValue !== latestValue) {
+                    const change = latestValue - g.initialValue;
+                    const changePercent = ((change / g.initialValue) * 100).toFixed(1);
+                    goalDescription += `
             • Total Change: ${change > 0 ? '+' : ''}${change.toFixed(1)} ${g.unit} (${changePercent > 0 ? '+' : ''}${changePercent}%)`;
-                            }
-                        
-                            goalDescription += `
+                }
+
+                goalDescription += `
                         
             ⏱️ TIMELINE:
             • Tracking Frequency: ${g.trackingFrequency}
             • Started: ${g.startDate ? new Date(g.startDate).toLocaleDateString() : new Date(g.createdAt).toLocaleDateString()}`;
-                        
-                            if (g.deadline) {
-                                goalDescription += `
+
+                if (g.deadline) {
+                    goalDescription += `
             • Deadline: ${new Date(g.deadline).toLocaleDateString()}
             • Time Left: ${daysLeft > 0 ? `${daysLeft} days remaining` : `OVERDUE by ${Math.abs(daysLeft)} days`}`;
-                            } else {
-                                goalDescription += `
+                } else {
+                    goalDescription += `
             • Deadline: No deadline set (tracking at own pace)`;
-                            }
-                        
-                            goalDescription += `
+                }
+
+                goalDescription += `
                         
             📋 PROGRESS TRACKING:
             • Total Entries: ${milestoneCount} measurement${milestoneCount !== 1 ? 's' : ''} recorded`;
-                        
-                            if (milestoneCount > 0) {
-                                goalDescription += `
+
+                if (milestoneCount > 0) {
+                    goalDescription += `
             • Complete Measurement History:`;
-                                g.milestones.forEach((m, idx) => {
-                                    goalDescription += `
+                    g.milestones.forEach((m, idx) => {
+                        goalDescription += `
                 ${idx + 1}. ${m.value} ${g.unit} on ${new Date(m.date).toLocaleDateString()}${m.note ? ` - Note: ${m.note}` : ''}`;
-                                });
-                            
-                                if (milestoneCount >= 2) {
-                                    const first = g.milestones[0].value;
-                                    const last = g.milestones[milestoneCount - 1].value;
-                                    const trend = last - first;
-                                    const trendDirection = trend > 0 ? '📈 INCREASING' : trend < 0 ? '📉 DECREASING' : '➡️ STABLE';
-                                    goalDescription += `
+                    });
+
+                    if (milestoneCount >= 2) {
+                        const first = g.milestones[0].value;
+                        const last = g.milestones[milestoneCount - 1].value;
+                        const trend = last - first;
+                        const trendDirection = trend > 0 ? '📈 INCREASING' : trend < 0 ? '📉 DECREASING' : '➡️ STABLE';
+                        goalDescription += `
             • Overall Trend: ${trendDirection} (${trend > 0 ? '+' : ''}${trend.toFixed(1)} ${g.unit})`;
-                                }
-                            }
-                        
-                            if (g.notes) {
-                                goalDescription += `
+                    }
+                }
+
+                if (g.notes) {
+                    goalDescription += `
                             
             📝 NOTES: ${g.notes}`;
-                            }
-                        
-                            return goalDescription.trim();
-                        }).join('\n\n')
-                        : 'No active goals set.';
-                    
-                    const contextSummary = `
+                }
+
+                return goalDescription.trim();
+            }).join('\n\n')
+            : 'No active goals set.';
+
+        const contextSummary = `
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             🏥 COMPLETE PATIENT HEALTH DATABASE
             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -216,39 +216,39 @@ const AIHealthAssistant = () => {
                     
             IMPORTANT: You have access to the COMPLETE patient health database above. Use this data to answer any question about the patient's health, test results, goals, progress, trends, and provide personalized recommendations.
                     `.trim();
-                    
-                    const chatHistory = chatMessages
-                        .slice(-5)
-                        .filter(msg => msg.role !== 'error')
-                        .map(msg => ({ role: msg.role, text: msg.text }));
-                    
-                    return { contextSummary, chatHistory };
-                };
-            
-                const handleSendMessage = async (query) => {
-                    const userMessage = {
-                        role: 'user',
-                        text: query,
-                        timestamp: new Date()
-                    };
-                    setChatMessages(prev => [...prev, userMessage]);
-                    setIsTyping(true);
-                    setError(null);
-                
-                    try {
-                        const { contextSummary, chatHistory } = preparePatientContext();
-                    
-                        const response = await axios.post(
-                            `${BASE_URL}/api/auth/ai/chat`,
-                            {
-                                query: query,
-                                contextSummary: contextSummary,
-                                chatHistory: chatHistory
-                            },
-                            { withCredentials: true }
-                        );
-                    
-                        const aiResponse = response.data.data;
+
+        const chatHistory = chatMessages
+            .slice(-5)
+            .filter(msg => msg.role !== 'error')
+            .map(msg => ({ role: msg.role, text: msg.text }));
+
+        return { contextSummary, chatHistory };
+    };
+
+    const handleSendMessage = async (query) => {
+        const userMessage = {
+            role: 'user',
+            text: query,
+            timestamp: new Date()
+        };
+        setChatMessages(prev => [...prev, userMessage]);
+        setIsTyping(true);
+        setError(null);
+
+        try {
+            const { contextSummary, chatHistory } = preparePatientContext();
+
+            const response = await axios.post(
+                `${BASE_URL}/api/auth/ai/chat`,
+                {
+                    query: query,
+                    contextSummary: contextSummary,
+                    chatHistory: chatHistory
+                },
+                { withCredentials: true }
+            );
+
+            const aiResponse = response.data.data;
 
             const aiMessage = {
                 role: 'ai',
@@ -293,25 +293,25 @@ const AIHealthAssistant = () => {
                     <Maximize2 className="w-5 h-5 text-gray-400 group-hover:text-[#00a896] transition-colors" />
                 </div>
 
-                <p className="text-base text-gray-600 mb-4">
+                <p className="text-lg text-gray-600 mb-4">
                     Click to open full chat interface for personalized health insights and recommendations.
                 </p>
 
-                <div className="flex items-center gap-2 text-base text-[#028090] font-medium">
+                <div className="flex items-center gap-2 text-lg text-[#028090] font-medium">
                     <Bot className="w-4 h-4" />
                     <span>Open AI Assistant</span>
                     <ChevronRight className="w-4 h-4 ml-auto" />
                 </div>
 
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                    <div className="flex items-center justify-center gap-20 text-xs text-gray-500">
+                    <div className="flex items-center justify-center gap-20 text-lg text-gray-500">
                         <div className="flex items-center gap-1">
                             <FileText className="w-3 h-3" />
-                            <span className="text-base"> Reports</span>
+                            <span className="text-lg"> Reports</span>
                         </div>
                         <div className="flex items-center gap-1">
                             <Target className="w-3 h-3" />
-                            <span className="text-base">Track Goals</span>
+                            <span className="text-lg">Track Goals</span>
                         </div>
                     </div>
                 </div>

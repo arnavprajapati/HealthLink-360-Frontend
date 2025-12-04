@@ -53,14 +53,14 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-white">AI Health Analysis</h3>
-                            <p className="text-[#f0f3bd] text-base">Powered by Advanced AI</p>
+                            <p className="text-[#f0f3bd] text-lg">Powered by Advanced AI</p>
                         </div>
                     </div>
 
                     {aiAnalysis.riskLevel && (
                         <div className={`flex items-center space-x-2 px-4 py-2 rounded-full font-semibold border-2 ${getRiskColor(aiAnalysis.riskLevel)}`}>
                             {getRiskIcon(aiAnalysis.riskLevel)}
-                            <span className="uppercase text-base">{getRiskLabel()}</span>
+                            <span className="uppercase text-lg">{getRiskLabel()}</span>
                         </div>
                     )}
                 </div>
@@ -72,7 +72,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                         <FileText className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
                         <div className="flex-1">
                             <h4 className="font-semibold text-blue-900 mb-2 text-lg">📋 Summary</h4>
-                            <p className="text-blue-800 text-base leading-relaxed">{aiAnalysis.summary}</p>
+                            <p className="text-blue-800 text-lg leading-relaxed">{aiAnalysis.summary}</p>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                         {(aiAnalysis.detectedConditions || detectedConditions || []).map((condition, idx) => (
                             <span
                                 key={idx}
-                                className="px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-base font-medium border border-purple-300 shadow-sm"
+                                className="px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-lg font-medium border border-purple-300 shadow-sm"
                             >
                                 {condition}
                             </span>
@@ -130,7 +130,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                                 className="bg-red-100 border border-red-300 rounded-lg p-3 flex items-center space-x-2"
                             >
                                 <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-                                <span className="text-red-900 font-medium text-base">{test}</span>
+                                <span className="text-red-900 font-medium text-lg">{test}</span>
                             </div>
                         ))}
                     </div>
@@ -155,7 +155,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
                                     key={idx}
                                     className="flex items-start space-x-3 bg-green-100 p-4 rounded-lg border border-green-300 shadow-sm"
                                 >
-                                    <div className="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-base font-bold">
+                                    <div className="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-lg font-bold">
                                         {idx + 1}
                                     </div>
                                     <span className="flex-1 text-green-900 leading-relaxed">{rec}</span>
@@ -167,7 +167,7 @@ const AIAnalysisCard = ({ aiAnalysis, detectedConditions }) => {
             )}
 
             <div className="p-4 bg-gray-100 border-t-2 border-gray-300">
-                <p className="text-base text-gray-600 text-center">
+                <p className="text-lg text-gray-600 text-center">
                     ⚠️ <span className="font-extrabold">Medical Disclaimer:</span> This AI analysis is for informational purposes only.
                     Always consult with a qualified healthcare professional for medical advice, diagnosis, and treatment.
                 </p>

@@ -75,7 +75,7 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
                 <div className="bg-gradient-to-r from-[#00a896] to-[#02c39a] px-6 py-5 flex justify-between items-center">
                     <div>
                         <h2 className="text-2xl font-bold text-white">Upload Medical Report</h2>
-                        <p className="text-[#f0f3bd] text-base mt-1">
+                        <p className="text-[#f0f3bd] text-lg mt-1">
                             🤖 AI will automatically analyze and extract all test results
                         </p>
                     </div>
@@ -96,7 +96,7 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
                     )}
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-3">
+                        <label className="block text-lg font-semibold text-gray-700 mb-3">
                             📄 Upload Your Medical Report *
                         </label>
 
@@ -137,8 +137,8 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
                                     <div className="flex items-center justify-center space-x-3 bg-white rounded-lg p-4 border border-gray-200">
                                         <FileText className="w-10 h-10 text-[#00a896]" />
                                         <div className="text-left flex-1">
-                                            <p className="text-base font-semibold text-gray-800">{file.name}</p>
-                                            <p className="text-base text-gray-500">
+                                            <p className="text-lg font-semibold text-gray-800">{file.name}</p>
+                                            <p className="text-lg text-gray-500">
                                                 {(file.size / 1024 / 1024).toFixed(2)} MB
                                             </p>
                                         </div>
@@ -161,20 +161,20 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
                                     <p className="text-lg font-semibold text-gray-700 mb-2">
                                         Drop your medical report here
                                     </p>
-                                    <p className="text-base text-gray-500 mb-3">
+                                    <p className="text-lg text-gray-500 mb-3">
                                         or click to browse files
                                     </p>
                                     <div className="inline-flex items-center px-6 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors font-medium">
                                         Choose File
                                     </div>
-                                    <p className="text-base text-gray-500 mt-4">
+                                    <p className="text-lg text-gray-500 mt-4">
                                         Supported: PNG, JPG, JPEG, PDF (Max 10MB)
                                     </p>
                                     <div className="mt-4 bg-[#f0f3bd] rounded-lg p-3 inline-block">
-                                        <p className="text-base text-[#028090] font-semibold">
+                                        <p className="text-lg text-[#028090] font-semibold">
                                             🤖 AI will automatically detect:
                                         </p>
-                                        <p className="text-base text-gray-600 mt-1">
+                                        <p className="text-lg text-gray-600 mt-1">
                                             Blood tests, vitals, ranges, and abnormalities
                                         </p>
                                     </div>
@@ -190,7 +190,7 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-base font-semibold text-gray-700 mb-2">
+                        <label className="block text-lg font-semibold text-gray-700 mb-2">
                             📝 Additional Notes (Optional)
                         </label>
                         <textarea
@@ -201,7 +201,7 @@ const AddHealthLog = ({ onClose, onSuccess }) => {
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#02c39a] focus:border-[#02c39a] resize-none"
                             placeholder="Any symptoms, concerns, or additional information about this report..."
                         />
-                        <p className="text-base text-gray-500 mt-1">
+                        <p className="text-lg text-gray-500 mt-1">
                             {description.length}/500 characters
                         </p>
                     </div>

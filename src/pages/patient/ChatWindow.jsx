@@ -21,7 +21,7 @@ const renderMessageText = (text) => {
             if (/^\d+\.\s*\*\*/.test(trimmedLine)) {
                 return (
                     <div key={idx} className="mt-3 mb-2 pb-2 border-b border-gray-100">
-                        <h3 className="text-base font-medium text-[#028090] flex items-center gap-1">
+                        <h3 className="text-lg font-medium text-[#028090] flex items-center gap-1">
                             <span className="text-[#00a896]">{trimmedLine.match(/^\d+/)[0]}.</span>
                             <span>{formattedLine.slice(1)}</span>
                         </h3>
@@ -38,20 +38,20 @@ const renderMessageText = (text) => {
                 });
                 return (
                     <div key={idx} className="flex items-start gap-2 ml-2 my-0.5">
-                        <span className="text-[#00a896] text-xs mt-1.5">●</span>
-                        <span className="text-gray-600 text-base">{cleanedLine}</span>
+                        <span className="text-[#00a896] text-lg mt-1.5">●</span>
+                        <span className="text-gray-600 text-lg">{cleanedLine}</span>
                     </div>
                 );
             }
 
-            return <p key={idx} className="mb-1 text-base text-gray-600">{formattedLine}</p>;
+            return <p key={idx} className="mb-1 text-lg text-gray-600">{formattedLine}</p>;
         }
 
         if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
             return (
                 <div key={idx} className="flex items-start gap-2 ml-2 my-0.5">
-                    <span className="text-[#00a896] text-xs mt-1.5">●</span>
-                    <span className="text-gray-600 text-base">{trimmedLine.replace(/^[•-]\s*/, '')}</span>
+                    <span className="text-[#00a896] text-lg mt-1.5">●</span>
+                    <span className="text-gray-600 text-lg">{trimmedLine.replace(/^[•-]\s*/, '')}</span>
                 </div>
             );
         }
@@ -59,7 +59,7 @@ const renderMessageText = (text) => {
         if (/^\d+\./.test(trimmedLine) && !trimmedLine.includes('**')) {
             return (
                 <div key={idx} className="mt-3 mb-2 pb-2 border-b border-gray-100">
-                    <h3 className="text-base font-medium text-[#028090] flex items-center gap-1">
+                    <h3 className="text-lg font-medium text-[#028090] flex items-center gap-1">
                         <span className="text-[#00a896]">{trimmedLine.match(/^\d+/)[0]}.</span>
                         <span>{trimmedLine.replace(/^\d+\.\s*/, '')}</span>
                     </h3>
@@ -69,20 +69,20 @@ const renderMessageText = (text) => {
 
         if (trimmedLine.endsWith(':') && trimmedLine.length < 60 && !trimmedLine.includes('**')) {
             return (
-                <p key={idx} className="font-medium text-[#028090] mt-2 mb-1 text-base">
+                <p key={idx} className="font-medium text-[#028090] mt-2 mb-1 text-lg">
                     {trimmedLine}
                 </p>
             );
         }
 
-        return trimmedLine ? <p key={idx} className="mb-1 text-gray-600 text-base leading-relaxed">{trimmedLine}</p> : <div key={idx} className="h-1" />;
+        return trimmedLine ? <p key={idx} className="mb-1 text-gray-600 text-lg leading-relaxed">{trimmedLine}</p> : <div key={idx} className="h-1" />;
     });
 };
 
 const renderSuggestionButton = (suggestion, handleQuickAction, isTyping) => (
     <button
         onClick={() => handleQuickAction(suggestion)}
-        className="block w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-[#00a896] hover:bg-[#f0f3bd]/30 transition-all text-base text-gray-700"
+        className="block w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-[#00a896] hover:bg-[#f0f3bd]/30 transition-all text-lg text-gray-700"
         disabled={isTyping}
     >
         {suggestion}
@@ -107,7 +107,7 @@ const ChatWindow = ({ chatMessages, isTyping, handleQuickAction }) => {
         <>
             {showQuickActions && (
                 <div className="p-4 bg-[#f0f3bd]/20 border-b border-gray-200 flex-shrink-0 ">
-                    <p className="text-base text-gray-600 mb-3 font-medium">Quick Actions:</p>
+                    <p className="text-lg text-gray-600 mb-3 font-medium">Quick Actions:</p>
                     <div className="grid grid-cols-2 gap-3">
                         {quickActions.map((action, idx) => (
                             <button
@@ -117,7 +117,7 @@ const ChatWindow = ({ chatMessages, isTyping, handleQuickAction }) => {
                                 disabled={isTyping}
                             >
                                 <div className="text-[#00a896]">{action.icon}</div>
-                                <span className="text-gray-700 text-base">{action.text}</span>
+                                <span className="text-gray-700 text-lg">{action.text}</span>
                             </button>
                         ))}
                     </div>
@@ -145,14 +145,14 @@ const ChatWindow = ({ chatMessages, isTyping, handleQuickAction }) => {
                                         : 'bg-white border border-gray-200 shadow-sm px-5 py-4'
                                     : 'bg-[#02c39a] text-white px-5 py-3'
                                     }`}>
-                                    <div className={`${msg.role === 'ai' ? 'text-base' : 'text-base'} leading-relaxed`}>
+                                    <div className={`${msg.role === 'ai' ? 'text-lg' : 'text-lg'} leading-relaxed`}>
                                         {renderMessageText(msg.text)}
                                     </div>
                                 </div>
 
                                 {msg.suggestions && msg.suggestions.length > 0 && (
                                     <div className="space-y-2 mt-2">
-                                        <p className="text-base text-gray-500 ml-1 flex items-center gap-1">
+                                        <p className="text-lg text-gray-500 ml-1 flex items-center gap-1">
                                             <span>💡</span>
                                             <span className="font-medium">You might also want to ask:</span>
                                         </p>
@@ -164,7 +164,7 @@ const ChatWindow = ({ chatMessages, isTyping, handleQuickAction }) => {
                                     </div>
                                 )}
 
-                                <span className="text-sm text-end font-semibold text-gray-400 ml-1">
+                                <span className="text-lg text-end font-semibold text-gray-400 ml-1">
                                     {msg.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>

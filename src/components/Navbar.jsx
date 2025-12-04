@@ -5,6 +5,7 @@ import {
     Settings,
     User,
     ChevronDown,
+    Menu,
 } from 'lucide-react';
 
 const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
@@ -14,6 +15,14 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
     return (
         <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between w-full">
+
+                {/* Hamburger Menu Button - Mobile Only */}
+                <button
+                    onClick={toggleSidebar}
+                    className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
 
                 <h2 className="text-xl font-bold text-[#00a896]"></h2>
 
@@ -38,7 +47,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                     onError={(e) => e.target.src = 'https://placehold.co/40x40/00a896/FFF?text=' + (user.email?.[0]?.toUpperCase() || 'U')}
                                 />
                             ) : (
-                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#02c39a] to-[#028090] flex items-center justify-center text-white font-semibold text-base">
+                                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#02c39a] to-[#028090] flex items-center justify-center text-white font-semibold text-lg">
                                     {user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                                 </div>
                             )}
@@ -54,16 +63,16 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                 ></div>
                                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
                                     <div className="px-4 py-3 border-b border-gray-100">
-                                        <p className="text-base font-semibold text-gray-800">
+                                        <p className="text-lg font-semibold text-gray-800">
                                             {user?.displayName || 'User'}
                                         </p>
-                                        <p className="text-base text-gray-500 truncate">
+                                        <p className="text-lg text-gray-500 truncate">
                                             {user?.email}
                                         </p>
                                     </div>
 
                                     <button
-                                        className="w-full flex items-center px-4 py-2 text-base text-gray-700 hover:bg-gray-100 transition-colors"
+                                        className="w-full flex items-center px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 transition-colors"
                                         onClick={() => setShowProfileMenu(false)}
                                     >
                                         <User className="w-4 h-4 mr-3" />
@@ -71,7 +80,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                     </button>
 
                                     <button
-                                        className="w-full flex items-center px-4 py-2 text-base text-gray-700 hover:bg-gray-100 transition-colors"
+                                        className="w-full flex items-center px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 transition-colors"
                                         onClick={() => setShowProfileMenu(false)}
                                     >
                                         <Settings className="w-4 h-4 mr-3" />
@@ -84,7 +93,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                                 setShowProfileMenu(false);
                                                 onLogout();
                                             }}
-                                            className="w-full flex items-center px-4 py-2 text-base text-red-600 hover:bg-red-50 transition-colors"
+                                            className="w-full flex items-center px-4 py-2 text-lg text-red-600 hover:bg-red-50 transition-colors"
                                         >
                                             <LogOut className="w-4 h-4 mr-3" />
                                             Sign Out
