@@ -22,6 +22,7 @@ import Layout from "./components/Layout";
 import TrackProgress from "./pages/patient/TrackProgress";
 import CalendarPage from "./pages/patient/CalendarPage";
 import PatientAppointments from "./pages/patient/PatientAppointments";
+import PatientNotesPage from "./pages/patient/PatientNotesPage";
 
 function App() {
   useAuthListener();
@@ -174,6 +175,17 @@ function App() {
             <PrivateRoute allowedRoles={['patient']}>
               <Layout>
                 <PatientAppointments />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/patient-notes"
+          element={
+            <PrivateRoute allowedRoles={['patient']}>
+              <Layout>
+                <PatientNotesPage />
               </Layout>
             </PrivateRoute>
           }

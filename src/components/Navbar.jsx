@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Bell,
@@ -7,11 +7,50 @@ import {
     User,
     ChevronDown,
     Menu,
+    FileText,
+    X,
+    MessageSquare,
+    Send
 } from 'lucide-react';
+import { useConnection } from '../context/ConnectionContext';
 
 const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
     const navigate = useNavigate();
+    const {
+        unreadNotesCount,
+        getUnreadNotesCount,
+        doctorUnreadNotes,
+        getDoctorUnreadNotes,
+        patientUnreadNotes,
+        getPatientUnreadNotes,
+        markNoteAsRead
+    } = useConnection();
+
+    useEffect(() => {
+        if (user) {
+            getUnreadNotesCount();
+            if (user.role === 'patient') {
+                getPatientUnreadNotes();
+            } else if (user.role === 'doctor') {
+                getDoctorUnreadNotes();
+            }
+        }
+    }, [user]);
+
+    // Refetch when notification bell is clicked
+    const handleBellClick = async () => {
+        if (!showNotifications) {
+            await getUnreadNotesCount();
+            if (user?.role === 'patient') {
+                await getPatientUnreadNotes();
+            } else if (user?.role === 'doctor') {
+                await getDoctorUnreadNotes();
+            }
+        }
+        setShowNotifications(!showNotifications);
+    };
 
     const handleProfileClick = () => {
         setShowProfileMenu(false);
@@ -20,6 +59,21 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         } else {
         }
     };
+
+    const handleNotificationClick = async (note) => {
+        await markNoteAsRead(note._id);
+        await getUnreadNotesCount();
+        setShowNotifications(false);
+        if (user?.role === 'patient') {
+            navigate('/patient-notes');
+        } else {
+            navigate(`/doctor/patient/${note.patient?._id || note.patient}`);
+        }
+    };
+
+    const unreadNotes = user?.role === 'patient'
+        ? (patientUnreadNotes || []).slice(0, 5)
+        : (doctorUnreadNotes || []).slice(0, 5);
 
     return (
         <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 lg:px-8">
@@ -37,11 +91,123 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
 
                 <div className="flex items-center space-x-2 sm:space-x-4">
 
+                    {/* Notifications Bell */}
+                    <div className="relative">
+                        <button
+                            onClick={handleBellClick}
+                            className="p-2 rounded-full cursor-pointer text-gray-500 hover:bg-gray-100 relative transition-colors"
+                        >
+                            <Bell className="w-5 h-5" />
+                            {unreadNotesCount > 0 && (
+                                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full px-1">
+                                    {unreadNotesCount > 9 ? '9+' : unreadNotesCount}
+                                </span>
+                            )}
+                        </button>
 
-                    <button className="p-2 rounded-full cursor-pointer text-gray-500 hover:bg-gray-100 relative transition-colors">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
+                        {/* Notifications Dropdown */}
+                        {showNotifications && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setShowNotifications(false)}
+                                ></div>
+                                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20 overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-[#00a896] to-[#028090]">
+                                        <h3 className="font-semibold text-white flex items-center gap-2">
+                                            <Bell className="w-4 h-4" />
+                                            Notifications {unreadNotesCount > 0 && `(${unreadNotesCount})`}
+                                        </h3>
+                                        <button
+                                            onClick={() => setShowNotifications(false)}
+                                            className="text-white/80 hover:text-white"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    <div className="max-h-80 overflow-y-auto">
+                                        {unreadNotesCount === 0 || unreadNotes.length === 0 ? (
+                                            <div className="px-4 py-8 text-center">
+                                                <MessageSquare className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                                                <p className="text-gray-500 text-sm">No new notifications</p>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {unreadNotes.map((note) => (
+                                                    <div
+                                                        key={note._id}
+                                                        onClick={() => handleNotificationClick(note)}
+                                                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                                                    >
+                                                        <div className="flex items-start gap-3">
+                                                            {/* Sender Avatar */}
+                                                            {note.senderRole === 'doctor' ? (
+                                                                note.doctor?.photoURL ? (
+                                                                    <img
+                                                                        src={note.doctor.photoURL}
+                                                                        alt={note.doctor.displayName}
+                                                                        className="w-10 h-10 rounded-full object-cover border-2 border-teal-100"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00a896] to-[#028090] flex items-center justify-center text-white font-bold text-sm">
+                                                                        {note.doctor?.displayName?.charAt(0)?.toUpperCase() || 'D'}
+                                                                    </div>
+                                                                )
+                                                            ) : (
+                                                                (note.patient?.photoURL || note.sender?.photoURL) ? (
+                                                                    <img
+                                                                        src={note.patient?.photoURL || note.sender?.photoURL}
+                                                                        alt={note.patient?.displayName || note.sender?.displayName}
+                                                                        className="w-10 h-10 rounded-full object-cover border-2 border-green-100"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-sm">
+                                                                        {note.patient?.displayName?.charAt(0)?.toUpperCase() || note.sender?.displayName?.charAt(0)?.toUpperCase() || 'P'}
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                                                    {note.title}
+                                                                </p>
+                                                                <p className="text-xs text-gray-600 mt-0.5 font-medium">
+                                                                    {note.senderRole === 'doctor'
+                                                                        ? `Dr. ${note.doctor?.displayName || 'Doctor'}`
+                                                                        : note.patient?.displayName || note.sender?.displayName || 'Patient'}
+                                                                </p>
+                                                                <p className="text-xs text-gray-400 mt-1">
+                                                                    {new Date(note.createdAt).toLocaleDateString('en-US', {
+                                                                        month: 'short',
+                                                                        day: 'numeric',
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit'
+                                                                    })}
+                                                                </p>
+                                                            </div>
+                                                            <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-2"></div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                                <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                                                    <button
+                                                        onClick={() => {
+                                                            setShowNotifications(false);
+                                                            navigate(user?.role === 'patient' ? '/patient-notes' : '/doctor-patients');
+                                                        }}
+                                                        className="w-full text-center text-sm text-[#00a896] hover:text-[#028090] font-medium"
+                                                    >
+                                                        View All Notes →
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
 
                     <div className="relative">
                         <button

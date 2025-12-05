@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useConnection } from '../../context/ConnectionContext';
 import {
     Calendar,
@@ -12,8 +12,11 @@ import {
     Stethoscope,
     MapPin,
     Phone,
-    Mail
+    Mail,
+    Plus,
+    CalendarPlus
 } from 'lucide-react';
+import RequestAppointmentModal from './RequestAppointmentModal';
 
 const PatientAppointments = () => {
     const {
@@ -23,6 +26,8 @@ const PatientAppointments = () => {
         getLinkedDoctors,
         loading
     } = useConnection();
+
+    const [showRequestModal, setShowRequestModal] = useState(false);
 
     useEffect(() => {
         getPatientAppointments();
@@ -173,13 +178,25 @@ const PatientAppointments = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#00a896] to-[#028090] rounded-xl shadow-lg p-6 text-white">
-                <div className="flex items-center gap-3 mb-2">
-                    <Calendar className="w-8 h-8" />
-                    <h1 className="text-2xl font-bold">My Appointments</h1>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <Calendar className="w-8 h-8" />
+                            <h1 className="text-2xl font-bold">My Appointments</h1>
+                        </div>
+                        <p className="text-teal-100">
+                            View and manage your scheduled appointments with your healthcare providers
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setShowRequestModal(true)}
+                        disabled={!linkedDoctors || linkedDoctors.length === 0}
+                        className="px-4 py-2 bg-white text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <CalendarPlus className="w-5 h-5" />
+                        Request Appointment
+                    </button>
                 </div>
-                <p className="text-teal-100">
-                    View and manage your scheduled appointments with your healthcare providers
-                </p>
             </div>
 
             {/* Stats Cards */}
@@ -322,6 +339,67 @@ const PatientAppointments = () => {
                     </div>
                 </div>
             )}
+
+            {/* Pending Requests */}
+            {appointments?.filter(a => a.status === 'pending' && a.requestedBy === 'patient').length > 0 && (
+                <div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <div className="w-2 h-6 bg-yellow-400 rounded-full"></div>
+                        Pending Requests
+                    </h2>
+                    <div className="space-y-4">
+                        {appointments.filter(a => a.status === 'pending' && a.requestedBy === 'patient').map((appointment) => (
+                            <div
+                                key={appointment._id}
+                                className="bg-yellow-50 border border-yellow-200 rounded-xl p-4"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        {appointment.doctor?.photoURL ? (
+                                            <img
+                                                src={appointment.doctor.photoURL}
+                                                alt={appointment.doctor.displayName}
+                                                className="w-12 h-12 rounded-full border-2 border-yellow-200 object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-yellow-200 flex items-center justify-center text-yellow-700 font-bold">
+                                                {appointment.doctor?.displayName?.charAt(0)?.toUpperCase() || 'D'}
+                                            </div>
+                                        )}
+                                        <div>
+                                            <h3 className="font-semibold text-gray-900">
+                                                Dr. {appointment.doctor?.displayName}
+                                            </h3>
+                                            <p className="text-sm text-gray-600">
+                                                {new Date(appointment.date).toLocaleDateString('en-US', {
+                                                    weekday: 'short',
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                })} at {appointment.time}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+                                        Awaiting Response
+                                    </span>
+                                </div>
+                                {appointment.requestMessage && (
+                                    <p className="mt-3 text-sm text-gray-600 bg-white/50 rounded-lg p-2">
+                                        "{appointment.requestMessage}"
+                                    </p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Request Appointment Modal */}
+            <RequestAppointmentModal
+                isOpen={showRequestModal}
+                onClose={() => setShowRequestModal(false)}
+                doctors={linkedDoctors}
+            />
         </div>
     );
 };
