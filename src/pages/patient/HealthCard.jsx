@@ -1,8 +1,8 @@
 import React from 'react';
-import { Calendar, Eye, Trash2, FileText } from 'lucide-react';
+import { Calendar, Eye, Trash2, FileText, Share2, Lock, Users, UserCheck } from 'lucide-react';
 import { getDiseaseConfig } from '../../utils/diseaseConfig';
 
-const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate }) => {
+const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, onShare, formatDate, readOnly = false }) => {
     const config = getDiseaseConfig(log.diseaseType);
 
     const readingsArray = log.readings || [];
@@ -11,7 +11,6 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
         return acc;
     }, {});
 
-    // Check if document is invalid (non-medical) - defined first as it's used by getDisplayTitle
     const isInvalidDocument = () => {
         const summary = log.aiAnalysis?.summary?.toLowerCase() || '';
         const hasNoMedicalData = summary.includes('resume') ||
@@ -22,9 +21,7 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
         return hasNoMedicalData;
     };
 
-    // Get display title - for 'Other' type, use detected condition or first detected condition from AI
     const getDisplayTitle = () => {
-        // First check if invalid document
         if (isInvalidDocument()) {
             return 'Invalid Document';
         }
@@ -44,6 +41,22 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
         return 'Medical Report';
     };
 
+    // Get sharing status icon and color
+    const getSharingStatus = () => {
+        const visibility = log.sharing?.visibility || 'all_doctors';
+        switch (visibility) {
+            case 'private':
+                return { icon: Lock, color: 'text-red-500', label: 'Private' };
+            case 'specific_doctors':
+                return { icon: UserCheck, color: 'text-blue-500', label: 'Specific Doctors' };
+            default:
+                return { icon: Users, color: 'text-green-500', label: 'All Doctors' };
+        }
+    };
+
+    const sharingStatus = getSharingStatus();
+    const SharingIcon = sharingStatus.icon;
+
     return (
         <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
             <div className="bg-gradient-to-r from-[#f0f3bd] to-[#02c39a]/20 p-4 border-b border-gray-100">
@@ -59,27 +72,38 @@ const HealthCard = ({ log, onViewDetails, onViewFullReport, onDelete, formatDate
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
+                        {!readOnly && (
+                            <button
+                                onClick={() => onShare && onShare(log)}
+                                className={`p-2 ${sharingStatus.color} cursor-pointer hover:bg-gray-100 rounded-lg transition-colors`}
+                                title={`Sharing: ${sharingStatus.label}`}
+                            >
+                                <SharingIcon className="w-5 h-5" />
+                            </button>
+                        )}
                         <button
                             onClick={() => onViewFullReport && onViewFullReport(log)}
                             className="p-2 text-purple-600 cursor-pointer hover:bg-purple-50 rounded-lg transition-colors"
                             title="View Full Report"
                         >
-                            <FileText className="w-4 h-4" />
+                            <FileText className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => onViewDetails(log)}
                             className="p-2 text-[#00a896] cursor-pointer hover:bg-[#f0f3bd] rounded-lg transition-colors"
                             title="Quick View"
                         >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-5 h-5" />
                         </button>
-                        <button
-                            onClick={() => onDelete(log._id)}
-                            className="p-2 text-red-600 cursor-pointer hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
+                        {!readOnly && (
+                            <button
+                                onClick={() => onDelete(log._id)}
+                                className="p-2 text-red-600 cursor-pointer hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete"
+                            >
+                                <Trash2 className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

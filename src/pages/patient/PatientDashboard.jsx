@@ -11,6 +11,7 @@ import DetailModal from './DetailModal';
 import FullReportModal from './FullReportModal';
 import AIHealthAssistant from './AIHealthAssistant';
 import EmptyState from './EmptyState';
+import ShareModal from './ShareModal';
 
 import GoalSettingModal from './GoalSettingModal';
 import TrendsDashboard from './TrendsDashboard';
@@ -25,6 +26,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
 
     const [showVitalsModal, setShowVitalsModal] = useState(false);
     const [showConnectModal, setShowConnectModal] = useState(false);
+    const [shareModalLog, setShareModalLog] = useState(null);
 
     const { logs, loading, getHealthLogs, deleteHealthLog, getCurrentVitals } = useHealth();
     const { user } = useSelector((state) => state.auth);
@@ -113,6 +115,7 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
                                     onViewDetails={setSelectedLog}
                                     onViewFullReport={setSelectedFullReport}
                                     onDelete={handleDelete}
+                                    onShare={setShareModalLog}
                                     formatDate={formatDate}
                                 />
                             ))}
@@ -176,6 +179,14 @@ const PatientDashboard = ({ showAddModal, setShowAddModal }) => {
             <ConnectDoctorModal
                 isOpen={showConnectModal}
                 onClose={() => setShowConnectModal(false)}
+            />
+
+            <ShareModal
+                isOpen={!!shareModalLog}
+                onClose={() => setShareModalLog(null)}
+                item={shareModalLog}
+                itemType="healthLog"
+                onSuccess={() => fetchHealthLogs()}
             />
         </div>
     );

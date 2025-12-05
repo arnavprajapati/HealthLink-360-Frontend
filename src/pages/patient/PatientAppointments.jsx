@@ -221,81 +221,92 @@ const PatientAppointments = () => {
                 </div>
             </div>
 
-            {/* Upcoming Appointments */}
-            <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <div className="w-2 h-6 bg-[#00a896] rounded-full"></div>
-                    Upcoming Appointments
-                </h2>
-                {upcomingAppointments.length > 0 ? (
-                    <div className="space-y-4">
-                        {upcomingAppointments.map((appointment) => (
-                            <AppointmentCard key={appointment._id} appointment={appointment} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center">
-                        <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-700 mb-2">No Upcoming Appointments</h3>
-                        <p className="text-gray-500">
-                            Your doctor will schedule appointments for you. Connect with a doctor to get started.
-                        </p>
-                    </div>
-                )}
-            </div>
+            {/* Main Content - Appointments (Left) and Doctors (Right) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Upcoming Appointments - Left Side */}
+                <div className="lg:col-span-2">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <div className="w-2 h-6 bg-[#00a896] rounded-full"></div>
+                        Upcoming Appointments
+                    </h2>
+                    {upcomingAppointments.length > 0 ? (
+                        <div className="space-y-4">
+                            {upcomingAppointments.map((appointment) => (
+                                <AppointmentCard key={appointment._id} appointment={appointment} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center">
+                            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Upcoming Appointments</h3>
+                            <p className="text-gray-500">
+                                Your doctor will schedule appointments for you. Connect with a doctor to get started.
+                            </p>
+                        </div>
+                    )}
+                </div>
 
-            {/* Connected Doctors */}
-            {linkedDoctors && linkedDoctors.length > 0 && (
-                <div>
+                {/* Connected Doctors - Right Side */}
+                <div className="lg:col-span-1">
                     <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
                         My Doctors
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {linkedDoctors.map((doctor) => (
-                            <div
-                                key={doctor._id}
-                                className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow"
-                            >
-                                <div className="flex items-center gap-4">
-                                    {doctor.photoURL ? (
-                                        <img
-                                            src={doctor.photoURL}
-                                            alt={doctor.displayName}
-                                            className="w-14 h-14 rounded-full border-2 border-blue-200 object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
-                                            {doctor.displayName?.charAt(0)?.toUpperCase() || 'D'}
-                                        </div>
-                                    )}
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-gray-900">
-                                            Dr. {doctor.displayName}
-                                        </h3>
-                                        <p className="text-lg text-gray-600">
-                                            {doctor.doctorProfile?.speciality || 'General Physician'}
-                                        </p>
-                                        {doctor.doctorProfile?.clinicName && (
-                                            <p className="text-lg text-gray-500 mt-1 flex items-center gap-1">
-                                                <MapPin className="w-3 h-3" />
-                                                {doctor.doctorProfile.clinicName}
-                                            </p>
+                    {linkedDoctors && linkedDoctors.length > 0 ? (
+                        <div className="space-y-4">
+                            {linkedDoctors.map((doctor) => (
+                                <div
+                                    key={doctor._id}
+                                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        {doctor.photoURL ? (
+                                            <img
+                                                src={doctor.photoURL}
+                                                alt={doctor.displayName}
+                                                className="w-14 h-14 rounded-full border-2 border-blue-200 object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
+                                                {doctor.displayName?.charAt(0)?.toUpperCase() || 'D'}
+                                            </div>
                                         )}
+                                        <div className="flex-1">
+                                            <h3 className="font-semibold text-gray-900">
+                                                Dr. {doctor.displayName}
+                                            </h3>
+                                            <p className="text-lg text-gray-600">
+                                                {doctor.doctorProfile?.speciality || 'General Physician'}
+                                            </p>
+                                            {doctor.doctorProfile?.clinicName && (
+                                                <p className="text-lg text-gray-500 mt-1 flex items-center gap-1">
+                                                    <MapPin className="w-3 h-3" />
+                                                    {doctor.doctorProfile.clinicName}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
                                     </div>
-                                    <CheckCircle className="w-6 h-6 text-green-500" />
+                                    <div className="mt-3 pt-3 border-t border-gray-100 text-lg text-gray-500">
+                                        <span className="flex items-center gap-1">
+                                            <Mail className="w-3 h-3" />
+                                            {doctor.email}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-4 text-lg text-gray-500">
-                                    <span className="flex items-center gap-1">
-                                        <Mail className="w-4 h-4" />
-                                        {doctor.email}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
+                            <User className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2">No Doctors Connected</h3>
+                            <p className="text-sm text-gray-500">
+                                Connect with a doctor to get started.
+                            </p>
+                        </div>
+                    )}
                 </div>
-            )}
+            </div>
 
             {/* Past Appointments */}
             {pastAppointments.length > 0 && (
