@@ -18,7 +18,6 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         if (user?.role === 'doctor') {
             navigate('/doctor-profile');
         } else {
-            // navigate('/patient-profile'); // Uncomment when patient profile is ready
         }
     };
 
@@ -82,10 +81,8 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                                     </div>
 
                                     <button
-                                        className="w-full flex items-center px-4 py-2 text-base text-gray-700 hover:bg-gray-100 transition-colors"
-                                        onClick={handleProfileClick}
                                         className="w-full flex items-center px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 transition-colors"
-                                        onClick={() => setShowProfileMenu(false)}
+                                        onClick={handleProfileClick}
                                     >
                                         <User className="w-4 h-4 mr-3" />
                                         Profile Settings

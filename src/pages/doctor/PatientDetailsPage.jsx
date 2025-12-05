@@ -24,7 +24,6 @@ import {
 import ScheduleAppointmentModal from './ScheduleAppointmentModal';
 import GoalDetailModal from '../patient/GoalDetailModal';
 
-// Reuse patient components
 import HealthCard from '../patient/HealthCard';
 import FullReportModal from '../patient/FullReportModal';
 import DetailModal from '../patient/DetailModal';
@@ -410,7 +409,7 @@ const PatientDetailsPage = () => {
                     {/* AI Summary Button */}
                     <button
                         onClick={() => generatePatientSummary(patientId)}
-                        disabled={loading} 
+                        disabled={loading}
                         className="px-4 py-2 cursor-pointer bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-base font-medium disabled:opacity-50 flex items-center gap-2"
                     >
                         <Sparkles className="w-4 h-4" />
@@ -525,8 +524,8 @@ const PatientDetailsPage = () => {
                                     log={log}
                                     onViewDetails={setSelectedLog}
                                     onViewFullReport={setSelectedFullReport}
-                                    onDelete={() => { }} // Doctors can't delete patient logs
                                     formatDate={formatDate}
+                                    readOnly={true}
                                 />
                             ))}
                         </div>

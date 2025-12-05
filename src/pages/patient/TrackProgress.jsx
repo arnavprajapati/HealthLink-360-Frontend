@@ -3,10 +3,11 @@ import {
     Target, Plus, TrendingUp, TrendingDown, Activity,
     Calendar, CheckCircle, Clock, AlertCircle, Edit, Trash2,
     Award, BarChart3, Filter, X, Eye, Sparkles, ChevronRight,
-    Zap, Trophy, Flame, CalendarCheck
+    Zap, Trophy, Flame, CalendarCheck, Lock, Users, UserCheck
 } from 'lucide-react';
 import { useGoals } from '../../context/GoalsContext';
 import GoalDetailModal from './GoalDetailModal';
+import ShareModal from './ShareModal';
 
 const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
     const { createGoal, editGoal, loading, checkGoogleCalendarStatus, createGoogleCalendarEvent, googleCalendarConnected } = useGoals();
@@ -538,8 +539,8 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                         className="sr-only peer"
                                     />
                                     <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${isCalendarConnected
-                                            ? 'bg-gray-300 peer-checked:bg-[#00a896]'
-                                            : 'bg-gray-200 cursor-not-allowed'
+                                        ? 'bg-gray-300 peer-checked:bg-[#00a896]'
+                                        : 'bg-gray-200 cursor-not-allowed'
                                         }`}></div>
                                 </label>
                             </div>
@@ -620,7 +621,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
 };
 
 // Goal Card Component
-const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
+const GoalCard = ({ goal, onEdit, onDelete, onView, onShare }) => {
     const getProgressColor = (progress) => {
         if (progress >= 75) return 'from-green-500 to-green-600';
         if (progress >= 50) return 'from-[#00a896] to-[#02c39a]';
@@ -659,6 +660,22 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
         return icons[param] || '🎯';
     };
 
+    // Get sharing status
+    const getSharingStatus = () => {
+        const visibility = goal.sharing?.visibility || 'all_doctors';
+        switch (visibility) {
+            case 'private':
+                return { icon: Lock, color: 'text-red-500', label: 'Private' };
+            case 'specific_doctors':
+                return { icon: UserCheck, color: 'text-blue-500', label: 'Specific Doctors' };
+            default:
+                return { icon: Users, color: 'text-green-500', label: 'All Doctors' };
+        }
+    };
+
+    const sharingStatus = getSharingStatus();
+    const SharingIcon = sharingStatus.icon;
+
     const daysRemaining = goal.deadline
         ? Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24))
         : null;
@@ -685,6 +702,13 @@ const GoalCard = ({ goal, onEdit, onDelete, onView }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-1  transition-opacity">
+                        <button
+                            onClick={() => onShare(goal)}
+                            className={`p-2 cursor-pointer ${sharingStatus.color} hover:bg-gray-100 rounded-full transition-colors`}
+                            title={`Sharing: ${sharingStatus.label}`}
+                        >
+                            <SharingIcon className="w-5 h-5" />
+                        </button>
                         <button
                             onClick={() => onView(goal)}
                             className="p-2 cursor-pointer text-[#00a896] hover:bg-[#f0f3bd] rounded-full transition-colors"
@@ -850,6 +874,7 @@ const TrackProgress = () => {
     const [editingGoal, setEditingGoal] = useState(null);
     const [selectedGoal, setSelectedGoal] = useState(null);
     const [filterStatus, setFilterStatus] = useState('all');
+    const [shareModalGoal, setShareModalGoal] = useState(null);
 
     useEffect(() => {
         loadData();
@@ -1094,6 +1119,7 @@ const TrackProgress = () => {
                             onEdit={handleEditGoal}
                             onDelete={handleDeleteGoal}
                             onView={handleViewGoal}
+                            onShare={setShareModalGoal}
                         />
                     ))}
                 </div>
@@ -1118,6 +1144,14 @@ const TrackProgress = () => {
                     onAnalyze={handleAnalyzeGoal}
                 />
             )}
+
+            <ShareModal
+                isOpen={!!shareModalGoal}
+                onClose={() => setShareModalGoal(null)}
+                item={shareModalGoal}
+                itemType="healthGoal"
+                onSuccess={() => loadData()}
+            />
         </div>
     );
 };
