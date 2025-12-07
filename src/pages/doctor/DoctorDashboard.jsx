@@ -103,7 +103,7 @@ const DoctorDashboard = () => {
                                     )}
                                     <div>
                                         <p className="font-medium text-gray-900">{request.patient?.displayName}</p>
-                                        <p className="text-sm text-gray-500">
+                                        <p className="text-lg text-gray-500">
                                             {formatAppointmentDate(request.date)} at {request.time} • {request.type}
                                         </p>
                                         {request.requestMessage && (
@@ -114,13 +114,13 @@ const DoctorDashboard = () => {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleAppointmentResponse(request._id, 'approved')}
-                                        className="px-3 py-1.5 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600"
+                                        className="px-3 py-1.5 bg-green-500 text-white text-lg rounded-lg hover:bg-green-600"
                                     >
                                         Approve
                                     </button>
                                     <button
                                         onClick={() => handleAppointmentResponse(request._id, 'rejected')}
-                                        className="px-3 py-1.5 bg-red-100 text-red-600 text-sm rounded-lg hover:bg-red-200"
+                                        className="px-3 py-1.5 bg-red-100 text-red-600 text-lg rounded-lg hover:bg-red-200"
                                     >
                                         Decline
                                     </button>
@@ -164,12 +164,12 @@ const DoctorDashboard = () => {
                                             <h3 className="font-semibold text-gray-900">
                                                 {appointment.patient?.displayName || 'Patient'}
                                             </h3>
-                                            <p className="text-sm text-gray-500">{appointment.type}</p>
+                                            <p className="text-lg text-gray-500">{appointment.type}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="text-right">
-                                            <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                                            <span className="text-lg font-medium text-gray-700 flex items-center gap-1">
                                                 <Clock className="w-4 h-4" />
                                                 {appointment.time}
                                             </span>
@@ -186,7 +186,7 @@ const DoctorDashboard = () => {
                             <div className="text-center py-8">
                                 <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                                 <h3 className="font-semibold text-gray-700 mb-1">No Appointments Today</h3>
-                                <p className="text-sm text-gray-500">Schedule appointments with patients</p>
+                                <p className="text-lg text-gray-500">Schedule appointments with patients</p>
                             </div>
                         )}
                     </div>
@@ -198,14 +198,14 @@ const DoctorDashboard = () => {
                         return aptDate.getTime() > today.getTime() && apt.status !== 'cancelled' && apt.status !== 'rejected';
                     }).length > 0 && (
                             <div className="mt-4 pt-4 border-t border-gray-100">
-                                <h4 className="text-sm font-medium text-gray-600 mb-3">Upcoming Appointments</h4>
+                                <h4 className="text-lg font-medium text-gray-600 mb-3">Upcoming Appointments</h4>
                                 <div className="space-y-2">
                                     {appointments.filter(apt => {
                                         const aptDate = new Date(apt.date);
                                         aptDate.setHours(0, 0, 0, 0);
                                         return aptDate.getTime() > today.getTime() && apt.status !== 'cancelled' && apt.status !== 'rejected';
                                     }).slice(0, 3).map((apt) => (
-                                        <div key={apt._id} className="flex items-center justify-between p-2 bg-blue-50 rounded-lg text-sm">
+                                        <div key={apt._id} className="flex items-center justify-between p-2 bg-blue-50 rounded-lg lgm">
                                             <div className="flex items-center gap-2">
                                                 <CalendarDays className="w-4 h-4 text-blue-500" />
                                                 <span className="font-medium text-gray-700">{apt.patient?.displayName}</span>

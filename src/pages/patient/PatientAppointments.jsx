@@ -184,14 +184,14 @@ const PatientAppointments = () => {
                             <Calendar className="w-8 h-8" />
                             <h1 className="text-2xl font-bold">My Appointments</h1>
                         </div>
-                        <p className="text-teal-100">
+                        <p className="text-teal-100 text-lg">
                             View and manage your scheduled appointments with your healthcare providers
                         </p>
                     </div>
                     <button
                         onClick={() => setShowRequestModal(true)}
                         disabled={!linkedDoctors || linkedDoctors.length === 0}
-                        className="px-4 py-2 bg-white text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 cursor-pointer text-lg bg-white text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <CalendarPlus className="w-5 h-5" />
                         Request Appointment

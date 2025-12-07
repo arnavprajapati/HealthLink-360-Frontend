@@ -114,7 +114,7 @@ const PatientNotesPage = () => {
                     </div>
                     <button
                         onClick={() => setShowNewNoteModal(true)}
-                        className="px-4 py-2 bg-white text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center gap-2 font-medium"
+                        className="px-4 py-2 bg-white text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors cursor-pointer text-lg flex items-center gap-2 font-medium"
                     >
                         <Plus className="w-5 h-5" />
                         New Note
@@ -207,7 +207,7 @@ const PatientNotesPage = () => {
                                             <div className="flex items-center gap-2">
                                                 <h3 className="font-semibold text-gray-900">{note.title}</h3>
                                                 {!note.isRead && note.senderRole === 'doctor' && (
-                                                    <span className="px-2 py-0.5 bg-red-100 text-red-600 text-sm font-medium rounded-full">
+                                                    <span className="px-2 py-0.5 bg-red-100 text-red-600 text-lg font-medium rounded-full">
                                                         New
                                                     </span>
                                                 )}
@@ -220,7 +220,7 @@ const PatientNotesPage = () => {
                                                     <span className="text-gray-400"> • {note.doctor.doctorProfile.speciality}</span>
                                                 )}
                                             </p>
-                                            <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                                            <p className="text-lg text-gray-400 mt-1 flex items-center gap-1">
                                                 <Clock className="w-3 h-3" />
                                                 {formatDate(note.createdAt)}
                                             </p>
@@ -228,7 +228,7 @@ const PatientNotesPage = () => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {note.replies?.length > 0 && (
-                                            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                                            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-lg rounded-full">
                                                 {note.replies.length} replies
                                             </span>
                                         )}
@@ -264,7 +264,7 @@ const PatientNotesPage = () => {
                                                             <span className="text-lg font-medium text-gray-700">
                                                                 {reply.senderRole === 'patient' ? 'You' : `Dr. ${reply.sender?.displayName}`}
                                                             </span>
-                                                            <span className="text-sm text-gray-400">
+                                                            <span className="text-lg text-gray-400">
                                                                 {formatDate(reply.createdAt)}
                                                             </span>
                                                         </div>
@@ -281,7 +281,7 @@ const PatientNotesPage = () => {
                                                 value={replyText}
                                                 onChange={(e) => setReplyText(e.target.value)}
                                                 placeholder="Type your reply..."
-                                                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896] focus:border-transparent"
+                                                className="flex-1 text-lg px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896] focus:border-transparent"
                                                 onKeyPress={(e) => e.key === 'Enter' && handleReply(note._id)}
                                             />
                                             <button
@@ -315,20 +315,20 @@ const PatientNotesPage = () => {
                             <h3 className="text-lg font-bold text-gray-900">Send Note to Doctor</h3>
                             <button
                                 onClick={() => setShowNewNoteModal(false)}
-                                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+                                className="p-2 cursor-pointer text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-5 h-6" />
                             </button>
                         </div>
                         <form onSubmit={handleSendNewNote} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-lg font-medium text-gray-700 mb-1">
+                                <label className="block text-lg text-lg font-medium text-gray-700 mb-1">
                                     Select Doctor
                                 </label>
                                 <select
                                     value={newNote.doctorId}
                                     onChange={(e) => setNewNote({ ...newNote, doctorId: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896]"
+                                    className="w-full cursor-pointer text-lg px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896]"
                                     required
                                 >
                                     <option value="">Choose a doctor...</option>
@@ -348,7 +348,7 @@ const PatientNotesPage = () => {
                                     value={newNote.title}
                                     onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
                                     placeholder="e.g., Question about medication"
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896]"
+                                    className="w-full text-lg px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896]"
                                     required
                                 />
                             </div>
@@ -361,7 +361,7 @@ const PatientNotesPage = () => {
                                     onChange={(e) => setNewNote({ ...newNote, description: e.target.value })}
                                     placeholder="Type your message here..."
                                     rows={4}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896] resize-none"
+                                    className="w-full text-lg px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00a896] resize-none"
                                     required
                                 />
                             </div>
