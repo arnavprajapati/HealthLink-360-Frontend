@@ -18,7 +18,7 @@ const Layout = ({ children, onAddRecord }) => {
     const handleLogout = async () => {
         try {
             await dispatch(logoutUser()).unwrap();
-            navigate('/login');
+            navigate('/');
         } catch (err) {
             console.error('Logout failed:', err);
         }
