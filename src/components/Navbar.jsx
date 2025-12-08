@@ -76,7 +76,7 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         : (doctorUnreadNotes || []).slice(0, 5);
 
     return (
-        <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-22 flex items-center px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between w-full">
 
                 {/* Hamburger Menu Button - Mobile Only */}

@@ -62,7 +62,7 @@ const Sidebar = ({ userRole }) => {
 
     return (
         <div className="w-64 min-w-64 h-screen bg-white shadow-xl flex flex-col">
-            <div className="flex items-center justify-start p-6 border-b border-gray-100">
+            <div className="flex items-center justify-start p-6 border-b border-gray-100" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
                 <div className="p-2 bg-[#00a896] rounded-full text-white shadow-lg">
                     <HeartPulse className="w-6 h-6" />
                 </div>
