@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginWithEmail, loginWithGoogle, clearError } from '../../app/reducers/authSlice';
+import { X } from 'lucide-react';
+import { FcGoogle } from 'react-icons/fc';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +16,8 @@ const Login = () => {
   const { loading, error, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    dispatch(clearError());
+    
     if (user) {
       if (user.role === 'doctor') {
         navigate('/doctor-dashboard');
@@ -21,7 +25,6 @@ const Login = () => {
         navigate('/patient-dashboard');
       }
     }
-    dispatch(clearError());
   }, [user, navigate, dispatch]);
 
   async function handleSubmit(e) {
@@ -41,8 +44,20 @@ const Login = () => {
     }
   }
 
+  const handleClose = () => {
+    navigate('/');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
+      <button 
+        onClick={handleClose}
+        className="absolute cursor-pointer top-4 right-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a]"
+        aria-label="Close Login"
+      >
+        <X className="h-6 w-6" />
+      </button>
+
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -60,7 +75,7 @@ const Login = () => {
           <button
             type="button"
             onClick={() => setRole('patient')}
-            className={`px-6 py-2 rounded-lg font-medium ${role === 'patient'
+            className={`px-6 cursor-pointer py-2 rounded-lg font-medium ${role === 'patient'
               ? 'bg-[#00a896] text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -70,7 +85,7 @@ const Login = () => {
           <button
             type="button"
             onClick={() => setRole('doctor')}
-            className={`px-6 py-2 rounded-lg font-medium ${role === 'doctor'
+            className={`px-6 cursor-pointer py-2 rounded-lg font-medium ${role === 'doctor'
               ? 'bg-[#00a896] text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -107,7 +122,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-[#00a896] hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`group relative cursor-pointer w-full flex justify-center py-2 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-[#00a896] hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
@@ -128,8 +143,9 @@ const Login = () => {
             <button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              className="w-full cursor-pointer flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-lg font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             >
+              <FcGoogle className="h-6 w-6 mr-2" /> 
               Sign in with Google as {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
           </div>

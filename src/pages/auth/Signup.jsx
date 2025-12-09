@@ -2,16 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { signupWithEmail, loginWithGoogle, clearError } from '../../app/reducers/authSlice';
+import { X } from 'lucide-react';
+import { FcGoogle } from 'react-icons/fc';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [role, setRole] = useState('patient');
-  const [speciality, setSpeciality] = useState('');
-  const [clinicName, setClinicName] = useState('');
-  const [experience, setExperience] = useState('');
-  const [qualification, setQualification] = useState('');
 
   const [validationError, setValidationError] = useState('');
 
@@ -21,6 +19,8 @@ const Signup = () => {
   const { loading, error: reduxError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    dispatch(clearError());
+
     if (user) {
       if (user.role === 'doctor') {
         navigate('/doctor-dashboard');
@@ -28,7 +28,6 @@ const Signup = () => {
         navigate('/patient-dashboard');
       }
     }
-    dispatch(clearError());
   }, [user, navigate, dispatch]);
 
   async function handleSubmit(e) {
@@ -44,10 +43,6 @@ const Signup = () => {
         email,
         password,
         role,
-        speciality: role === 'doctor' ? speciality : undefined,
-        clinicName: role === 'doctor' ? clinicName : undefined,
-        experience: role === 'doctor' ? experience : undefined,
-        qualification: role === 'doctor' ? qualification : undefined
       })).unwrap();
     } catch (err) {
       console.error("Signup Failed", err);
@@ -61,9 +56,21 @@ const Signup = () => {
       console.error("Google Sign In Failed", err);
     }
   }
+  
+  const handleClose = () => {
+    navigate('/');
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative"> 
+      <button 
+        onClick={handleClose}
+        className="absolute top-4 cursor-pointer right-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a]"
+        aria-label="Close Signup"
+      >
+        <X className="h-6 w-6" />
+      </button>
+
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -81,7 +88,7 @@ const Signup = () => {
           <button
             type="button"
             onClick={() => setRole('patient')}
-            className={`px-6 py-2 rounded-lg font-medium ${role === 'patient'
+            className={`px-6 cursor-pointer py-2 rounded-lg font-medium ${role === 'patient'
               ? 'bg-[#00a896] text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -91,7 +98,7 @@ const Signup = () => {
           <button
             type="button"
             onClick={() => setRole('doctor')}
-            className={`px-6 py-2 rounded-lg font-medium ${role === 'doctor'
+            className={`px-6 cursor-pointer py-2 rounded-lg font-medium ${role === 'doctor'
               ? 'bg-[#00a896] text-white'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
@@ -134,56 +141,11 @@ const Signup = () => {
             </div>
           </div>
 
-          {role === 'doctor' && (
-            <div className="rounded-md shadow-sm -space-y-px mt-4">
-              <div>
-                <input
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-base"
-                  placeholder="Speciality (e.g. Cardiologist)"
-                  value={speciality}
-                  onChange={(e) => setSpeciality(e.target.value)}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-base"
-                  placeholder="Clinic Name"
-                  value={clinicName}
-                  onChange={(e) => setClinicName(e.target.value)}
-                />
-              </div>
-              <div>
-                <input
-                  type="number"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-base"
-                  placeholder="Years of Experience"
-                  value={experience}
-                  onChange={(e) => setExperience(e.target.value)}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-base"
-                  placeholder="Qualification (e.g. MBBS, MD)"
-                  value={qualification}
-                  onChange={(e) => setQualification(e.target.value)}
-                />
-              </div>
-            </div>
-          )}
-
           <div>
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-[#00a896] hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`group relative cursor-pointer w-full flex justify-center py-2 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-[#00a896] hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {loading ? 'Creating Account...' : `Sign Up as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
             </button>
@@ -204,8 +166,9 @@ const Signup = () => {
             <button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              className="w-full cursor-pointer flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-lg font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             >
+              <FcGoogle className="h-6 w-6 mr-2" />
               Sign up with Google as {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
           </div>
