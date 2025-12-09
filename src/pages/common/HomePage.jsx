@@ -1,7 +1,6 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { TrendingUp, Brain, Calendar, Users, Shield, Activity, Heart, ArrowRight, HeartPulse } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
 
 const sectionIDs = ['hero', 'features', 'how-it-works'];
 const sectionNames = ['Home', 'Features', 'How It Works'];
@@ -80,34 +79,38 @@ const HomePage = () => {
     const smoothX = useSpring(x, { stiffness: 80, damping: 25, mass: 0.1 })
 
     const scrollToSection = (index) => {
-        const totalHeight = containerRef.current.offsetHeight;
-        const scrollPosition = (totalHeight / 3) * index;
-
+        if (!containerRef.current) return;
+        
+        const windowHeight = window.innerHeight;
+        const totalContainerHeight = containerRef.current.offsetHeight;
+        const scrollableHeight = totalContainerHeight - windowHeight;
+        
+        const scrollPercentage = index / (sectionIDs.length - 1);
+        const targetScroll = scrollableHeight * scrollPercentage;
+        
         window.scrollTo({
-            top: scrollPosition,
+            top: targetScroll,
             behavior: 'smooth'
         });
     };
 
-    const activeSectionIndex = useTransform(
-        scrollYProgress,
-        [0, 1 / 3, 2 / 3, 1],
-        [0, 1, 2, 2],
-        { clamp: true }
-    );
-
-    const [currentSectionIndex, setCurrentSectionIndex] = React.useState(0);
-    React.useEffect(() => {
-        const unsubscribe = activeSectionIndex.on('change', (latest) => {
-            setCurrentSectionIndex(Math.round(latest));
+    const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+    
+    useEffect(() => {
+        const unsubscribe = scrollYProgress.on('change', (latest) => {
+            if (latest < 0.33) {
+                setCurrentSectionIndex(0);
+            } else if (latest < 0.67) {
+                setCurrentSectionIndex(1);
+            } else {
+                setCurrentSectionIndex(2);
+            }
         });
         return () => unsubscribe();
-    }, [activeSectionIndex]);
-
-    const navigate = useNavigate();
+    }, [scrollYProgress]);
 
     return (
-        <div ref={containerRef} className='relative bg-white' style={{ height: '800vh' }}>
+        <div ref={containerRef} className='relative bg-white' style={{ height: '300vh' }}>
 
             <header className='fixed top-0 left-0 right-0 z-50 bg-white shadow-md'>
                 <div className='max-w-7xl mx-auto flex items-center justify-between px-8 py-4'>
@@ -145,12 +148,12 @@ const HomePage = () => {
                     </nav>
 
                     <div className='flex items-center gap-4'>
-                        <Link to='/login' className='text-gray-700 font-medium transition-colors'>
+                        <button className='text-gray-700 font-medium transition-colors hover:text-teal-600'>
                             Sign In
-                        </Link>
-                        <Link to='/signup' className='bg-teal-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-teal-600 transition-all shadow-md flex items-center gap-1'>
+                        </button>
+                        <button className='bg-teal-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-teal-600 transition-all shadow-md flex items-center gap-1'>
                             Get Started <ArrowRight className="w-4 h-4" />
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </header>
@@ -158,9 +161,9 @@ const HomePage = () => {
             <div className='sticky top-0 h-screen flex items-center overflow-hidden bg-white'>
                 <motion.div
                     style={{ x: smoothX }}
-                    className='flex'
+                    className='flex flex-nowrap'
                 >
-                    <div id={sectionIDs[0]} className='min-w-screen w-screen h-screen flex items-center justify-center px-16 bg-white'>
+                    <section className='flex-shrink-0 h-screen flex items-center justify-center px-16 bg-white' style={{ width: '100vw' }}>
                         <div className='max-w-7xl w-full flex items-center gap-24'>
                             <div className='flex-1 max-w-xl'>
                                 <motion.h1
@@ -220,11 +223,10 @@ const HomePage = () => {
                                 </div>
                             </motion.div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div id={sectionIDs[1]} className='min-w-screen w-screen h-screen flex items-center justify-center px-16 bg-white'>
+                    <section className='flex-shrink-0 h-screen flex items-center justify-center px-16 bg-white' style={{ width: '100vw' }}>
                         <div className='max-w-7xl w-full flex flex-col pt-24'>
-
                             <div className='text-center mb-16'>
                                 <h2 className='text-4xl font-bold text-gray-900 mb-4'>
                                     Core Features & Benefits
@@ -241,8 +243,7 @@ const HomePage = () => {
                                         initial="hidden"
                                         whileInView="visible"
                                         viewport={{ once: true, amount: 0.3 }}
-
-                                        className='bg-white p-6 rounded-xl border border-gray-200 shadow-md transition-all duration-300'
+                                        className='bg-white p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300'
                                     >
                                         <div className='w-10 h-10 bg-teal-500/10 rounded-full flex items-center justify-center mb-4 text-teal-600'>
                                             {feature.icon}
@@ -253,9 +254,9 @@ const HomePage = () => {
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div id={sectionIDs[2]} className='min-w-screen w-screen h-screen flex items-center justify-center px-16 bg-white'>
+                    <section className='flex-shrink-0 h-screen flex items-center justify-center px-16 bg-white' style={{ width: '100vw' }}>
                         <div className='max-w-6xl w-full'>
                             <div className='text-center mb-16'>
                                 <motion.h2
@@ -282,7 +283,6 @@ const HomePage = () => {
                                 {steps.map((step, index) => (
                                     <motion.div
                                         key={index}
-
                                         viewport={{ once: true, amount: 0.3 }}
                                         className='relative bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md hover:border-teal-500/50 transition-all duration-300 group'
                                     >
@@ -295,13 +295,12 @@ const HomePage = () => {
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </section>
 
                 </motion.div>
             </div>
 
             <style>{`
-                /* Keyframes for video scrolling */
                 @keyframes scrollUp {
                     from {
                         transform: translateY(0);
