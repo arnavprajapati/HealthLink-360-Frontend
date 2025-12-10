@@ -10,14 +10,15 @@ axios.defaults.withCredentials = true;
 
 export const signupWithEmail = createAsyncThunk(
     "auth/signupWithEmail",
-    async ({ email, password, role }, { rejectWithValue }) => {
+    async ({ email, password, name, role }, { rejectWithValue }) => {
         try {
             const response = await axios.post(`${API_URL}/signup`, {
                 email,
                 password,
+                name,
                 role: role || "patient"
             });
-            return response.data.user;
+            return null;
         } catch (error) {
             return rejectWithValue(
                 error.response?.data?.message || "Signup failed"
@@ -132,6 +133,55 @@ export const updateUserProfile = createAsyncThunk(
     }
 );
 
+export const verifyEmailThunk = createAsyncThunk(
+    "auth/verifyEmail",
+    async ({ firebaseToken }, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${API_URL}/verify-email`, {
+                firebaseToken
+            });
+            return response.data.user;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Email verification failed"
+            );
+        }
+    }
+);
+
+export const requestPasswordResetThunk = createAsyncThunk(
+    "auth/requestPasswordReset",
+    async ({ email }, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${API_URL}/request-password-reset`, {
+                email
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Password reset request failed"
+            );
+        }
+    }
+);
+
+export const resetPasswordThunk = createAsyncThunk(
+    "auth/resetPassword",
+    async ({ firebaseToken, newPassword }, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${API_URL}/reset-password`, {
+                firebaseToken,
+                newPassword
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Password reset failed"
+            );
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: "auth",
     initialState: {
@@ -150,7 +200,11 @@ const authSlice = createSlice({
         },
         clearError: (state) => {
             state.error = null;
-        }
+        },
+        clearUser: (state) => {
+            state.user = null;
+            state.error = null;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -160,7 +214,7 @@ const authSlice = createSlice({
             })
             .addCase(signupWithEmail.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = action.payload;
+                state.user = null;
                 state.isAuthChecking = false;
             })
             .addCase(signupWithEmail.rejected, (state, action) => {
@@ -232,9 +286,44 @@ const authSlice = createSlice({
             .addCase(updateUserProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(verifyEmailThunk.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(verifyEmailThunk.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+                state.isAuthChecking = false;
+            })
+            .addCase(verifyEmailThunk.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(requestPasswordResetThunk.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(requestPasswordResetThunk.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(requestPasswordResetThunk.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(resetPasswordThunk.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(resetPasswordThunk.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(resetPasswordThunk.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });
 
-export const { setUser, setAuthChecking, clearError } = authSlice.actions;
+export const { setUser, setAuthChecking, clearError, clearUser } = authSlice.actions;
 export default authSlice.reducer;

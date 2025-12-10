@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { signupWithEmail, loginWithGoogle, clearError } from '../../app/reducers/authSlice';
-import { X } from 'lucide-react';
+import { signupWithEmail, loginWithGoogle, clearError, clearUser } from '../../app/reducers/authSlice';
+import { X, Mail } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
+import { sendEmailVerification, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/firebaseConfig';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [name, setName] = useState('');
   const [role, setRole] = useState('patient');
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false);
 
   const [validationError, setValidationError] = useState('');
 
@@ -21,31 +25,56 @@ const Signup = () => {
   useEffect(() => {
     dispatch(clearError());
 
-    if (user) {
+    if (user && !emailVerificationSent) {
       if (user.role === 'doctor') {
-        navigate('/doctor-dashboard');
+        navigate('/dashboard/doctor');
       } else {
-        navigate('/patient-dashboard');
+        navigate('/dashboard/patient');
       }
     }
-  }, [user, navigate, dispatch]);
+  }, [user, navigate, dispatch, emailVerificationSent]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setValidationError('');
+
+    if (!name) {
+      return setValidationError('Please enter your name');
+    }
 
     if (password !== passwordConfirm) {
       return setValidationError('Passwords do not match');
     }
 
     try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      const actionCodeSettings = {
+        url: `${window.location.origin}/verify-email`,
+        handleCodeInApp: true
+      };
+      await sendEmailVerification(userCredential.user, actionCodeSettings);
+
       await dispatch(signupWithEmail({
         email,
         password,
+        name,
         role,
       })).unwrap();
+
+      await auth.signOut();
+
+      dispatch(clearUser());
+
+      setEmailVerificationSent(true);
+      setValidationError('');
     } catch (err) {
       console.error("Signup Failed", err);
+      if (err.code === 'auth/email-already-in-use') {
+        setValidationError('This email is already registered. Please login instead.');
+      } else {
+        setValidationError(err.message || 'Signup failed. Please try again.');
+      }
     }
   }
 
@@ -56,14 +85,50 @@ const Signup = () => {
       console.error("Google Sign In Failed", err);
     }
   }
-  
+
   const handleClose = () => {
     navigate('/');
   };
 
+  if (emailVerificationSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 text-center">
+          <div className="bg-blue-50 p-8 rounded-lg">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
+              <Mail className="h-8 w-8 text-blue-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Verify your email</h2>
+            <p className="text-gray-600 mb-6 text-base">
+              We've sent a verification link to <strong>{email}</strong>
+            </p>
+            <p className="text-lg text-gray-500 mb-6">
+              Please check your email and click the verification link to activate your account.
+              After verifying, you can log in to your account.
+            </p>
+            <div className="space-y-3">
+              <Link
+                to="/login"
+                className="block w-full py-2 cursor-pointer px-4 bg-[#00a896] text-white rounded-md hover:bg-[#028090] font-medium"
+              >
+                Go to Login
+              </Link>
+              <button
+                onClick={() => setEmailVerificationSent(false)}
+                className="block w-full cursor-pointer py-2 px-4 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-medium"
+              >
+                Back to Signup
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative"> 
-      <button 
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
+      <button
         onClick={handleClose}
         className="absolute top-4 cursor-pointer right-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a]"
         aria-label="Close Signup"
@@ -108,12 +173,22 @@ const Signup = () => {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="rounded-md shadow-sm space-y-3">
+            <div>
+              <input
+                type="text"
+                required
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-lg"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
             <div>
               <input
                 type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-lg"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-lg"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -123,7 +198,7 @@ const Signup = () => {
               <input
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-lg"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-lg"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -133,7 +208,7 @@ const Signup = () => {
               <input
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-lg"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#02c39a] focus:border-[#02c39a] focus:z-10 sm:text-lg"
                 placeholder="Password Confirmation"
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
