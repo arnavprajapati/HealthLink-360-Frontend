@@ -2,13 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginWithEmail, loginWithGoogle, clearError } from '../../app/reducers/authSlice';
-import { X } from 'lucide-react';
+import { X, Mail } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/firebaseConfig';
+import axios from 'axios';
+
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/auth`;
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('patient');
+  const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -17,24 +24,62 @@ const Login = () => {
 
   useEffect(() => {
     dispatch(clearError());
-    
+
     if (user) {
       if (user.role === 'doctor') {
-        navigate('/doctor-dashboard');
+        navigate('/dashboard/doctor');
       } else {
-        navigate('/patient-dashboard');
+        navigate('/dashboard/patient');
       }
     }
   }, [user, navigate, dispatch]);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setEmailNotVerified(false);
+
     try {
+      let firebaseVerified = false;
+      let firebaseLoginSuccess = false;
+
+      try {
+        const firebaseUser = await signInWithEmailAndPassword(auth, email, password);
+        firebaseLoginSuccess = true;
+        firebaseVerified = firebaseUser.user.emailVerified;
+
+        if (firebaseVerified) {
+          try {
+            await axios.post(`${API_URL}/verify-email-code`, {
+              oobCode: 'firebase-verified',
+              email: email
+            });
+          } catch (syncErr) {
+          }
+
+          try {
+            await axios.post(`${API_URL}/reset-password-direct`, {
+              email: email,
+              newPassword: password
+            });
+          } catch (syncErr) {
+          }
+        }
+        await auth.signOut();
+      } catch (firebaseErr) {
+      }
+
       await dispatch(loginWithEmail({ email, password })).unwrap();
     } catch (err) {
       console.error("Login Failed", err);
+      if (err && typeof err === 'string' && err.includes('verify')) {
+        setEmailNotVerified(true);
+      }
     }
   }
+
+  const handleResendVerification = () => {
+    navigate('/signup');
+  };
 
   async function handleGoogleSignIn() {
     try {
@@ -50,7 +95,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
-      <button 
+      <button
         onClick={handleClose}
         className="absolute cursor-pointer top-4 right-4 p-2 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a]"
         aria-label="Close Login"
@@ -68,6 +113,32 @@ const Login = () => {
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             {error}
+          </div>
+        )}
+
+        {/* {emailNotVerified && !verificationSent && (
+          <div className="bg-yellow-50 border border-yellow-400 p-4 rounded-lg">
+            <div className="flex items-start">
+              <Mail className="h-5 w-5 text-yellow-600 mt-0.5 mr-3" />
+              <div className="flex-1">
+                <h3 className="text-base font-medium text-yellow-800">Email not verified</h3>
+                <p className="text-base text-yellow-700 mt-1">
+                  Please verify your email address before logging in.
+                </p>
+                <button
+                  onClick={handleResendVerification}
+                  className="mt-3 text-base font-medium text-yellow-800 underline hover:text-yellow-900"
+                >
+                  Resend verification email
+                </button>
+              </div>
+            </div>
+          </div>
+        )} */}
+
+        {verificationSent && (
+          <div className="bg-green-50 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+            Verification email sent! Please check your inbox.
           </div>
         )}
 
@@ -118,6 +189,12 @@ const Login = () => {
             </div>
           </div>
 
+          <div className="flex items-center justify-between">
+            <Link to="/forgot-password" className="text-lg text-[#00a896] hover:text-[#028090]">
+              Forgot password?
+            </Link>
+          </div>
+
           <div>
             <button
               type="submit"
@@ -145,7 +222,7 @@ const Login = () => {
               disabled={loading}
               className="w-full cursor-pointer flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-lg font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             >
-              <FcGoogle className="h-6 w-6 mr-2" /> 
+              <FcGoogle className="h-6 w-6 mr-2" />
               Sign in with Google as {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
           </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, FileText, Calendar, Eye, ExternalLink, Image, File } from 'lucide-react';
 import AIAnalysisCard from './AIAnalysisCard';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const FullReportModal = ({ log, onClose }) => {
     const [showDocument, setShowDocument] = useState(false);

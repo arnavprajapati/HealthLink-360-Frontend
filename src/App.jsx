@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from 'react-redux';
@@ -10,6 +9,9 @@ import { useSelector } from "react-redux";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import VerifyEmail from "./pages/auth/VerifyEmail";
 import PatientDashboard from "./pages/patient/PatientDashboard";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorProfile from "./pages/doctor/DoctorProfile";
@@ -73,6 +75,30 @@ function App() {
           element={
             <PublicRoute>
               <Signup />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/verify-email"
+          element={
+            <PublicRoute>
+              <VerifyEmail />
             </PublicRoute>
           }
         />
