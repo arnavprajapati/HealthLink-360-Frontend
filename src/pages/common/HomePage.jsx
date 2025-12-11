@@ -80,22 +80,6 @@ const HomePage = () => {
     const x = useTransform(scrollYProgress, [0, 1], ["0%", "-66.66%"]);
     const smoothX = useSpring(x, { stiffness: 250, damping: 35, mass: 0.4 });
 
-    const scrollToSection = (index) => {
-        if (!containerRef.current) return;
-
-        const windowHeight = window.innerHeight;
-        const totalContainerHeight = containerRef.current.offsetHeight;
-        const scrollableHeight = totalContainerHeight - windowHeight;
-
-        const scrollPercentage = index / (sectionIDs.length - 1);
-        const targetScroll = scrollableHeight * scrollPercentage;
-
-        window.scrollTo({
-            top: targetScroll,
-            behavior: 'smooth'
-        });
-    };
-
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 1024);
         checkMobile();
@@ -106,27 +90,51 @@ const HomePage = () => {
     useEffect(() => {
         if (!isMobile) {
             const unsubscribe = scrollYProgress.on('change', (latest) => {
-                if (latest < 0.33) {
-                    setCurrentSectionIndex(0);
-                } else if (latest < 0.67) {
-                    setCurrentSectionIndex(1);
-                } else {
-                    setCurrentSectionIndex(2);
-                }
+                if (latest < 0.33) setCurrentSectionIndex(0);
+                else if (latest < 0.67) setCurrentSectionIndex(1);
+                else setCurrentSectionIndex(2);
             });
             return () => unsubscribe();
+        } else {
         }
     }, [scrollYProgress, isMobile]);
 
+    const scrollToSection = (index) => {
+        if (!containerRef.current) return;
+
+        if (isMobile) {
+            const element = document.getElementById(sectionIDs[index]);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                setCurrentSectionIndex(index);
+            }
+        } else {
+            const windowHeight = window.innerHeight;
+            const totalContainerHeight = containerRef.current.offsetHeight;
+            const scrollableHeight = totalContainerHeight - windowHeight;
+            const scrollPercentage = index / (sectionIDs.length - 1);
+            const targetScroll = scrollableHeight * scrollPercentage;
+
+            window.scrollTo({
+                top: targetScroll,
+                behavior: 'smooth'
+            });
+        }
+    };
+
     return (
-        <div ref={containerRef} className='relative bg-white' style={{ height: '300vh' }}>
+        <div 
+            ref={containerRef} 
+            className='relative bg-white' 
+            style={{ height: isMobile ? 'auto' : '300vh' }}
+        >
             <header className='fixed top-0 left-0 right-0 z-50 bg-white shadow-md'>
                 <div className='max-w-7xl mx-auto flex items-center justify-between px-5 sm:px-6 lg:px-8 py-4'>
                     <div className='flex items-center gap-2'>
                         <div className="p-2 bg-[#00a896] rounded-full text-white shadow-lg">
                             <HeartPulse className="w-6 h-6" />
                         </div>
-                        <h2 className="text-xl font-extrabold text-gray-800 ml-3 tracking-wide">
+                        <h2 className="text-2xl font-extrabold text-gray-800 ml-3 tracking-wide">
                             HealthLink<span className="text-[#028090] font-black">-360</span>
                         </h2>
                     </div>
@@ -137,7 +145,7 @@ const HomePage = () => {
                                 key={index}
                                 onClick={() => scrollToSection(index)}
                                 className={`
-                                    font-medium cursor-pointer text-lg transition-colors relative 
+                                    font-medium cursor-pointer text-xl transition-colors relative 
                                     ${currentSectionIndex === index
                                         ? 'text-[#02c39a] font-bold'
                                         : 'text-gray-700 hover:text-[#02c39a]'}
@@ -155,33 +163,39 @@ const HomePage = () => {
                         ))}
                     </nav>
 
-                    <div className='hidden md:flex items-center gap-4'>
+                    <div className='hidden md:flex items-center gap-8'>
                         <button
-                            className='text-gray-700 cursor-pointer font-medium transition-colors hover:text-[#02c39a]'
+                            className='text-gray-700 cursor-pointer text-xl font-medium transition-colors hover:text-[#02c39a]'
                             onClick={() => navigate('/login')}
                         >
                             Sign In
                         </button>
                         <button
-                            className='bg-[#02c39a] cursor-pointer text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-[#00a896] transition-all shadow-md flex items-center gap-1'
+                            className='bg-[#02c39a] cursor-pointer text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-[#00a896] transition-all shadow-md flex items-center gap-1 text-xl'
                             onClick={() => navigate('/signup')}
                         >
                             Get Started <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
 
-                    <button className='md:hidden bg-[#02c39a] text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-[#00a896] transition-all shadow-md text-base'>
+                    <button className='md:hidden bg-[#02c39a] text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-[#00a896] transition-all shadow-md text-base' onClick={() => navigate('/signup')}>
                         Start
                     </button>
                 </div>
             </header>
 
-            <div className='sticky top-0 h-screen flex items-center overflow-hidden '>
+            <div className={`${!isMobile ? 'sticky top-0 h-screen flex items-center overflow-hidden' : 'pt-24 pb-10 overflow-hidden'}`}>
+                
                 <motion.div
-                    style={{ x: smoothX }}
-                    className='flex flex-nowrap'
+                    style={!isMobile ? { x: smoothX } : {}}
+                    className={`flex ${isMobile ? 'flex-col' : 'flex-nowrap'}`}
                 >
-                    <section className='flex-shrink-0 min-h-screen flex items-center justify-center px-4 sm:px-16 relative overflow-hidden pt-28' style={{ width: '100vw' }}>
+                    {/* SECTION 1: HERO */}
+                    <section 
+                        id="hero"
+                        className={`flex-shrink-0 flex items-center justify-center px-4 sm:px-16 relative overflow-hidden ${!isMobile ? 'min-h-screen pt-28' : 'py-10'}`} 
+                        style={{ width: isMobile ? '100%' : '100vw' }}
+                    >
                         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#02c39a_1px,transparent_1px)] [background-size:20px_20px]"></div>
 
                         <div className='max-w-[95vw] w-full z-10'>
@@ -190,7 +204,7 @@ const HomePage = () => {
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.8 }}
-                                    className='text-5xl md:text-6xl font-bold text-gray-900 mb-4 leading-tight'
+                                    className='text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight'
                                 >
                                     <span className="text-[#028090]">HealthTrack AI:</span> Smart Health Monitoring Platform
                                 </motion.h1>
@@ -198,13 +212,14 @@ const HomePage = () => {
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.8, delay: 0.2 }}
-                                    className='text-xl text-gray-600 max-w-3xl mx-auto'
+                                    className='text-lg md:text-xl text-gray-600 mx-auto max-w-3xl'
                                 >
-                                    Bridging the gap between patients and doctors with intelligent health analytics.
+                                    Track vitals, monitor trends, and receive personalized insights. HealthTrack AI bridges the gap between patients and doctors with intelligent health analytics.
                                 </motion.p>
                             </div>
 
                             <div className='flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-0 w-full'>
+                                
                                 <motion.div
                                     initial={{ opacity: 0, x: -50 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -213,29 +228,20 @@ const HomePage = () => {
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img
-                                            src={patientImg}
-                                            alt="Patient tracking health vitals"
-                                            className='w-full h-full object-cover group-hover:scale-180 transition-transform duration-700 animate-zoomUp'
-                                        />
-                                        <div className="absolute top-4 left-4 z-20 bg-[#02c39a] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">
-                                            For Patients
-                                        </div>
+                                        <img src={patientImg} alt="Patient tracking" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700' />
+                                        <div className="absolute top-4 left-4 z-20 bg-[#02c39a] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Patients</div>
                                     </div>
                                     <div className='p-6 bg-white relative z-20'>
                                         <h3 className='text-2xl font-bold text-[#028090] mb-2 flex items-center gap-2'>
                                             Track Vitals & Goals
-                                            <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                                         </h3>
-                                        <p className='text-lg text-gray-600 font-medium'>
-                                            Real-time insights for a healthier you. Sync devices instantly.
-                                        </p>
+                                        <p className='text-lg text-gray-600 font-medium'>Real-time insights for a healthier you.</p>
                                     </div>
                                 </motion.div>
 
                                 <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-3">
                                     <div className="h-16 w-1 xl:h-1 xl:w-24 bg-gray-200 relative overflow-hidden rounded-full">
-                                        <div className="absolute bg-[#02c39a] h-full w-full animate-pulse-flow"></div>
+                                        <div className={`absolute bg-[#02c39a] h-full w-full ${isMobile ? 'animate-pulse' : 'animate-pulse-flow'}`}></div>
                                     </div>
                                     <div className="w-3 h-3 bg-[#02c39a] rounded-full shadow-[0_0_10px_#02c39a]"></div>
                                 </div>
@@ -244,21 +250,14 @@ const HomePage = () => {
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.8, delay: 0.6 }}
-                                    className='relative z-30 shrink-0 mx-0'
+                                    className='relative z-30 shrink-0 mx-0 my-4 xl:my-0'
                                 >
                                     <div className='relative'>
                                         <div className='absolute inset-0 bg-[#02c39a] rounded-full blur-3xl opacity-20 animate-pulse'></div>
                                         <div className='relative flex items-center justify-center w-40 h-40 md:w-52 md:h-52'>
                                             <div className="absolute inset-0 border-2 border-dashed border-[#02c39a]/40 rounded-full animate-[spin_10s_linear_infinite]"></div>
                                             <div className="absolute inset-4 border border-[#028090]/20 rounded-full"></div>
-                                            <img
-                                                src={aiBrainImg}
-                                                alt="AI Brain"
-                                                className='w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-xl mix-blend-multiply relative z-10'
-                                            />
-                                        </div>
-                                        <div className="absolute top-0 left-0 w-full h-full rounded-full animate-[spin_4s_linear_infinite] pointer-events-none">
-                                            <div className="w-4 h-4 bg-[#028090] rounded-full absolute -top-1 left-1/2 -translate-x-1/2 shadow-[0_0_15px_#028090] border-2 border-white"></div>
+                                            <img src={aiBrainImg} alt="AI Brain" className='w-32 h-32 md:w-82 md:h-60 object-contain drop-shadow-xl mix-blend-multiply relative z-10' />
                                         </div>
                                     </div>
                                 </motion.div>
@@ -266,7 +265,7 @@ const HomePage = () => {
                                 <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-3">
                                     <div className="w-3 h-3 bg-[#028090] rounded-full shadow-[0_0_10px_#028090]"></div>
                                     <div className="h-16 w-1 xl:h-1 xl:w-24 bg-gray-200 relative overflow-hidden rounded-full">
-                                        <div className="absolute bg-[#028090] h-full w-full animate-pulse-flow-reverse"></div>
+                                        <div className={`absolute bg-[#028090] h-full w-full ${isMobile ? 'animate-pulse' : 'animate-pulse-flow-reverse'}`}></div>
                                     </div>
                                 </div>
 
@@ -278,40 +277,37 @@ const HomePage = () => {
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img
-                                            src={doctorImg}
-                                            alt="Doctor analyzing patient data"
-                                            className='w-full h-full object-cover group-hover:scale-180 transition-transform duration-700 animate-zoomUp'
-                                        />
-                                        <div className="absolute top-4 right-4 z-20 bg-[#028090] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">
-                                            For Doctors
-                                        </div>
+                                        <img src={doctorImg} alt="Doctor Dashboard" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700' />
+                                        <div className="absolute top-4 right-4 z-20 bg-[#028090] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Doctors</div>
                                     </div>
                                     <div className='p-6 bg-white relative z-20'>
                                         <h3 className='text-2xl font-bold text-[#028090] mb-2 flex items-center justify-between'>
                                             Manage & Analyze
                                             <Activity className="w-6 h-6 text-[#02c39a]" />
                                         </h3>
-                                        <p className='text-lg text-gray-600 font-medium'>
-                                            Advanced tools for better care. Access patient history instantly.
-                                        </p>
+                                        <p className='text-lg text-gray-600 font-medium'>Advanced tools for better care.</p>
                                     </div>
                                 </motion.div>
                             </div>
                         </div>
                     </section>
 
-                    <section className='flex-shrink-0 h-screen flex items-center justify-center px-16 bg-white' style={{ width: '100vw' }}>
-                        <div className='max-w-7xl w-full flex flex-col pt-24 pb-10'>
+                    {/* SECTION 2: FEATURES */}
+                    <section 
+                        id="features"
+                        className={`flex-shrink-0 flex items-center justify-center px-4 md:px-16 bg-white ${!isMobile ? 'h-screen' : 'py-20'}`} 
+                        style={{ width: isMobile ? '100%' : '100vw' }}
+                    >
+                        <div className='max-w-7xl w-full flex flex-col pt-10 md:pt-24 pb-10'>
                             <div className='text-center mb-16'>
-                                <h2 className='text-5xl font-bold text-gray-900 mb-4'>
+                                <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-4'>
                                     Core Features & Benefits
                                 </h2>
                                 <p className='text-xl text-gray-700 max-w-4xl mx-auto'>
-                                    Comprehensive tools for patients and healthcare providers, powered by intelligent analytics.
+                                    Comprehensive tools for patients and healthcare providers.
                                 </p>
                             </div>
-                            <div className='grid grid-cols-3 gap-8'>
+                            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
                                 {features.map((feature, index) => (
                                     <motion.div
                                         key={index}
@@ -331,7 +327,11 @@ const HomePage = () => {
                         </div>
                     </section>
 
-                    <section className='flex-shrink-0 h-screen flex items-center justify-center px-16 bg-white' style={{ width: '100vw' }}>
+                    <section 
+                        id="how-it-works"
+                        className={`flex-shrink-0 flex items-center justify-center px-4 md:px-16 bg-white ${!isMobile ? 'h-screen' : 'py-20'}`} 
+                        style={{ width: isMobile ? '100%' : '100vw' }}
+                    >
                         <div className='max-w-6xl w-full'>
                             <div className='text-center mb-16'>
                                 <motion.h2
@@ -339,7 +339,7 @@ const HomePage = () => {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.8 }}
-                                    className='text-6xl font-bold text-gray-900 mb-6'
+                                    className='text-4xl md:text-6xl font-bold text-gray-900 mb-6'
                                 >
                                     How it works
                                 </motion.h2>
@@ -353,7 +353,7 @@ const HomePage = () => {
                                     Get started in minutes. Your health journey, simplified.
                                 </motion.p>
                             </div>
-                            <div className='grid grid-cols-4 gap-10'>
+                            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10'>
                                 {steps.map((step, index) => (
                                     <motion.div
                                         key={index}
