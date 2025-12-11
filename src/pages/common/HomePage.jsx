@@ -62,10 +62,10 @@ const steps = [
     }
 ];
 
-const videos = [
-    "https://cdn.pixabay.com/video/2022/08/31/129734-745175075_large.mp4",
-    "https://cdn.pixabay.com/video/2020/06/10/41612-430008505_large.mp4",
-    "https://cdn.pixabay.com/video/2022/08/31/129731-745175056_large.mp4",
+const images = [
+    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80",
+    "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800&q=80",
+    "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&q=80",
 ];
 
 
@@ -73,7 +73,7 @@ const HomePage = () => {
     const containerRef = useRef(null)
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(false)
-    
+
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start start", "end end"]
@@ -84,7 +84,7 @@ const HomePage = () => {
 
     const scrollToSection = (index) => {
         if (!containerRef.current) return;
-        
+
         if (isMobile) {
             const sections = ['mobile-hero', 'mobile-features', 'mobile-how-it-works'];
             const element = document.getElementById(sections[index]);
@@ -95,10 +95,10 @@ const HomePage = () => {
             const windowHeight = window.innerHeight;
             const totalContainerHeight = containerRef.current.offsetHeight;
             const scrollableHeight = totalContainerHeight - windowHeight;
-            
+
             const scrollPercentage = index / (sectionIDs.length - 1);
             const targetScroll = scrollableHeight * scrollPercentage;
-            
+
             window.scrollTo({
                 top: targetScroll,
                 behavior: 'smooth'
@@ -107,14 +107,14 @@ const HomePage = () => {
     };
 
     const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-    
+
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 1024);
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
-    
+
     useEffect(() => {
         if (!isMobile) {
             const unsubscribe = scrollYProgress.on('change', (latest) => {
@@ -169,13 +169,13 @@ const HomePage = () => {
                     </nav>
 
                     <div className='hidden md:flex items-center gap-4'>
-                        <button className='text-gray-700 cursor-pointer font-medium transition-colors hover:text-teal-600'  onClick={() => navigate('/login')} >
+                        <button className='text-gray-700 cursor-pointer font-medium transition-colors hover:text-teal-600' onClick={() => navigate('/login')} >
                             Sign In
                         </button>
-                        <button className='bg-teal-500 cursor-pointer text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-teal-600 transition-all shadow-md flex items-center gap-1'  onClick={() => navigate('/signup')}>
+                        <button className='bg-teal-500 cursor-pointer text-white font-semibold px-6 py-2.5 rounded-lg hover:bg-teal-600 transition-all shadow-md flex items-center gap-1' onClick={() => navigate('/signup')}>
                             Get Started <ArrowRight className="w-4 h-4" />
                         </button>
-                    </div> 
+                    </div>
 
                     <button className='md:hidden bg-teal-500 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-teal-600 transition-all shadow-md text-base'>
                         Start
@@ -305,19 +305,21 @@ const HomePage = () => {
                                     initial={{ opacity: 0, x: 50 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 1, delay: 0.5 }}
-                                    className='flex-1 flex gap-6 h-[730px]'
+                                    className='flex-1 flex gap-6 h-[750px]'
                                 >
                                     <div className='flex-1 relative overflow-hidden'>
                                         <div className='flex flex-col gap-6 animate-scroll-up'>
-                                            {[...videos, ...videos].map((videoUrl, index) => (
+                                            {[...images, ...images].map((imageUrl, index) => (
                                                 <div
                                                     key={`top-${index}`}
                                                     className='relative rounded-3xl overflow-hidden w-full flex-shrink-0 shadow-xl border border-gray-100'
                                                     style={{ height: '300px' }}
                                                 >
-                                                    <video autoPlay loop muted playsInline className='w-full h-full object-cover'>
-                                                        <source src={videoUrl} type='video/mp4' />
-                                                    </video>
+                                                    <img
+                                                        src={imageUrl}
+                                                        alt={`Health ${index + 1}`}
+                                                        className='w-full h-full object-cover'
+                                                    />
                                                 </div>
                                             ))}
                                         </div>
@@ -325,15 +327,17 @@ const HomePage = () => {
 
                                     <div className='flex-1 relative overflow-hidden pt-12'>
                                         <div className='flex flex-col gap-6 animate-scroll-down'>
-                                            {[...videos, ...videos].map((videoUrl, index) => (
+                                            {[...images, ...images].map((imageUrl, index) => (
                                                 <div
                                                     key={`bottom-${index}`}
                                                     className='relative rounded-3xl overflow-hidden w-full flex-shrink-0 shadow-xl border border-gray-100'
                                                     style={{ height: '300px' }}
                                                 >
-                                                    <video autoPlay loop muted playsInline className='w-full h-full object-cover'>
-                                                        <source src={videoUrl} type='video/mp4' />
-                                                    </video>
+                                                    <img
+                                                        src={imageUrl}
+                                                        alt={`Health ${index + 1}`}
+                                                        className='w-full h-full object-cover'
+                                                    />
                                                 </div>
                                             ))}
                                         </div>
