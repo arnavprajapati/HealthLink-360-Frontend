@@ -176,7 +176,7 @@ const HomePage = () => {
                 </div>
             </header>
 
-            <div className='sticky top-0 h-screen flex items-center overflow-hidden bg-gradient-to-br from-white via-[#f0f3bd]/10 to-[#02c39a]/5'>
+            <div className='sticky top-0 h-screen flex items-center overflow-hidden '>
                 <motion.div
                     style={{ x: smoothX }}
                     className='flex flex-nowrap'
@@ -204,12 +204,12 @@ const HomePage = () => {
                                 </motion.p>
                             </div>
 
-                            <div className='flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-12 w-full'>
+                            <div className='flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-0 w-full'>
                                 <motion.div
                                     initial={{ opacity: 0, x: -50 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.8, delay: 0.4 }}
-                                    className='group relative bg-white overflow-hidden shadow-2xl hover:shadow-[0_20px_50px_rgba(2,195,154,0.3)] transition-all duration-300 border-4 border-[#02c39a] w-full max-w-[500px] rounded-2xl z-20'
+                                    className='group relative bg-white overflow-hidden shadow-2xl transition-all duration-300 border-4 border-[#02c39a] w-full max-w-[500px] rounded-2xl z-20'
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
@@ -218,7 +218,7 @@ const HomePage = () => {
                                             alt="Patient tracking health vitals"
                                             className='w-full h-full object-cover group-hover:scale-180 transition-transform duration-700 animate-zoomUp'
                                         />
-                                        <div className="absolute top-4 left-4 z-20 bg-[#02c39a] text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                                        <div className="absolute top-4 left-4 z-20 bg-[#02c39a] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">
                                             For Patients
                                         </div>
                                     </div>
@@ -227,13 +227,13 @@ const HomePage = () => {
                                             Track Vitals & Goals
                                             <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                                         </h3>
-                                        <p className='text-base text-gray-600 font-medium'>
+                                        <p className='text-lg text-gray-600 font-medium'>
                                             Real-time insights for a healthier you. Sync devices instantly.
                                         </p>
                                     </div>
                                 </motion.div>
 
-                                <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-6">
+                                <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-3">
                                     <div className="h-16 w-1 xl:h-1 xl:w-24 bg-gray-200 relative overflow-hidden rounded-full">
                                         <div className="absolute bg-[#02c39a] h-full w-full animate-pulse-flow"></div>
                                     </div>
@@ -244,7 +244,7 @@ const HomePage = () => {
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.8, delay: 0.6 }}
-                                    className='relative z-30 shrink-0 mx-2'
+                                    className='relative z-30 shrink-0 mx-0'
                                 >
                                     <div className='relative'>
                                         <div className='absolute inset-0 bg-[#02c39a] rounded-full blur-3xl opacity-20 animate-pulse'></div>
@@ -263,7 +263,7 @@ const HomePage = () => {
                                     </div>
                                 </motion.div>
 
-                                <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-6">
+                                <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-3">
                                     <div className="w-3 h-3 bg-[#028090] rounded-full shadow-[0_0_10px_#028090]"></div>
                                     <div className="h-16 w-1 xl:h-1 xl:w-24 bg-gray-200 relative overflow-hidden rounded-full">
                                         <div className="absolute bg-[#028090] h-full w-full animate-pulse-flow-reverse"></div>
@@ -274,7 +274,7 @@ const HomePage = () => {
                                     initial={{ opacity: 0, x: 50 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.8, delay: 0.8 }}
-                                    className='group relative bg-white overflow-hidden shadow-2xl hover:shadow-[0_20px_50px_rgba(2,128,144,0.3)] transition-all duration-300 border-4 border-[#028090] w-full max-w-[500px] rounded-2xl z-20'
+                                    className='group relative bg-white overflow-hidden shadow-2xl transition-all duration-300 border-4 border-[#028090] w-full max-w-[500px] rounded-2xl z-20'
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
@@ -283,7 +283,7 @@ const HomePage = () => {
                                             alt="Doctor analyzing patient data"
                                             className='w-full h-full object-cover group-hover:scale-180 transition-transform duration-700 animate-zoomUp'
                                         />
-                                        <div className="absolute top-4 right-4 z-20 bg-[#028090] text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                                        <div className="absolute top-4 right-4 z-20 bg-[#028090] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">
                                             For Doctors
                                         </div>
                                     </div>
@@ -292,7 +292,7 @@ const HomePage = () => {
                                             Manage & Analyze
                                             <Activity className="w-6 h-6 text-[#02c39a]" />
                                         </h3>
-                                        <p className='text-base text-gray-600 font-medium'>
+                                        <p className='text-lg text-gray-600 font-medium'>
                                             Advanced tools for better care. Access patient history instantly.
                                         </p>
                                     </div>
@@ -304,7 +304,7 @@ const HomePage = () => {
                     <section className='flex-shrink-0 h-screen flex items-center justify-center px-16 bg-white' style={{ width: '100vw' }}>
                         <div className='max-w-7xl w-full flex flex-col pt-24 pb-10'>
                             <div className='text-center mb-16'>
-                                <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+                                <h2 className='text-5xl font-bold text-gray-900 mb-4'>
                                     Core Features & Benefits
                                 </h2>
                                 <p className='text-xl text-gray-700 max-w-4xl mx-auto'>
@@ -324,7 +324,7 @@ const HomePage = () => {
                                             {feature.icon}
                                         </div>
                                         <h3 className='text-lg font-bold text-gray-900 mb-2.5'>{feature.title}</h3>
-                                        <p className='text-base text-gray-600 leading-relaxed'>{feature.description}</p>
+                                        <p className='text-lg text-gray-600 leading-relaxed'>{feature.description}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -353,7 +353,7 @@ const HomePage = () => {
                                     Get started in minutes. Your health journey, simplified.
                                 </motion.p>
                             </div>
-                            <div className='grid grid-cols-4 gap-6'>
+                            <div className='grid grid-cols-4 gap-10'>
                                 {steps.map((step, index) => (
                                     <motion.div
                                         key={index}
@@ -364,7 +364,7 @@ const HomePage = () => {
                                             <span className='text-5xl font-extrabold text-[#02c39a]/20 group-hover:text-[#02c39a]/40 transition-colors'>{step.number}</span>
                                             <h3 className='text-xl font-bold text-gray-900 pt-1 border-b-2 border-[#02c39a]/50'>{step.title}</h3>
                                         </div>
-                                        <p className='text-base text-gray-600 leading-relaxed'>{step.description}</p>
+                                        <p className='text-lg text-gray-600 leading-relaxed'>{step.description}</p>
                                     </motion.div>
                                 ))}
                             </div>
@@ -376,9 +376,9 @@ const HomePage = () => {
             <style>{`
                 @keyframes zoomUp {
                     0% { transform: scale(1) translateY(0); }
-                    100% { transform: scale(1.7) translateY(-10px); }
+                    100% { transform: scale(2) translateY(40px); }
                 }
-                .animate-zoomUp { animation: zoomUp 5s ease-in-out infinite alternate; }
+                .animate-zoomUp { animation: zoomUp 4s ease-in-out infinite alternate; }
 
                 @keyframes pulse-flow {
                     0% { transform: translateX(-100%); opacity: 0; }
