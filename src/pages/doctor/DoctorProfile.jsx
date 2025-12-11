@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfile } from '../../app/reducers/authSlice';
 import { User, Stethoscope, Building, Award, Clock, Save, ArrowLeft } from 'lucide-react';
@@ -17,7 +17,9 @@ const DoctorProfile = () => {
         qualification: ''
     });
 
-    const [message, setMessage] = useState({ type: '', text: '' });
+    const [message, setMessage] = useState(null);
+
+    const timerRef = useRef(null);
 
     useEffect(() => {
         if (user) {
@@ -31,19 +33,40 @@ const DoctorProfile = () => {
         }
     }, [user]);
 
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
+    }, []);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const showTempMessage = (msgObj, ms = 3000) => {
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+        setMessage(msgObj);
+        timerRef.current = setTimeout(() => {
+            setMessage(null);
+            timerRef.current = null;
+        }, ms);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage({ type: '', text: '' });
 
         try {
             await dispatch(updateUserProfile(formData)).unwrap();
-            setMessage({ type: 'success', text: 'Profile updated successfully!' });
+
+            showTempMessage({ type: 'success', text: 'Profile updated successfully!' }, 3000);
+
         } catch (error) {
-            setMessage({ type: 'error', text: error || 'Failed to update profile' });
+            const errText = error?.message || String(error) || 'Failed to update profile';
+            showTempMessage({ type: 'error', text: errText }, 3000);
         }
     };
 
@@ -51,9 +74,9 @@ const DoctorProfile = () => {
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
                 <div className="mb-6 flex items-center">
-                    <button 
+                    <button
                         onClick={() => navigate('/doctor-dashboard')}
-                        className="flex items-center text-gray-600 hover:text-[#00a896] transition-colors"
+                        className="flex cursor-pointer items-center text-gray-600 hover:text-[#00a896] transition-colors"
                     >
                         <ArrowLeft className="w-5 h-5 mr-2" />
                         Back to Dashboard
@@ -70,10 +93,9 @@ const DoctorProfile = () => {
                     </div>
 
                     <div className="p-6">
-                        {message.text && (
-                            <div className={`mb-6 p-4 rounded-md ${
-                                message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
-                            }`}>
+                        {message?.text && (
+                            <div className={`mb-6 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+                                }`}>
                                 {message.text}
                             </div>
                         )}
@@ -81,7 +103,7 @@ const DoctorProfile = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-base font-medium text-gray-700 mb-1">
                                         Full Name
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -93,14 +115,14 @@ const DoctorProfile = () => {
                                             name="displayName"
                                             value={formData.displayName}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
                                             placeholder="Dr. John Doe"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-base font-medium text-gray-700 mb-1">
                                         Speciality
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -112,14 +134,14 @@ const DoctorProfile = () => {
                                             name="speciality"
                                             value={formData.speciality}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
                                             placeholder="Cardiologist"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-base font-medium text-gray-700 mb-1">
                                         Clinic Name
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -131,14 +153,14 @@ const DoctorProfile = () => {
                                             name="clinicName"
                                             value={formData.clinicName}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
                                             placeholder="City Health Clinic"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-base font-medium text-gray-700 mb-1">
                                         Years of Experience
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -150,14 +172,14 @@ const DoctorProfile = () => {
                                             name="experience"
                                             value={formData.experience}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
                                             placeholder="10"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-base font-medium text-gray-700 mb-1">
                                         Qualification
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -169,7 +191,7 @@ const DoctorProfile = () => {
                                             name="qualification"
                                             value={formData.qualification}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
                                             placeholder="MBBS, MD"
                                         />
                                     </div>
@@ -180,9 +202,8 @@ const DoctorProfile = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className={`flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-[#00a896] hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a] transition-colors ${
-                                        loading ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
+                                    className={`flex cursor-pointer items-center px-6 py-3 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-[#00a896] hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#02c39a] transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
                                 >
                                     <Save className="w-5 h-5 mr-2" />
                                     {loading ? 'Saving...' : 'Save Changes'}

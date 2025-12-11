@@ -385,7 +385,7 @@ const HomePage = () => {
                     50% { opacity: 1; }
                     100% { transform: translateX(100%); opacity: 0; }
                 }
-                .animate-pulse-flow { animation: pulse-flow 2s infinite linear; }
+                .animate-pulse-flow { animation: pulse-flow 5s infinite linear; }
 
                 @keyframes pulse-flow-reverse {
                     0% { transform: translateX(100%); opacity: 0; }

@@ -238,9 +238,7 @@ const PatientAppointments = () => {
                 </div>
             </div>
 
-            {/* Main Content - Appointments (Left) and Doctors (Right) */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Upcoming Appointments - Left Side */}
                 <div className="lg:col-span-2">
                     <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <div className="w-2 h-6 bg-[#00a896] rounded-full"></div>
@@ -317,7 +315,7 @@ const PatientAppointments = () => {
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
                             <User className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                             <h3 className="text-lg font-semibold text-gray-700 mb-2">No Doctors Connected</h3>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-base text-gray-500">
                                 Connect with a doctor to get started.
                             </p>
                         </div>
@@ -370,7 +368,7 @@ const PatientAppointments = () => {
                                             <h3 className="font-semibold text-gray-900">
                                                 Dr. {appointment.doctor?.displayName}
                                             </h3>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-base text-gray-600">
                                                 {new Date(appointment.date).toLocaleDateString('en-US', {
                                                     weekday: 'short',
                                                     month: 'short',
@@ -379,12 +377,12 @@ const PatientAppointments = () => {
                                             </p>
                                         </div>
                                     </div>
-                                    <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+                                    <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-base font-medium">
                                         Awaiting Response
                                     </span>
                                 </div>
                                 {appointment.requestMessage && (
-                                    <p className="mt-3 text-sm text-gray-600 bg-white/50 rounded-lg p-2">
+                                    <p className="mt-3 text-base text-gray-600 bg-white/50 rounded-lg p-2">
                                         "{appointment.requestMessage}"
                                     </p>
                                 )}
