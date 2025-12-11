@@ -123,9 +123,9 @@ const HomePage = () => {
     };
 
     return (
-        <div 
-            ref={containerRef} 
-            className='relative bg-white' 
+        <div
+            ref={containerRef}
+            className='relative bg-white'
             style={{ height: isMobile ? 'auto' : '300vh' }}
         >
             <header className='fixed top-0 left-0 right-0 z-50 bg-white shadow-md'>
@@ -185,15 +185,15 @@ const HomePage = () => {
             </header>
 
             <div className={`${!isMobile ? 'sticky top-0 h-screen flex items-center overflow-hidden' : 'pt-24 pb-10 overflow-hidden'}`}>
-                
+
                 <motion.div
                     style={!isMobile ? { x: smoothX } : {}}
                     className={`flex ${isMobile ? 'flex-col' : 'flex-nowrap'}`}
                 >
                     {/* SECTION 1: HERO */}
-                    <section 
+                    <section
                         id="hero"
-                        className={`flex-shrink-0 flex items-center justify-center px-4 sm:px-16 relative overflow-hidden ${!isMobile ? 'min-h-screen pt-28' : 'py-10'}`} 
+                        className={`flex-shrink-0 flex items-center justify-center px-4 sm:px-16 relative overflow-hidden ${!isMobile ? 'min-h-screen pt-28' : 'py-10'}`}
                         style={{ width: isMobile ? '100%' : '100vw' }}
                     >
                         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#02c39a_1px,transparent_1px)] [background-size:20px_20px]"></div>
@@ -219,7 +219,7 @@ const HomePage = () => {
                             </div>
 
                             <div className='flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-0 w-full'>
-                                
+
                                 <motion.div
                                     initial={{ opacity: 0, x: -50 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -228,7 +228,7 @@ const HomePage = () => {
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img src={patientImg} alt="Patient tracking" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700' />
+                                        <img src={patientImg} alt="Patient tracking" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
                                         <div className="absolute top-4 left-4 z-20 bg-[#02c39a] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Patients</div>
                                     </div>
                                     <div className='p-6 bg-white relative z-20'>
@@ -277,7 +277,7 @@ const HomePage = () => {
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img src={doctorImg} alt="Doctor Dashboard" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700' />
+                                        <img src={doctorImg} alt="Doctor Dashboard" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
                                         <div className="absolute top-4 right-4 z-20 bg-[#028090] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Doctors</div>
                                     </div>
                                     <div className='p-6 bg-white relative z-20'>
@@ -293,9 +293,9 @@ const HomePage = () => {
                     </section>
 
                     {/* SECTION 2: FEATURES */}
-                    <section 
+                    <section
                         id="features"
-                        className={`flex-shrink-0 flex items-center justify-center px-4 md:px-16 bg-white ${!isMobile ? 'h-screen' : 'py-20'}`} 
+                        className={`flex-shrink-0 flex items-center justify-center px-4 md:px-16 bg-white ${!isMobile ? 'h-screen' : 'py-20'}`}
                         style={{ width: isMobile ? '100%' : '100vw' }}
                     >
                         <div className='max-w-7xl w-full flex flex-col pt-10 md:pt-24 pb-10'>
@@ -327,9 +327,9 @@ const HomePage = () => {
                         </div>
                     </section>
 
-                    <section 
+                    <section
                         id="how-it-works"
-                        className={`flex-shrink-0 flex items-center justify-center px-4 md:px-16 bg-white ${!isMobile ? 'h-screen' : 'py-20'}`} 
+                        className={`flex-shrink-0 flex items-center justify-center px-4 md:px-16 bg-white ${!isMobile ? 'h-screen' : 'py-20'}`}
                         style={{ width: isMobile ? '100%' : '100vw' }}
                     >
                         <div className='max-w-6xl w-full'>
@@ -376,9 +376,9 @@ const HomePage = () => {
             <style>{`
                 @keyframes zoomUp {
                     0% { transform: scale(1) translateY(0); }
-                    100% { transform: scale(2) translateY(40px); }
+                    100% { transform: scale(2.8) translateY(40px); }
                 }
-                .animate-zoomUp { animation: zoomUp 4s ease-in-out infinite alternate; }
+                .animate-zoomUp { animation: zoomUp 5s ease-in-out infinite alternate; }
 
                 @keyframes pulse-flow {
                     0% { transform: translateX(-100%); opacity: 0; }
