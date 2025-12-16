@@ -206,7 +206,7 @@ const HomePage = () => {
                                     transition={{ duration: 0.8 }}
                                     className='text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight'
                                 >
-                                    <span className="text-[#028090]">HealthTrack AI:</span> Smart Health Monitoring Platform
+                                    <span className="text-[#028090]">HealthLink AI:</span> Smart Health Monitoring Platform
                                 </motion.h1>
                                 <motion.p
                                     initial={{ opacity: 0, y: 30 }}
@@ -228,7 +228,7 @@ const HomePage = () => {
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img src={patientImg} alt="Patient tracking" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
+                                        <img src='https://res.cloudinary.com/dzz1wmydl/image/upload/v1765867683/Woman_Phone_Blood_Sugar_UI_bvsmwq.png' alt="Patient tracking" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
                                         <div className="absolute top-4 left-4 z-20 bg-[#02c39a] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Patients</div>
                                     </div>
                                     <div className='p-6 bg-white relative z-20'>
@@ -257,7 +257,7 @@ const HomePage = () => {
                                         <div className='relative flex items-center justify-center w-40 h-40 md:w-52 md:h-52'>
                                             <div className="absolute inset-0 border-2 border-dashed border-[#02c39a]/40 rounded-full animate-[spin_10s_linear_infinite]"></div>
                                             <div className="absolute inset-4 border border-[#028090]/20 rounded-full"></div>
-                                            <img src={aiBrainImg} alt="AI Brain" className='w-32 h-32 md:w-82 md:h-60 object-contain drop-shadow-xl mix-blend-multiply relative z-10' />
+                                            <img src='https://res.cloudinary.com/dzz1wmydl/image/upload/v1765868056/Adobe_Express_-_file_qntq4u.png' alt="AI Brain" className='w-32 h-32 md:w-82 md:h-60 object-contain drop-shadow-xl mix-blend-multiply relative z-10' />
                                         </div>
                                     </div>
                                 </motion.div>
@@ -277,7 +277,7 @@ const HomePage = () => {
                                 >
                                     <div className='aspect-[16/10] overflow-hidden relative'>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img src={doctorImg} alt="Doctor Dashboard" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
+                                        <img src='https://res.cloudinary.com/dzz1wmydl/image/upload/v1765867682/Doctor_Panel_With_UI_Monitors_tt0msx.png' alt="Doctor Dashboard" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
                                         <div className="absolute top-4 right-4 z-20 bg-[#028090] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Doctors</div>
                                     </div>
                                     <div className='p-6 bg-white relative z-20'>
