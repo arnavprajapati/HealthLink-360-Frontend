@@ -3,10 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { TrendingUp, Brain, Calendar, Users, Shield, Activity, ArrowRight, HeartPulse } from 'lucide-react';
 
-import patientImg from '../../assets/patient-phone.jpg';
-import doctorImg from '../../assets/doctor-dashboard.jpg';
-import aiBrainImg from '../../assets/ai-brain.jpg';
-
 const sectionIDs = ['hero', 'features', 'how-it-works'];
 const sectionNames = ['Home', 'Features', 'How It Works'];
 
