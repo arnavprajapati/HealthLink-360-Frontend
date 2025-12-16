@@ -55,43 +55,43 @@ const ScheduleAppointmentModal = ({ isOpen, onClose, patientId, patientName }) =
                                     {error && (
                                         <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative flex items-center">
                                             <AlertCircle className="w-5 h-5 mr-2" />
-                                            <span className="text-sm">{error}</span>
+                                            <span className="text-lg">{error}</span>
                                         </div>
                                     )}
 
                                     {successMessage && (
                                         <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative flex items-center">
                                             <CheckCircle className="w-5 h-5 mr-2" />
-                                            <span className="text-sm">{successMessage}</span>
+                                            <span className="text-lg">{successMessage}</span>
                                         </div>
                                     )}
 
                                     <form onSubmit={handleSubmit} className="mt-4 space-y-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                            <label className="block text-lg font-medium text-gray-700 mb-1">Date</label>
                                             <input
                                                 type="date"
                                                 required
-                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-3 border"
+                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-lg border-gray-300 rounded-md py-2 px-3 border"
                                                 value={date}
                                                 onChange={(e) => setDate(e.target.value)}
                                                 min={new Date().toISOString().split('T')[0]}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                                            <label className="block text-lg font-medium text-gray-700 mb-1">Time</label>
                                             <input
                                                 type="time"
                                                 required
-                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-3 border"
+                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-lg border-gray-300 rounded-md py-2 px-3 border"
                                                 value={time}
                                                 onChange={(e) => setTime(e.target.value)}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                            <label className="block text-lg font-medium text-gray-700 mb-1">Type</label>
                                             <select
-                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-3 border"
+                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-lg border-gray-300 rounded-md py-2 px-3 border"
                                                 value={type}
                                                 onChange={(e) => setType(e.target.value)}
                                             >
@@ -102,10 +102,10 @@ const ScheduleAppointmentModal = ({ isOpen, onClose, patientId, patientName }) =
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                                            <label className="block text-lg font-medium text-gray-700 mb-1">Notes (Optional)</label>
                                             <textarea
                                                 rows={3}
-                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-3 border"
+                                                className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-lg border-gray-300 rounded-md py-2 px-3 border"
                                                 placeholder="Add any specific instructions or notes..."
                                                 value={notes}
                                                 onChange={(e) => setNotes(e.target.value)}
@@ -116,13 +116,13 @@ const ScheduleAppointmentModal = ({ isOpen, onClose, patientId, patientName }) =
                                             <button
                                                 type="submit"
                                                 disabled={loading}
-                                                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#00a896] text-base font-medium text-white hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:col-start-2 sm:text-sm ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                className={`w-full cursor-pointer inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#00a896] text-lg font-medium text-white hover:bg-[#028090] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:col-start-2 sm:text-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                             >
                                                 {loading ? 'Scheduling...' : 'Schedule'}
                                             </button>
                                             <button
                                                 type="button"
-                                                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                                                className="mt-3 w-full cursor-pointer inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-lg font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-lg"
                                                 onClick={handleClose}
                                             >
                                                 Close

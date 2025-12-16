@@ -41,7 +41,14 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
         checkCalendar();
     }, [checkGoogleCalendarStatus]);
 
-    const isWeeklyGoal = formData.trackingFrequency === 'weekly';
+    const getRecurrenceRule = (frequency) => {
+        switch (frequency) {
+            case 'daily': return 'RRULE:FREQ=DAILY';
+            case 'weekly': return 'RRULE:FREQ=WEEKLY';
+            case 'monthly': return 'RRULE:FREQ=MONTHLY';
+            default: return 'RRULE:FREQ=WEEKLY';
+        }
+    };
 
     const parameters = [
         { name: 'Blood Sugar', key: 'blood_sugar', unit: 'mg/dL', defaultGoal: 'decrease', icon: '🩸' },
@@ -134,7 +141,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                 parameterKey: isCustomParameter ? 'custom' : formData.parameterKey,
                 customParameterName: isCustomParameter ? formData.customParameterName.trim() : null,
                 unit: formData.unit.trim(),
-                syncToGoogleCalendar: syncToCalendar && isWeeklyGoal,
+                syncToGoogleCalendar: syncToCalendar,
             };
             if (goalMode === 'fixed') {
                 submitData.minValue = '';
@@ -149,20 +156,21 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                 savedGoal = await createGoal(submitData);
             }
 
-            // Create Google Calendar event if sync is enabled and it's a weekly goal
-            if (syncToCalendar && isWeeklyGoal && isCalendarConnected && savedGoal && !editingGoal?.googleEventId) {
+            // Create Google Calendar event if sync is enabled
+            if (syncToCalendar && isCalendarConnected && savedGoal && !editingGoal?.googleEventId) {
                 try {
                     const startDate = new Date();
                     startDate.setHours(9, 0, 0, 0); // 9 AM
                     const endDate = new Date(startDate);
                     endDate.setHours(10, 0, 0, 0); // 10 AM
 
+                    const frequencyText = formData.trackingFrequency.charAt(0).toUpperCase() + formData.trackingFrequency.slice(1);
                     await createGoogleCalendarEvent({
                         title: `Health Goal: ${submitData.parameter}`,
-                        description: `Weekly health goal tracking for ${submitData.parameter}. Target: ${submitData.targetValue || `${submitData.minValue}-${submitData.maxValue}`} ${submitData.unit}`,
+                        description: `${frequencyText} health goal tracking for ${submitData.parameter}. Target: ${submitData.targetValue || `${submitData.minValue}-${submitData.maxValue}`} ${submitData.unit}`,
                         startDateTime: startDate.toISOString(),
                         endDateTime: endDate.toISOString(),
-                        recurrence: 'RRULE:FREQ=WEEKLY',
+                        recurrence: getRecurrenceRule(formData.trackingFrequency),
                         goalId: savedGoal._id
                     });
                 } catch (calendarError) {
@@ -469,13 +477,14 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                             {['daily', 'weekly', 'monthly'].map(freq => (
                                 <button
                                     key={freq}
+                                    type="button"
                                     onClick={() => setFormData({ ...formData, trackingFrequency: freq })}
                                     className={`p-3 cursor-pointer rounded-lg border-2 transition-all text-center ${formData.trackingFrequency === freq
-                                        ? 'border-[#00a896] bg-[#f0f3bd]/30 text-[#028090]'
-                                        : 'border-gray-200 hover:border-[#00a896]/50'
+                                        ? 'border-[#00a896] bg-[#f0f3bd]/30 text-[#028090] font-semibold'
+                                        : 'border-gray-200 hover:border-[#00a896]/50 text-gray-700'
                                         }`}
                                 >
-                                    <span className="text-lg font-medium capitalize">{freq}</span>
+                                    <span className="text-lg capitalize">{freq === 'daily' ? 'Daily' : freq === 'weekly' ? 'Weekly' : 'Monthly'}</span>
                                 </button>
                             ))}
                         </div>
@@ -515,42 +524,40 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                         />
                     </div>
 
-                    {/* Google Calendar Sync Toggle - Only for weekly goals */}
-                    {isWeeklyGoal && (
-                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                    <CalendarCheck className="w-5 h-5 text-blue-600" />
-                                    <div>
-                                        <p className="font-semibold text-gray-800">Sync to Google Calendar</p>
-                                        <p className="text-sm text-gray-600">
-                                            {isCalendarConnected
-                                                ? 'Create a recurring weekly reminder'
-                                                : 'Connect Google Calendar in Settings to enable'}
-                                        </p>
-                                    </div>
+                    {/* Google Calendar Sync Toggle */}
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <CalendarCheck className="w-5 h-5 text-blue-600" />
+                                <div>
+                                    <p className="font-semibold text-gray-800">Sync to Google Calendar</p>
+                                    <p className="text-sm text-gray-600">
+                                        {isCalendarConnected
+                                            ? `Create a recurring ${formData.trackingFrequency} reminder`
+                                            : 'Connect Google Calendar in Settings to enable'}
+                                    </p>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={syncToCalendar}
-                                        onChange={(e) => setSyncToCalendar(e.target.checked)}
-                                        disabled={!isCalendarConnected}
-                                        className="sr-only peer"
-                                    />
-                                    <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${isCalendarConnected
-                                        ? 'bg-gray-300 peer-checked:bg-[#00a896]'
-                                        : 'bg-gray-200 cursor-not-allowed'
-                                        }`}></div>
-                                </label>
                             </div>
-                            {!isCalendarConnected && (
-                                <p className="text-xs text-blue-600 mt-2">
-                                    💡 Go to <a href="/calendar" className="underline font-medium">Calendar</a> page to connect your Google Calendar
-                                </p>
-                            )}
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={syncToCalendar}
+                                    onChange={(e) => setSyncToCalendar(e.target.checked)}
+                                    disabled={!isCalendarConnected}
+                                    className="sr-only peer"
+                                />
+                                <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all ${isCalendarConnected
+                                    ? 'bg-gray-300 peer-checked:bg-[#00a896]'
+                                    : 'bg-gray-200 cursor-not-allowed'
+                                    }`}></div>
+                            </label>
                         </div>
-                    )}
+                        {!isCalendarConnected && (
+                            <p className="text-xs text-blue-600 mt-2">
+                                💡 Go to <a href="/calendar" className="underline font-medium">Calendar</a> page to connect your Google Calendar
+                            </p>
+                        )}
+                    </div>
 
                     {/* Preview */}
                     <div className="bg-gradient-to-r from-[#f0f3bd]/50 to-[#02c39a]/10 rounded-lg p-4 border border-[#02c39a]/30">

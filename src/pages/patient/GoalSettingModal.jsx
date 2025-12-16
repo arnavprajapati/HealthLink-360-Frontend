@@ -444,15 +444,18 @@ const GoalSettingModal = ({ onClose, onSuccess }) => {
                                     key={freq}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, trackingFrequency: freq })}
-                                    className={`p-3 rounded-lg border-2 transition-all text-lg font-medium capitalize ${formData.trackingFrequency === freq
-                                        ? 'border-purple-500 bg-purple-50 text-purple-700'
-                                        : 'border-gray-300 hover:border-purple-300'
+                                    className={`p-3 cursor-pointer rounded-lg border-2 transition-all text-lg capitalize ${formData.trackingFrequency === freq
+                                        ? 'border-[#00a896] bg-[#f0f3bd]/30 text-[#028090] font-semibold'
+                                        : 'border-gray-300 hover:border-[#00a896]/50 text-gray-700'
                                         }`}
                                 >
-                                    {freq}
+                                    {freq === 'daily' ? 'Daily' : freq === 'weekly' ? 'Weekly' : 'Monthly'}
                                 </button>
                             ))}
                         </div>
+                        <p className="text-lg text-gray-500 mt-1">
+                            How often you want to track this metric
+                        </p>
                     </div>
 
                     <div>

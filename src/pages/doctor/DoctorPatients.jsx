@@ -63,7 +63,10 @@ const DoctorPatients = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]"></div>
+                <div className="relative">
+                    <div className="w-12 h-12 rounded-full border-4 border-[#00a896]/20"></div>
+                    <div className="absolute top-0 left-0 w-12 h-12 rounded-full border-4 border-transparent border-t-[#00a896] animate-spin"></div>
+                </div>
             </div>
         );
     }
@@ -76,7 +79,7 @@ const DoctorPatients = () => {
                     <Users className="w-8 h-8" />
                     <h1 className="text-2xl font-bold">My Patients</h1>
                 </div>
-                <p className="text-teal-100">
+                <p className="text-lg text-teal-100">
                     Manage your connected patients and pending requests
                 </p>
             </div>
@@ -197,7 +200,7 @@ const DoctorPatients = () => {
                         placeholder="Search patients by name or email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a896] focus:border-transparent"
+                        className="w-full text-lg pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00a896] focus:border-transparent"
                     />
                 </div>
             </div>

@@ -109,7 +109,7 @@ const NotesSection = ({ patientNotes, user, formatDate, patientId, getPatientNot
                                 )}
                             </div>
                         </div>
-                        <p className="text-gray-700 whitespace-pre-wrap text-base line-clamp-2">{note.description}</p>
+                        <p className="text-gray-700 whitespace-pre-wrap text-lg line-clamp-2">{note.description}</p>
                         <div className="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-500 flex items-center gap-2">
                             {note.senderRole === 'doctor' ? (
                                 <>
@@ -144,8 +144,8 @@ const NotesSection = ({ patientNotes, user, formatDate, patientId, getPatientNot
                                         <div
                                             key={reply._id}
                                             className={`p-3 rounded-lg ${reply.senderRole === 'doctor'
-                                                    ? 'bg-blue-50 mr-8'
-                                                    : 'bg-green-50 ml-8'
+                                                ? 'bg-blue-50 mr-8'
+                                                : 'bg-green-50 ml-8'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-2 mb-2">
@@ -248,7 +248,7 @@ const GoalCard = ({ goal, onView }) => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-gray-900 leading-tight">{goal.parameter}</h3>
-                            <span className={`inline-flex items-center px-2 py-0.5 mt-1 rounded-full text-base font-medium border ${getStatusColor(goal.status)}`}>
+                            <span className={`inline-flex items-center px-2 py-0.5 mt-1 rounded-full text-lg font-medium border ${getStatusColor(goal.status)}`}>
                                 {goal.status === 'achieved' && <Trophy className="w-3 h-3 mr-1" />}
                                 {goal.status.replace('-', ' ').toUpperCase()}
                             </span>
@@ -301,22 +301,22 @@ const GoalCard = ({ goal, onView }) => {
                     <div className="flex-1 space-y-2">
                         {goal.initialValue !== undefined && goal.initialValue !== null && (
                             <div className="flex justify-between items-center">
-                                <span className="text-base text-gray-500">Initial Value</span>
-                                <span className="text-base font-medium text-gray-600">
+                                <span className="text-lg text-gray-500">Initial Value</span>
+                                <span className="text-lg font-medium text-gray-600">
                                     {goal.initialValue} {goal.unit}
                                 </span>
                             </div>
                         )}
                         <div className="flex justify-between items-center">
-                            <span className="text-base text-gray-500">Current Value</span>
-                            <span className="text-base font-bold text-[#028090]">
+                            <span className="text-lg text-gray-500">Current Value</span>
+                            <span className="text-lg font-bold text-[#028090]">
                                 {goal.currentValue !== null && goal.currentValue !== undefined ? `${goal.currentValue} ${goal.unit}` : '—'}
                             </span>
                         </div>
                         {goal.goalType === 'range' || (goal.minValue !== null || goal.maxValue !== null) ? (
                             <div className="flex justify-between items-center">
-                                <span className="text-base text-gray-500">Target Range</span>
-                                <span className="text-base font-bold text-gray-900">
+                                <span className="text-lg text-gray-500">Target Range</span>
+                                <span className="text-lg font-bold text-gray-900">
                                     {goal.minValue !== null && goal.maxValue !== null
                                         ? `${goal.minValue} - ${goal.maxValue} ${goal.unit}`
                                         : goal.minValue !== null
@@ -327,13 +327,13 @@ const GoalCard = ({ goal, onView }) => {
                             </div>
                         ) : goal.targetValue !== null && goal.targetValue !== undefined ? (
                             <div className="flex justify-between items-center">
-                                <span className="text-base text-gray-500">Target Value</span>
-                                <span className="text-base font-bold text-gray-900">{goal.targetValue} {goal.unit}</span>
+                                <span className="text-lg text-gray-500">Target Value</span>
+                                <span className="text-lg font-bold text-gray-900">{goal.targetValue} {goal.unit}</span>
                             </div>
                         ) : null}
                         <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-                            <span className="text-base text-gray-500">Goal Type</span>
-                            <span className="text-base font-medium text-gray-700 capitalize flex items-center gap-1">
+                            <span className="text-lg text-gray-500">Goal Type</span>
+                            <span className="text-lg font-medium text-gray-700 capitalize flex items-center gap-1">
                                 {goal.goalType === 'decrease' && <TrendingDown className="w-3 h-3 text-red-500" />}
                                 {goal.goalType === 'increase' && <TrendingUp className="w-3 h-3 text-green-500" />}
                                 {goal.goalType === 'maintain' && <Activity className="w-3 h-3 text-blue-500" />}
@@ -347,7 +347,7 @@ const GoalCard = ({ goal, onView }) => {
                 {/* Timeline */}
                 {hasDeadline ? (
                     <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                        <div className="flex items-center justify-between text-base text-gray-600 mb-2">
+                        <div className="flex items-center justify-between text-lg text-gray-600 mb-2">
                             <span>Start: {new Date(goal.startDate || goal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                             <span className={daysRemaining > 0 ? 'text-[#028090] font-medium' : 'text-red-500 font-medium'}>
                                 {daysRemaining > 0 ? `${daysRemaining} days left` : 'Overdue'}
@@ -368,7 +368,7 @@ const GoalCard = ({ goal, onView }) => {
                     </div>
                 ) : (
                     <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                        <div className="flex items-center justify-between text-base text-gray-600">
+                        <div className="flex items-center justify-between text-lg text-gray-600">
                             <span>Started: {new Date(goal.startDate || goal.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                             <span className="text-[#028090] font-medium">No deadline</span>
                         </div>
@@ -378,7 +378,7 @@ const GoalCard = ({ goal, onView }) => {
                 {/* View Details Button */}
                 <button
                     onClick={() => onView(goal)}
-                    className="w-full cursor-pointer py-2.5 text-base font-semibold bg-gray-100 text-[#028090] hover:bg-[#f0f3bd]/80 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                    className="w-full cursor-pointer py-2.5 text-lg font-semibold bg-gray-100 text-[#028090] hover:bg-[#f0f3bd]/80 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                 >
                     <Eye className="w-4 h-4" />
                     View Details & Analysis ({goal.milestones ? goal.milestones.length : 0} Entries)
@@ -482,7 +482,10 @@ const PatientDetailsPage = () => {
     if (loading && !patient) {
         return (
             <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00a896]"></div>
+                <div className="relative">
+                    <div className="w-12 h-12 rounded-full border-4 border-[#00a896]/20"></div>
+                    <div className="absolute top-0 left-0 w-12 h-12 rounded-full border-4 border-transparent border-t-[#00a896] animate-spin"></div>
+                </div>
             </div>
         );
     }
@@ -517,14 +520,14 @@ const PatientDetailsPage = () => {
                 <div className="flex items-center space-x-3">
                     <button
                         onClick={() => setShowAppointmentModal(true)}
-                        className="px-4 cursor-pointer py-2 bg-white border border-[#00a896] text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center text-base"
+                        className="px-4 cursor-pointer py-2 bg-white border border-[#00a896] text-[#00a896] rounded-lg hover:bg-teal-50 transition-colors flex items-center text-lg"
                     >
                         <Calendar className="w-4 h-4 mr-2" />
                         Schedule Appointment
                     </button>
                     <button
                         onClick={() => setShowNoteForm(!showNoteForm)}
-                        className="px-4 cursor-pointer py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors flex items-center text-base"
+                        className="px-4 cursor-pointer py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors flex items-center text-lg"
                     >
                         {showNoteForm ? <X className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
                         {showNoteForm ? 'Cancel' : 'Add Note'}
@@ -548,7 +551,7 @@ const PatientDetailsPage = () => {
                             className="w-20 h-20 rounded-full border-4 border-teal-100 object-cover"
                         />
                     ) : (
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00a896] to-[#028090] flex items-center justify-center text-white font-bold text-2xl">
+                        <div className="w-20 h-20 rounded-full border-4 border-teal-200 bg-white flex items-center justify-center text-teal-600 font-bold text-2xl">
                             {patient.displayName?.[0]?.toUpperCase() || 'P'}
                         </div>
                     )}
@@ -556,13 +559,13 @@ const PatientDetailsPage = () => {
                         <h1 className="text-2xl font-bold text-gray-900">{patient.displayName}</h1>
                         <p className="text-gray-500">{patient.email}</p>
                         <div className="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
-                            <span className="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-base font-medium">
+                            <span className="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-lg font-medium">
                                 {filteredLogs.length} Health Records
                             </span>
-                            <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-base font-medium">
+                            <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-lg font-medium">
                                 {patientNotes?.length || 0} Clinical Notes
                             </span>
-                            <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-base font-medium">
+                            <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-lg font-medium">
                                 {patientGoals?.length || 0} Health Goals
                             </span>
                         </div>
@@ -571,7 +574,7 @@ const PatientDetailsPage = () => {
                     <button
                         onClick={() => generatePatientSummary(patientId)}
                         disabled={loading}
-                        className="px-4 py-2 cursor-pointer bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-base font-medium disabled:opacity-50 flex items-center gap-2"
+                        className="px-4 py-2 cursor-pointer bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-lg font-medium disabled:opacity-50 flex items-center gap-2"
                     >
                         <Sparkles className="w-4 h-4" />
                         {loading ? 'Generating...' : 'AI Summary'}
@@ -581,11 +584,11 @@ const PatientDetailsPage = () => {
                 {/* AI Summary */}
                 {aiSummary && (
                     <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-100">
-                        <h4 className="text-base font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                        <h4 className="text-lg font-semibold text-purple-900 mb-2 flex items-center gap-2">
                             <Sparkles className="w-4 h-4" />
                             AI Health Summary
                         </h4>
-                        <p className="text-base text-gray-700 whitespace-pre-wrap">{aiSummary}</p>
+                        <p className="text-lg text-gray-700 whitespace-pre-wrap">{aiSummary}</p>
                     </div>
                 )}
             </div>
@@ -596,7 +599,7 @@ const PatientDetailsPage = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-4">New Clinical Note</h3>
                     <form onSubmit={handleAddNote} className="space-y-4">
                         <div>
-                            <label className="block text-base font-medium text-gray-700 mb-1">Title</label>
+                            <label className="block text-lg font-medium text-gray-700 mb-1">Title</label>
                             <input
                                 type="text"
                                 value={noteTitle}
@@ -607,7 +610,7 @@ const PatientDetailsPage = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-base font-medium text-gray-700 mb-1">Description</label>
+                            <label className="block text-lg font-medium text-gray-700 mb-1">Description</label>
                             <textarea
                                 value={noteDescription}
                                 onChange={(e) => setNoteDescription(e.target.value)}
@@ -620,7 +623,7 @@ const PatientDetailsPage = () => {
                         <div className="flex justify-end">
                             <button
                                 type="submit"
-                                className="px-4 cursor-pointer py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] flex items-center text-base"
+                                className="px-4 cursor-pointer py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] flex items-center text-lg"
                             >
                                 <Save className="w-4 h-4 mr-2" />
                                 Save Note
@@ -634,7 +637,7 @@ const PatientDetailsPage = () => {
             <div className="flex gap-2 border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('records')}
-                    className={`px-4 cursor-pointer py-3 font-medium text-base flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'records'
+                    className={`px-4 cursor-pointer py-3 font-medium text-lg flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'records'
                         ? 'border-[#00a896] text-[#00a896]'
                         : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}
@@ -644,7 +647,7 @@ const PatientDetailsPage = () => {
                 </button>
                 <button
                     onClick={() => setActiveTab('progress')}
-                    className={`px-4 cursor-pointer py-3 font-medium text-base flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'progress'
+                    className={`px-4 cursor-pointer py-3 font-medium text-lg flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'progress'
                         ? 'border-[#00a896] text-[#00a896]'
                         : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}
@@ -654,7 +657,7 @@ const PatientDetailsPage = () => {
                 </button>
                 <button
                     onClick={() => setActiveTab('notes')}
-                    className={`px-4 cursor-pointer py-3 font-medium text-base flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notes'
+                    className={`px-4 cursor-pointer py-3 font-medium text-lg flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'notes'
                         ? 'border-[#00a896] text-[#00a896]'
                         : 'border-transparent text-gray-500 hover:text-gray-700'
                         }`}

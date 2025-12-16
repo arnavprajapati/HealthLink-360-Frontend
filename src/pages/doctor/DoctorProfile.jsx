@@ -62,7 +62,12 @@ const DoctorProfile = () => {
         try {
             await dispatch(updateUserProfile(formData)).unwrap();
 
-            showTempMessage({ type: 'success', text: 'Profile updated successfully!' }, 3000);
+            showTempMessage({ type: 'success', text: 'Profile updated successfully!' }, 2000);
+
+            // Navigate to dashboard after successful profile update
+            setTimeout(() => {
+                navigate('/doctor-dashboard');
+            }, 1500);
 
         } catch (error) {
             const errText = error?.message || String(error) || 'Failed to update profile';
@@ -103,7 +108,7 @@ const DoctorProfile = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                 <div className="col-span-2">
-                                    <label className="block text-base font-medium text-gray-700 mb-1">
+                                    <label className="block text-lg font-medium text-gray-700 mb-1">
                                         Full Name
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -115,14 +120,14 @@ const DoctorProfile = () => {
                                             name="displayName"
                                             value={formData.displayName}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-lg border-gray-300 rounded-md py-2 border"
                                             placeholder="Dr. John Doe"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-base font-medium text-gray-700 mb-1">
+                                    <label className="block text-lg font-medium text-gray-700 mb-1">
                                         Speciality
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -134,14 +139,14 @@ const DoctorProfile = () => {
                                             name="speciality"
                                             value={formData.speciality}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-lg border-gray-300 rounded-md py-2 border"
                                             placeholder="Cardiologist"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-base font-medium text-gray-700 mb-1">
+                                    <label className="block text-lg font-medium text-gray-700 mb-1">
                                         Clinic Name
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -153,14 +158,14 @@ const DoctorProfile = () => {
                                             name="clinicName"
                                             value={formData.clinicName}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-lg border-gray-300 rounded-md py-2 border"
                                             placeholder="City Health Clinic"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-base font-medium text-gray-700 mb-1">
+                                    <label className="block text-lg font-medium text-gray-700 mb-1">
                                         Years of Experience
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -172,14 +177,14 @@ const DoctorProfile = () => {
                                             name="experience"
                                             value={formData.experience}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-lg border-gray-300 rounded-md py-2 border"
                                             placeholder="10"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-base font-medium text-gray-700 mb-1">
+                                    <label className="block text-lg font-medium text-gray-700 mb-1">
                                         Qualification
                                     </label>
                                     <div className="relative rounded-md shadow-sm">
@@ -191,7 +196,7 @@ const DoctorProfile = () => {
                                             name="qualification"
                                             value={formData.qualification}
                                             onChange={handleChange}
-                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-base border-gray-300 rounded-md py-2 border"
+                                            className="focus:ring-[#00a896] focus:border-[#00a896] block w-full pl-10 sm:text-lg border-gray-300 rounded-md py-2 border"
                                             placeholder="MBBS, MD"
                                         />
                                     </div>
