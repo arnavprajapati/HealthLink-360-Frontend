@@ -23,7 +23,6 @@ const patientNavigation = [
     { name: 'Calendar', href: '/calendar', icon: CalendarCheck },
     { name: 'Appointments', href: '/patient-appointments', icon: Calendar },
     { name: 'Clinical Notes', href: '/patient-notes', icon: ClipboardList },
-    { name: 'Reports', href: '/patient-reports', icon: FileText },
     { name: 'Settings', href: '/patient-settings', icon: Settings },
 ];
 

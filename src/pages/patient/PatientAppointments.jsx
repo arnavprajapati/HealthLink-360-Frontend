@@ -238,6 +238,61 @@ const PatientAppointments = () => {
                 </div>
             </div>
 
+
+            {/* Pending Requests - Move to Top for better UX */}
+            {appointments?.filter(a => a.status === 'pending' && a.requestedBy === 'patient').length > 0 && (
+                <div className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <div className="w-2 h-6 bg-yellow-400 rounded-full"></div>
+                        Pending Requests
+                    </h2>
+                    <div className="space-y-4">
+                        {appointments.filter(a => a.status === 'pending' && a.requestedBy === 'patient').map((appointment) => (
+                            <div
+                                key={appointment._id}
+                                className="bg-yellow-50 border border-yellow-200 rounded-xl p-4"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        {appointment.doctor?.photoURL ? (
+                                            <img
+                                                src={appointment.doctor.photoURL}
+                                                alt={appointment.doctor.displayName}
+                                                className="w-12 h-12 rounded-full border-2 border-yellow-200 object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-yellow-200 flex items-center justify-center text-yellow-700 font-bold">
+                                                {appointment.doctor?.displayName?.charAt(0)?.toUpperCase() || 'D'}
+                                            </div>
+                                        )}
+                                        <div>
+                                            <h3 className="font-semibold text-gray-900">
+                                                Dr. {appointment.doctor?.displayName}
+                                            </h3>
+                                            <p className="text-base text-gray-600">
+                                                {new Date(appointment.date).toLocaleDateString('en-US', {
+                                                    weekday: 'short',
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                })} at {appointment.time}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-base font-medium">
+                                        Awaiting Response
+                                    </span>
+                                </div>
+                                {appointment.requestMessage && (
+                                    <p className="mt-3 text-base text-gray-600 bg-white/50 rounded-lg p-2">
+                                        "{appointment.requestMessage}"
+                                    </p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                     <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">

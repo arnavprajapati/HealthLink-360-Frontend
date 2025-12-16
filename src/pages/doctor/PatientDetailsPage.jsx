@@ -604,7 +604,7 @@ const PatientDetailsPage = () => {
                                 type="text"
                                 value={noteTitle}
                                 onChange={(e) => setNoteTitle(e.target.value)}
-                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
+                                className="w-full rounded-lg p-3 border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
                                 placeholder="e.g. Follow-up Consultation"
                                 required
                             />
@@ -615,7 +615,7 @@ const PatientDetailsPage = () => {
                                 value={noteDescription}
                                 onChange={(e) => setNoteDescription(e.target.value)}
                                 rows={3}
-                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
+                                className="w-full rounded-lg p-3 border-gray-300 shadow-sm focus:border-[#00a896] focus:ring-[#00a896]"
                                 placeholder="Enter clinical observations..."
                                 required
                             />
