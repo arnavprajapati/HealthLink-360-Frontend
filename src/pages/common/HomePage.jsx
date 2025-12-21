@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform, useSpring, color } from 'framer-motion';
 import { TrendingUp, Brain, Calendar, Users, Shield, Activity, ArrowRight, HeartPulse } from 'lucide-react';
 
 const sectionIDs = ['hero', 'features', 'how-it-works'];
@@ -243,7 +243,7 @@ const HomePage = () => {
                         <div className="absolute bottom-10 left-10 right-10 hidden md:flex justify-between items-center">
                             <div className="flex items-center gap-4">
                                 <div className="w-42 h-[1.5px] bg-[#14b8a6]"></div>
-                                <span className="text-lg font-bold text-slate-400 uppercase tracking-widest">Innovation Hub </span>
+                                <span className="text-lg font-bold text-slate-400 uppercase tracking-widest">HealthLink-360</span>
                             </div>
                             <div className="flex items-center gap-4">
                                 <span className="text-lg font-bold text-slate-400 uppercase tracking-widest">Global Health Tech</span>
