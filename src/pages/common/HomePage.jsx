@@ -215,7 +215,7 @@ const HomePage = () => {
                                             360° Monitoring
                                         </p>
                                         <p className="text-slate-700 font-normal text-[18px] md:text-lg leading-relaxed">
-                                            Instantly track BMI, weight, and blood sugar with automated cloud synchronization.
+                                            Centralized tracking of vitals and medical categories with real-time cloud synchronization.
                                         </p>
                                     </div>
 
