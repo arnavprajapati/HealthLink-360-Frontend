@@ -125,7 +125,7 @@ const HomePage = () => {
             style={{ height: isMobile ? 'auto' : '300vh' }}
         >
             <header className='fixed top-0 left-0 right-0 z-50 bg-white shadow-md'>
-                <div className='max-w-7xl mx-auto flex items-center justify-between px-5 sm:px-6 lg:px-8 py-4'>
+                <div className='max-w-7xl mx-auto flex items-center justify-between px-5 sm:px-6  py-4'>
                     <div className='flex items-center gap-2'>
                         <div className="p-2 bg-[#00a896] rounded-full text-white shadow-lg">
                             <HeartPulse className="w-6 h-6" />
@@ -186,115 +186,78 @@ const HomePage = () => {
                     style={!isMobile ? { x: smoothX } : {}}
                     className={`flex ${isMobile ? 'flex-col' : 'flex-nowrap'}`}
                 >
-                    {/* SECTION 1: HERO */}
                     <section
                         id="hero"
-                        className={`flex-shrink-0 flex items-center justify-center px-4 sm:px-16 relative overflow-hidden ${!isMobile ? 'min-h-screen pt-28' : 'py-10'}`}
+                        className={`flex-shrink-0 flex items-center justify-center px-6 md:px-57 relative bg-white ${!isMobile ? 'h-screen' : 'py-10'}`}
                         style={{ width: isMobile ? '100%' : '100vw' }}
                     >
-                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#02c39a_1px,transparent_1px)] [background-size:20px_20px]"></div>
+                        <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+                            <div className="md:col-span-8 flex flex-col items-start">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <span className="px-3 py-1 border border-slate-300 rounded-lg text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50">Next-Gen Architecture</span>
+                                    <span className="px-3 py-1 border border-slate-300 rounded-lg text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50">AI Integrated</span>
+                                </div>
 
-                        <div className='max-w-[95vw] w-full z-10'>
-                            <div className='text-center mb-10'>
-                                <motion.h1
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.8 }}
-                                    className='text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight'
-                                >
-                                    <span className="text-[#028090]">HealthLink AI:</span> Smart Health Monitoring Platform
-                                </motion.h1>
-                                <motion.p
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.8, delay: 0.2 }}
-                                    className='text-lg md:text-xl text-gray-600 mx-auto max-w-3xl'
-                                >
-                                    Track vitals, monitor trends, and receive personalized insights. HealthTrack AI bridges the gap between patients and doctors with intelligent health analytics.
-                                </motion.p>
+                                <h1 className="text-6xl md:text-8xl font-bold text-[#0f172a] tracking-tight leading-[0.95] mb-8">
+                                    Empowering <br />your <span className="bg-gradient-to-r from-[#0f172a] to-[#14b8a6] bg-clip-text text-transparent">Wellness <br />Journey.</span>
+                                </h1>
+
+                                <p className="text-xl md:text-2xl text-slate-500 max-w-2xl font-normal leading-relaxed">
+                                    Experience a centralized ecosystem for medical records, real-time vitals, and AI-driven diagnostics.
+                                    <span className="text-slate-900 font-bold ml-1">Healthcare, reimagined.</span>
+                                </p>
                             </div>
 
-                            <div className='flex flex-col xl:flex-row items-center justify-center gap-6 xl:gap-0 w-full'>
-
-                                <motion.div
-                                    initial={{ opacity: 0, x: -50 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.8, delay: 0.4 }}
-                                    className='group relative bg-white overflow-hidden shadow-2xl transition-all duration-300 border-4 border-[#02c39a] w-full max-w-[500px] rounded-2xl z-20'
-                                >
-                                    <div className='aspect-[16/10] overflow-hidden relative'>
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img src='https://res.cloudinary.com/dzz1wmydl/image/upload/v1765867683/Woman_Phone_Blood_Sugar_UI_bvsmwq.png' alt="Patient tracking" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
-                                        <div className="absolute top-4 left-4 z-20 bg-[#02c39a] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Patients</div>
+                            <div className="md:col-span-4 flex flex-col space-y-12 border-l border-slate-300 pl-10 hidden md:flex">
+                                <div className="space-y-10"> 
+                                    <div>
+                                        <p className="text-[#14b8a6] font-bold uppercase tracking-[0.2em] text-[16px] mb-1">
+                                            360° Monitoring
+                                        </p>
+                                        <p className="text-slate-700 font-normal text-[18px] md:text-lg leading-relaxed">
+                                            Instantly track BMI, weight, and blood sugar with automated cloud synchronization.
+                                        </p>
                                     </div>
-                                    <div className='p-6 bg-white relative z-20'>
-                                        <h3 className='text-2xl font-bold text-[#028090] mb-2 flex items-center gap-2'>
-                                            Track Vitals & Goals
-                                        </h3>
-                                        <p className='text-lg text-gray-600 font-medium'>Real-time insights for a healthier you.</p>
-                                    </div>
-                                </motion.div>
 
-                                <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-3">
-                                    <div className="h-16 w-1 xl:h-1 xl:w-24 bg-gray-200 relative overflow-hidden rounded-full">
-                                        <div className={`absolute bg-[#02c39a] h-full w-full ${isMobile ? 'animate-pulse' : 'animate-pulse-flow'}`}></div>
+                                    <div>
+                                        <p className="text-[#14b8a6] font-bold uppercase tracking-[0.2em] text-[16px] mb-1">
+                                            AI-Powered Insights
+                                        </p>
+                                        <p className="text-slate-700 font-normal text-[18px] md:text-lg leading-relaxed">
+                                            Advanced analysis of medical reports to provide instant, actionable health summaries.
+                                        </p>
                                     </div>
-                                    <div className="w-3 h-3 bg-[#02c39a] rounded-full shadow-[0_0_10px_#02c39a]"></div>
-                                </div>
 
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.8, delay: 0.6 }}
-                                    className='relative z-30 shrink-0 mx-0 my-4 xl:my-0'
-                                >
-                                    <div className='relative'>
-                                        <div className='absolute inset-0 bg-[#02c39a] rounded-full blur-3xl opacity-20 animate-pulse'></div>
-                                        <div className='relative flex items-center justify-center w-40 h-40 md:w-52 md:h-52'>
-                                            <div className="absolute inset-0 border-2 border-dashed border-[#02c39a]/40 rounded-full animate-[spin_10s_linear_infinite]"></div>
-                                            <div className="absolute inset-4 border border-[#028090]/20 rounded-full"></div>
-                                            <img src='https://res.cloudinary.com/dzz1wmydl/image/upload/v1765868056/Adobe_Express_-_file_qntq4u.png' alt="AI Brain" className='w-32 h-32 md:w-82 md:h-60 object-contain drop-shadow-xl mix-blend-multiply relative z-10' />
-                                        </div>
-                                    </div>
-                                </motion.div>
-
-                                <div className="flex flex-col xl:flex-row items-center z-10 -my-4 xl:-my-0 xl:-mx-3">
-                                    <div className="w-3 h-3 bg-[#028090] rounded-full shadow-[0_0_10px_#028090]"></div>
-                                    <div className="h-16 w-1 xl:h-1 xl:w-24 bg-gray-200 relative overflow-hidden rounded-full">
-                                        <div className={`absolute bg-[#028090] h-full w-full ${isMobile ? 'animate-pulse' : 'animate-pulse-flow-reverse'}`}></div>
+                                    <div>
+                                        <p className="text-[#14b8a6] font-bold uppercase tracking-[0.2em] text-[16px] mb-1">
+                                            Seamless Care
+                                        </p>
+                                        <p className="text-slate-700 font-normal text-[18px] md:text-lg leading-relaxed">
+                                            Bridge the gap between specialized doctors and patients via secure digital connectivity.
+                                        </p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <motion.div
-                                    initial={{ opacity: 0, x: 50 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.8, delay: 0.8 }}
-                                    className='group relative bg-white overflow-hidden shadow-2xl transition-all duration-300 border-4 border-[#028090] w-full max-w-[500px] rounded-2xl z-20'
-                                >
-                                    <div className='aspect-[16/10] overflow-hidden relative'>
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity" />
-                                        <img src='https://res.cloudinary.com/dzz1wmydl/image/upload/v1765867682/Doctor_Panel_With_UI_Monitors_tt0msx.png' alt="Doctor Dashboard" className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-zoomUp' />
-                                        <div className="absolute top-4 right-4 z-20 bg-[#028090] text-white px-3 py-1 rounded-full text-lg font-bold shadow-lg">For Doctors</div>
-                                    </div>
-                                    <div className='p-6 bg-white relative z-20'>
-                                        <h3 className='text-2xl font-bold text-[#028090] mb-2 flex items-center justify-between'>
-                                            Manage & Analyze
-                                            <Activity className="w-6 h-6 text-[#02c39a]" />
-                                        </h3>
-                                        <p className='text-lg text-gray-600 font-medium'>Advanced tools for better care.</p>
-                                    </div>
-                                </motion.div>
+                        <div className="absolute bottom-10 left-10 right-10 hidden md:flex justify-between items-center">
+                            <div className="flex items-center gap-4">
+                                <div className="w-42 h-[1.5px] bg-[#14b8a6]"></div>
+                                <span className="text-lg font-bold text-slate-400 uppercase tracking-widest">Innovation Hub </span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="text-lg font-bold text-slate-400 uppercase tracking-widest">Global Health Tech</span>
+                                <div className="w-18 h-[1.5px] bg-[#14b8a6]"></div>
                             </div>
                         </div>
                     </section>
 
-                    {/* SECTION 2: FEATURES */}
                     <section
                         id="features"
                         className={`flex-shrink-0 flex items-center justify-center px-4 md:px-16 bg-white ${!isMobile ? 'h-screen' : 'py-20'}`}
                         style={{ width: isMobile ? '100%' : '100vw' }}
                     >
-                        <div className='max-w-7xl w-full flex flex-col pt-10 md:pt-24 pb-10'>
+                        <div className='max-w-7xl w-full flex flex-col pt-10 md:pt-34 pb-10'>
                             <div className='text-center mb-16'>
                                 <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-4'>
                                     Core Features & Benefits
@@ -368,28 +331,6 @@ const HomePage = () => {
                     </section>
                 </motion.div>
             </div>
-
-            <style>{`
-                @keyframes zoomUp {
-                    0% { transform: scale(1) translateY(0); }
-                    100% { transform: scale(2.8) translateY(40px); }
-                }
-                .animate-zoomUp { animation: zoomUp 5s ease-in-out infinite alternate; }
-
-                @keyframes pulse-flow {
-                    0% { transform: translateX(-100%); opacity: 0; }
-                    50% { opacity: 1; }
-                    100% { transform: translateX(100%); opacity: 0; }
-                }
-                .animate-pulse-flow { animation: pulse-flow 5s infinite linear; }
-
-                @keyframes pulse-flow-reverse {
-                    0% { transform: translateX(100%); opacity: 0; }
-                    50% { opacity: 1; }
-                    100% { transform: translateX(-100%); opacity: 0; }
-                }
-                .animate-pulse-flow-reverse { animation: pulse-flow-reverse 2s infinite linear; }
-            `}</style>
         </div>
     );
 };
