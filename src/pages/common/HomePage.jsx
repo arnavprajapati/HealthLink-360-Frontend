@@ -188,7 +188,7 @@ const HomePage = () => {
                 >
                     <section
                         id="hero"
-                        className={`flex-shrink-0 flex items-center justify-center px-6 md:px-57 relative bg-white ${!isMobile ? 'h-screen' : 'py-10'}`}
+                        className={`flex-shrink-0 flex items-center justify-center px-6 md:px-36 relative bg-white ${!isMobile ? 'h-screen' : 'py-10'}`}
                         style={{ width: isMobile ? '100%' : '100vw' }}
                     >
                         <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
