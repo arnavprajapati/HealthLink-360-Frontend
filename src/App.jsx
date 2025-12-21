@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { Provider } from 'react-redux';
-import store from './app/store';
-import { HealthProvider } from './context/HealthContext';
-import { GoalsProvider } from './context/GoalsContext';
-import useAuthListener from "./hooks/useAuthListener";
 import { useSelector } from "react-redux";
+import useAuthListener from "./hooks/useAuthListener";
 
 const isDoctorProfileComplete = (user) => {
   if (!user || user.role !== 'doctor') return true;
@@ -32,6 +28,10 @@ import CalendarPage from "./pages/patient/CalendarPage";
 import PatientAppointments from "./pages/patient/PatientAppointments";
 import PatientNotesPage from "./pages/patient/PatientNotesPage";
 
+import { HealthProvider } from './context/HealthContext';
+import { GoalsProvider } from './context/GoalsContext';
+import { ConnectionProvider } from './context/ConnectionContext';
+
 function App() {
   useAuthListener();
   const { user, isAuthChecking } = useSelector((state) => state.auth);
@@ -49,16 +49,30 @@ function App() {
     );
   }
 
+  const PatientContextWrapper = ({ children }) => {
+    return (
+      <ConnectionProvider>
+        <HealthProvider>
+          <GoalsProvider>
+            {children}
+          </GoalsProvider>
+        </HealthProvider>
+      </ConnectionProvider>
+    );
+  };
+
   const PatientDashboardWrapper = () => {
     const [showAddModal, setShowAddModal] = useState(false);
 
     return (
-      <Layout onAddRecord={() => setShowAddModal(true)}>
-        <PatientDashboard
-          showAddModal={showAddModal}
-          setShowAddModal={setShowAddModal}
-        />
-      </Layout>
+      <PatientContextWrapper>
+        <Layout onAddRecord={() => setShowAddModal(true)}>
+          <PatientDashboard
+            showAddModal={showAddModal}
+            setShowAddModal={setShowAddModal}
+          />
+        </Layout>
+      </PatientContextWrapper>
     );
   };
 
@@ -182,11 +196,11 @@ function App() {
           path="/patient-track-progress"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <Layout>
-                <GoalsProvider>
+              <PatientContextWrapper>
+                <Layout>
                   <TrackProgress />
-                </GoalsProvider>
-              </Layout>
+                </Layout>
+              </PatientContextWrapper>
             </PrivateRoute>
           }
         />
@@ -195,9 +209,11 @@ function App() {
           path="/calendar"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <Layout>
-                <CalendarPage />
-              </Layout>
+              <PatientContextWrapper>
+                <Layout>
+                  <CalendarPage />
+                </Layout>
+              </PatientContextWrapper>
             </PrivateRoute>
           }
         />
@@ -206,9 +222,11 @@ function App() {
           path="/patient-appointments"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <Layout>
-                <PatientAppointments />
-              </Layout>
+              <PatientContextWrapper>
+                <Layout>
+                  <PatientAppointments />
+                </Layout>
+              </PatientContextWrapper>
             </PrivateRoute>
           }
         />
@@ -217,9 +235,11 @@ function App() {
           path="/patient-notes"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <Layout>
-                <PatientNotesPage />
-              </Layout>
+              <PatientContextWrapper>
+                <Layout>
+                  <PatientNotesPage />
+                </Layout>
+              </PatientContextWrapper>
             </PrivateRoute>
           }
         />
