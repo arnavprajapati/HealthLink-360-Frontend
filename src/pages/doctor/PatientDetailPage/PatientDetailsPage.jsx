@@ -22,7 +22,7 @@ import FullReportModal from '../../patient/FullReportModal';
 import DetailModal from '../../patient/DetailModal';
 
 import AppointmentsSection from './components/AppointmentsSection';
-import NotesSection from './components/NoteSection';
+import NotesSection from './components/NotesSection';
 import GoalCard from './components/GoalCard';
 import PatientProfileCard from './components/PatientProfileCard';
 import AddNoteForm from './components/AddNoteForm'; 
