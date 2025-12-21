@@ -21,7 +21,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import PatientDashboard from "./pages/patient/PatientDashboard";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorProfile from "./pages/doctor/DoctorProfile";
-import PatientDetailsPage from "./pages/doctor/PatientDetailsPage";
+import PatientDetailsPage from "./pages/doctor/PatientDetailPage/PatientDetailsPage";
 import DoctorPatients from "./pages/doctor/DoctorPatients";
 import PrivateRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
