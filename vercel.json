@@ -2,6 +2,12 @@
     "redirects": [
         {
             "source": "/(.*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "health-link-360-frontend.vercel.app"
+                }
+            ],
             "destination": "https://healthlink360.dev/$1",
             "permanent": true
         }
