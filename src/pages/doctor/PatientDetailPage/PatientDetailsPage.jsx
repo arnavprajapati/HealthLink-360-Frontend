@@ -25,7 +25,7 @@ import AppointmentsSection from './components/AppointmentsSection';
 import NotesSection from './components/NoteSection';
 import GoalCard from './components/GoalCard';
 import PatientProfileCard from './components/PatientProfileCard';
-import AddNoteForm from './components/AddNoteForm';
+import AddNoteForm from './components/AddNoteForm'; 
 
 const PatientDetailsPage = () => {
     const { patientId } = useParams();
