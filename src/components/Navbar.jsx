@@ -7,10 +7,8 @@ import {
     User,
     ChevronDown,
     Menu,
-    FileText,
-    X,
     MessageSquare,
-    Send
+    X
 } from 'lucide-react';
 import { useConnection } from '../context/ConnectionContext';
 
@@ -18,6 +16,22 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const navigate = useNavigate();
+    
+    let connectionContext;
+    try {
+        connectionContext = useConnection();
+    } catch (error) {
+        connectionContext = {
+            unreadNotesCount: 0,
+            getUnreadNotesCount: () => {},
+            doctorUnreadNotes: [],
+            getDoctorUnreadNotes: () => {},
+            patientUnreadNotes: [],
+            getPatientUnreadNotes: () => {},
+            markNoteAsRead: () => {}
+        };
+    }
+
     const {
         unreadNotesCount,
         getUnreadNotesCount,
@@ -26,10 +40,10 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         patientUnreadNotes,
         getPatientUnreadNotes,
         markNoteAsRead
-    } = useConnection();
+    } = connectionContext;
 
     useEffect(() => {
-        if (user) {
+        if (user && unreadNotesCount !== undefined) {
             getUnreadNotesCount();
             if (user.role === 'patient') {
                 getPatientUnreadNotes();
@@ -39,9 +53,8 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         }
     }, [user]);
 
-    // Refetch when notification bell is clicked
     const handleBellClick = async () => {
-        if (!showNotifications) {
+        if (!showNotifications && unreadNotesCount !== undefined) {
             await getUnreadNotesCount();
             if (user?.role === 'patient') {
                 await getPatientUnreadNotes();
@@ -56,13 +69,14 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         setShowProfileMenu(false);
         if (user?.role === 'doctor') {
             navigate('/doctor-profile');
-        } else {
         }
     };
 
     const handleNotificationClick = async (note) => {
-        await markNoteAsRead(note._id);
-        await getUnreadNotesCount();
+        if (markNoteAsRead) {
+            await markNoteAsRead(note._id);
+            await getUnreadNotesCount();
+        }
         setShowNotifications(false);
         if (user?.role === 'patient') {
             navigate('/patient-notes');
@@ -79,7 +93,6 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
         <header className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200 h-22 flex items-center px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between w-full">
 
-                {/* Hamburger Menu Button - Mobile Only */}
                 <button
                     onClick={toggleSidebar}
                     className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
@@ -91,7 +104,6 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
 
                 <div className="flex items-center space-x-2 sm:space-x-4">
 
-                    {/* Notifications Bell */}
                     <div className="relative">
                         <button
                             onClick={handleBellClick}
@@ -105,7 +117,6 @@ const Navbar = ({ toggleSidebar, user, onLogout, onAddRecord }) => {
                             )}
                         </button>
 
-                        {/* Notifications Dropdown */}
                         {showNotifications && (
                             <>
                                 <div

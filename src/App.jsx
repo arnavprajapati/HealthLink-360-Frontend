@@ -49,14 +49,22 @@ function App() {
     );
   }
 
-  const PatientContextWrapper = ({ children }) => {
+  const PatientDataWrapper = ({ children }) => {
+    return (
+      <HealthProvider>
+        <GoalsProvider>
+          {children}
+        </GoalsProvider>
+      </HealthProvider>
+    );
+  };
+
+  const LayoutWrapper = ({ children, ...props }) => {
     return (
       <ConnectionProvider>
-        <HealthProvider>
-          <GoalsProvider>
-            {children}
-          </GoalsProvider>
-        </HealthProvider>
+        <Layout {...props}>
+          {children}
+        </Layout>
       </ConnectionProvider>
     );
   };
@@ -65,14 +73,16 @@ function App() {
     const [showAddModal, setShowAddModal] = useState(false);
 
     return (
-      <PatientContextWrapper>
-        <Layout onAddRecord={() => setShowAddModal(true)}>
-          <PatientDashboard
-            showAddModal={showAddModal}
-            setShowAddModal={setShowAddModal}
-          />
-        </Layout>
-      </PatientContextWrapper>
+      <ConnectionProvider>
+        <PatientDataWrapper>
+          <Layout onAddRecord={() => setShowAddModal(true)}>
+            <PatientDashboard
+              showAddModal={showAddModal}
+              setShowAddModal={setShowAddModal}
+            />
+          </Layout>
+        </PatientDataWrapper>
+      </ConnectionProvider>
     );
   };
 
@@ -133,9 +143,9 @@ function App() {
           path="/doctor-dashboard"
           element={
             <PrivateRoute allowedRoles={['doctor']}>
-              <Layout>
+              <LayoutWrapper>
                 <DoctorDashboard />
-              </Layout>
+              </LayoutWrapper>
             </PrivateRoute>
           }
         />
@@ -144,9 +154,9 @@ function App() {
           path="/doctor-profile"
           element={
             <PrivateRoute allowedRoles={['doctor']}>
-              <Layout>
+              <LayoutWrapper>
                 <DoctorProfile />
-              </Layout>
+              </LayoutWrapper>
             </PrivateRoute>
           }
         />
@@ -155,9 +165,9 @@ function App() {
           path="/doctor-patients"
           element={
             <PrivateRoute allowedRoles={['doctor']}>
-              <Layout>
+              <LayoutWrapper>
                 <DoctorPatients />
-              </Layout>
+              </LayoutWrapper>
             </PrivateRoute>
           }
         />
@@ -166,9 +176,9 @@ function App() {
           path="/doctor/patient/:patientId"
           element={
             <PrivateRoute allowedRoles={['doctor']}>
-              <Layout>
+              <LayoutWrapper>
                 <PatientDetailsPage />
-              </Layout>
+              </LayoutWrapper>
             </PrivateRoute>
           }
         />
@@ -196,11 +206,13 @@ function App() {
           path="/patient-track-progress"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <PatientContextWrapper>
-                <Layout>
-                  <TrackProgress />
-                </Layout>
-              </PatientContextWrapper>
+              <ConnectionProvider>
+                <PatientDataWrapper>
+                  <Layout>
+                    <TrackProgress />
+                  </Layout>
+                </PatientDataWrapper>
+              </ConnectionProvider>
             </PrivateRoute>
           }
         />
@@ -209,11 +221,13 @@ function App() {
           path="/calendar"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <PatientContextWrapper>
-                <Layout>
-                  <CalendarPage />
-                </Layout>
-              </PatientContextWrapper>
+              <ConnectionProvider>
+                <PatientDataWrapper>
+                  <Layout>
+                    <CalendarPage />
+                  </Layout>
+                </PatientDataWrapper>
+              </ConnectionProvider>
             </PrivateRoute>
           }
         />
@@ -222,11 +236,13 @@ function App() {
           path="/patient-appointments"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <PatientContextWrapper>
-                <Layout>
-                  <PatientAppointments />
-                </Layout>
-              </PatientContextWrapper>
+              <ConnectionProvider>
+                <PatientDataWrapper>
+                  <Layout>
+                    <PatientAppointments />
+                  </Layout>
+                </PatientDataWrapper>
+              </ConnectionProvider>
             </PrivateRoute>
           }
         />
@@ -235,11 +251,13 @@ function App() {
           path="/patient-notes"
           element={
             <PrivateRoute allowedRoles={['patient']}>
-              <PatientContextWrapper>
-                <Layout>
-                  <PatientNotesPage />
-                </Layout>
-              </PatientContextWrapper>
+              <ConnectionProvider>
+                <PatientDataWrapper>
+                  <Layout>
+                    <PatientNotesPage />
+                  </Layout>
+                </PatientDataWrapper>
+              </ConnectionProvider>
             </PrivateRoute>
           }
         />
