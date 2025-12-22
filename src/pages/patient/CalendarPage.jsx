@@ -271,7 +271,6 @@ const CalendarPage = () => {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            {/* Notification */}
             {notification && (
                 <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 ${notification.type === 'success'
                     ? 'bg-green-500 text-white'
@@ -286,60 +285,62 @@ const CalendarPage = () => {
                 </div>
             )}
 
-            {/* Header */}
             <div className="mb-6 flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800 flex items-center">
                         <CalendarCheck className="w-8 h-8 mr-3 text-[#00a896]" />
                         Health Calendar
                     </h1>
-                    <p className="text-gray-600 text-base mt-1">
+                    <p className="text-gray-600 text-lg mt-1">
                         Track your health goals and reminders
                     </p>
                 </div>
 
-                {/* Google Calendar Connection Status */}
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     {isConnected ? (
-                        <>
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-base font-medium bg-green-100 text-green-800">
+                        <div className="flex items-center space-x-3">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-lg font-medium bg-green-100 text-green-800">
                                 <CheckCircle className="w-4 h-4 mr-1" />
-                                Google Connected
+                                Google Sync Active
                             </span>
                             <button
                                 onClick={handleDisconnect}
-                                className="px-3 py-1.5 text-base bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors flex items-center space-x-1"
+                                className="px-3 py-1.5 text-lg bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors flex items-center space-x-1"
                             >
                                 <Unlink className="w-4 h-4" />
                                 <span>Disconnect</span>
                             </button>
-                        </>
+                        </div>
                     ) : (
-                        <button
-                            onClick={handleConnect}
-                            disabled={connecting}
-                            className="px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors flex items-center space-x-2 font-medium disabled:opacity-50"
-                        >
-                            {connecting ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Connecting...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <LinkIcon className="w-4 h-4" />
-                                    <span>Connect Google Calendar</span>
-                                </>
-                            )}
-                        </button>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-lg font-medium bg-amber-100 text-amber-800">
+                                <AlertCircle className="w-4 h-4 mr-1" />
+                                Local Goals Only
+                            </span>
+                            <button
+                                onClick={handleConnect}
+                                disabled={connecting}
+                                className="px-4 py-2 bg-[#00a896] text-white rounded-lg hover:bg-[#028090] transition-colors flex items-center space-x-2 font-medium disabled:opacity-50"
+                            >
+                                {connecting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>Connecting...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <LinkIcon className="w-4 h-4" />
+                                        <span>Enable Google Sync</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Calendar Grid */}
                 <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
-                    {/* Calendar Header */}
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-semibold text-gray-800">
                             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
@@ -347,7 +348,7 @@ const CalendarPage = () => {
                         <div className="flex items-center space-x-2">
                             <button
                                 onClick={goToToday}
-                                className="px-3 py-1.5 text-base bg-[#f0f3bd] text-[#028090] rounded-lg hover:bg-[#e0e8a0] transition-colors font-medium"
+                                className="px-3 py-1.5 text-lg bg-[#f0f3bd] text-[#028090] rounded-lg hover:bg-[#e0e8a0] transition-colors font-medium"
                             >
                                 Today
                             </button>
@@ -366,16 +367,14 @@ const CalendarPage = () => {
                         </div>
                     </div>
 
-                    {/* Day Names */}
                     <div className="grid grid-cols-7 gap-1 mb-2">
                         {dayNames.map(day => (
-                            <div key={day} className="text-center text-base font-medium text-gray-500 py-2">
+                            <div key={day} className="text-center text-lg font-medium text-gray-500 py-2">
                                 {day}
                             </div>
                         ))}
                     </div>
 
-                    {/* Calendar Days */}
                     <div className="grid grid-cols-7 gap-1">
                         {days.map((day, index) => {
                             const dayGoals = day ? getEventsForDate(day) : [];
@@ -395,13 +394,12 @@ const CalendarPage = () => {
                                     {day && (
                                         <>
                                             <span className={`
-                                                text-base font-medium
+                                                text-lg font-medium
                                                 ${isToday(day) ? 'text-[#00a896]' : 'text-gray-700'}
                                             `}>
                                                 {day.getDate()}
                                             </span>
 
-                                            {/* Goal indicators with progress */}
                                             {hasGoals && (
                                                 <div className="mt-1 space-y-1">
                                                     {dayGoals.slice(0, 2).map((goal, i) => {
@@ -410,7 +408,7 @@ const CalendarPage = () => {
                                                         return (
                                                             <div
                                                                 key={i}
-                                                                className={`text-base px-1.5 py-0.5 text-white rounded truncate ${getProgressColor(goal)}`}
+                                                                className={`text-lg px-1.5 py-0.5 text-white rounded truncate ${getProgressColor(goal)}`}
                                                                 title={`${goalName}: ${goal.currentValue || 0} ${goal.unit} (Target: ${goal.targetValue} ${goal.unit})`}
                                                             >
                                                                 {goalName.length > 8 ? goalName.substring(0, 8) + '..' : goalName}
@@ -418,7 +416,7 @@ const CalendarPage = () => {
                                                         );
                                                     })}
                                                     {dayGoals.length > 2 && (
-                                                        <div className="text-base text-gray-500 px-1">
+                                                        <div className="text-lg text-gray-500 px-1">
                                                             +{dayGoals.length - 2} more
                                                         </div>
                                                     )}
@@ -432,7 +430,6 @@ const CalendarPage = () => {
                     </div>
                 </div>
 
-                {/* Selected Date Events / All Events */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <Calendar className="w-5 h-5 mr-2 text-[#00a896]" />
@@ -449,7 +446,7 @@ const CalendarPage = () => {
                                 <div className="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
                                     <Target className="w-6 h-6 text-gray-400" />
                                 </div>
-                                <p className="text-gray-500 text-base">No goals for this date</p>
+                                <p className="text-gray-500 text-lg">No goals for this date</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -461,7 +458,6 @@ const CalendarPage = () => {
                                             key={index}
                                             className="p-4 bg-gray-50 rounded-xl"
                                         >
-                                            {/* Goal Name */}
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center space-x-3">
                                                     <div className={`p-2.5 rounded-xl ${getProgressColor(goal)}`}>
@@ -471,7 +467,7 @@ const CalendarPage = () => {
                                                         <h3 className="font-bold text-gray-800 text-lg">
                                                             {goalName}
                                                         </h3>
-                                                        <span className="text-base text-gray-500 capitalize">
+                                                        <span className="text-lg text-gray-500 capitalize">
                                                             {goal.goalType} goal • {goal.trackingFrequency}
                                                         </span>
                                                     </div>
@@ -482,7 +478,6 @@ const CalendarPage = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Progress Bar */}
                                             <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
                                                 <div
                                                     className={`h-3 rounded-full transition-all ${getProgressColor(goal)}`}
@@ -490,34 +485,33 @@ const CalendarPage = () => {
                                                 />
                                             </div>
 
-                                            {/* Values Display */}
                                             <div className="bg-white rounded-lg p-3 border border-gray-100">
                                                 {goal.goalType === 'decrease' ? (
                                                     <div className="flex items-center justify-between text-center">
                                                         <div className="flex-1">
-                                                            <p className="text-base text-gray-400 mb-1">Started</p>
+                                                            <p className="text-lg text-gray-400 mb-1">Started</p>
                                                             <p className="text-lg font-semibold text-gray-600">{goal.initialValue || '-'} {goal.unit}</p>
                                                         </div>
                                                         <div className="text-gray-300 text-lg">→</div>
                                                         <div className="flex-1">
-                                                            <p className="text-base text-gray-400 mb-1">Now</p>
+                                                            <p className="text-lg text-gray-400 mb-1">Now</p>
                                                             <p className="text-lg font-bold text-gray-800">{goal.currentValue || 0} {goal.unit}</p>
                                                         </div>
                                                         <div className="text-gray-300 text-lg">→</div>
                                                         <div className="flex-1">
-                                                            <p className="text-base text-gray-400 mb-1">Target</p>
+                                                            <p className="text-lg text-gray-400 mb-1">Target</p>
                                                             <p className="text-lg font-bold text-green-600">{goal.targetValue} {goal.unit}</p>
                                                         </div>
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center justify-between text-center">
                                                         <div className="flex-1">
-                                                            <p className="text-base text-gray-400 mb-1">Current</p>
+                                                            <p className="text-lg text-gray-400 mb-1">Current</p>
                                                             <p className="text-lg font-bold text-gray-800">{goal.currentValue || 0} {goal.unit}</p>
                                                         </div>
                                                         <div className="text-gray-300 text-lg">→</div>
                                                         <div className="flex-1">
-                                                            <p className="text-base text-gray-400 mb-1">Target</p>
+                                                            <p className="text-lg text-gray-400 mb-1">Target</p>
                                                             <p className="text-lg font-bold text-[#00a896]">{goal.targetValue} {goal.unit}</p>
                                                         </div>
                                                     </div>
@@ -534,10 +528,10 @@ const CalendarPage = () => {
                                 <div className="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3">
                                     <Target className="w-6 h-6 text-gray-400" />
                                 </div>
-                                <h3 className="text-base font-medium text-gray-700 mb-1">
+                                <h3 className="text-lg font-medium text-gray-700 mb-1">
                                     No active goals
                                 </h3>
-                                <p className="text-gray-500 text-base">
+                                <p className="text-gray-500 text-lg">
                                     Create goals in Track Progress
                                 </p>
                             </div>
@@ -561,7 +555,7 @@ const CalendarPage = () => {
                                                         <h3 className="font-semibold text-gray-800">
                                                             {goalName}
                                                         </h3>
-                                                        <span className="text-base text-gray-500 capitalize">
+                                                        <span className="text-lg text-gray-500 capitalize">
                                                             {goal.goalType} • {goal.trackingFrequency}
                                                         </span>
                                                     </div>
@@ -569,7 +563,6 @@ const CalendarPage = () => {
                                                 <span className="text-lg font-bold text-gray-800">{progress}%</span>
                                             </div>
 
-                                            {/* Progress Bar */}
                                             <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                                                 <div
                                                     className={`h-2 rounded-full transition-all ${getProgressColor(goal)}`}
@@ -577,8 +570,7 @@ const CalendarPage = () => {
                                                 />
                                             </div>
 
-                                            {/* Current / Target */}
-                                            <div className="flex items-center justify-between text-base text-gray-600">
+                                            <div className="flex items-center justify-between text-lg text-gray-600">
                                                 <span>Now: <b>{goal.currentValue || 0} {goal.unit}</b></span>
                                                 <span>Target: <b className="text-[#00a896]">{goal.targetValue} {goal.unit}</b></span>
                                             </div>
@@ -594,7 +586,7 @@ const CalendarPage = () => {
                             href="https://calendar.google.com"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-4 w-full flex items-center justify-center space-x-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors text-base"
+                            className="mt-4 w-full flex items-center justify-center space-x-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors text-lg"
                         >
                             <ExternalLink className="w-4 h-4" />
                             <span>Open Google Calendar</span>

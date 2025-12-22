@@ -531,7 +531,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                                 <CalendarCheck className="w-5 h-5 text-blue-600" />
                                 <div>
                                     <p className="font-semibold text-gray-800">Sync to Google Calendar</p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-lg text-gray-600">
                                         {isCalendarConnected
                                             ? `Create a recurring ${formData.trackingFrequency} reminder`
                                             : 'Connect Google Calendar in Settings to enable'}
@@ -553,7 +553,7 @@ const SetGoalModal = ({ onClose, onSuccess, editingGoal = null }) => {
                             </label>
                         </div>
                         {!isCalendarConnected && (
-                            <p className="text-xs text-blue-600 mt-2">
+                            <p className="text-lg text-blue-600 mt-2">
                                 💡 Go to <a href="/calendar" className="underline font-medium">Calendar</a> page to connect your Google Calendar
                             </p>
                         )}
