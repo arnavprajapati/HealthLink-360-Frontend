@@ -5,7 +5,7 @@ import { useGoals } from '../../context/GoalsContext';
 import axios from 'axios';
 import AIHealthAssistantModal from './AIHealthAssistantModal';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const ChevronRight = ({ className }) => (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
